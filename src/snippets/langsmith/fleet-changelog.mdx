@@ -1,3 +1,13 @@
+## Fleet
+
+- Download SharePoint PDFs into your Fleet workspace and upload workspace files to SharePoint document libraries. Text file uploads continue to work.
+- Custom MCP servers can authenticate with the OAuth 2.0 client credentials grant, using your app's client ID and secret instead of a per-user sign-in.
+- OAuth providers that use HTTP Basic client authentication now encode the client ID and secret as the OAuth spec requires, so secrets containing characters such as `:`, `%` or `+` no longer fail at the token endpoint.
+- Claude Sonnet 5.5 and Opus 5.5, GPT-6.1 Sol, and Gemini 3.8 Flash are now available as directly selectable models in Fleet and Agent Builder. The new Claude models run with adaptive thinking.
+- Fleet agents save SharePoint downloads directly under the downloads folder, matching OneDrive files. Downloading another file with the same name replaces the earlier copy.
+- The New agent dialog preserves its contents when the sidebar transitions from an empty state to loading or populated agent lists.
+- OIDC-authenticated users can list and manage workspace secrets according to their workspace permissions.
+
 <Update label="September 28-October 5, 2026" rss={{ title: "2026-09-28 - Fleet product update" }}>
 
 ## Fleet

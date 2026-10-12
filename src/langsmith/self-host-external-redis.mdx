@@ -127,7 +127,9 @@ As of LangSmith helm version **0.12.25**, we officially support **Redis Cluster*
 
 ### Host names
 
-When using Redis Cluster, provide a list of node hostnames and ports. Each node URI must be in the form:
+When using Redis Cluster, provide one or more node URIs. LangSmith discovers the rest of the cluster from the nodes it reaches. A single endpoint that serves the cluster topology is enough, such as a [Memorystore Cluster discovery endpoint](#memorystore-for-redis-iam-authentication) or an ElastiCache configuration endpoint. Listing several nodes lets LangSmith start while one of them is down.
+
+Each node URI must be in the form:
 
 ```text
 redis://hostname:port
@@ -494,6 +496,12 @@ IAM authentication is only available for Memorystore Cluster, not standalone Mem
 
 #### Configuration
 
+Set the node URI to the cluster's discovery endpoint. LangSmith discovers the cluster's shards from it.
+
+<Note>
+Connecting through the discovery endpoint with IAM authentication requires LangSmith v0.18.0 or later.
+</Note>
+
 **Memorystore Cluster with IAM:**
 
 ```yaml
@@ -505,6 +513,7 @@ redis:
     cluster:
       enabled: true
       nodeUrisSecretKey: "redis_cluster_node_uris"
+      # Set to false if in-transit encryption is disabled on the cluster.
       tlsEnabled: true
 ```
 
@@ -515,7 +524,8 @@ metadata:
   name: redis-cluster-secret
 type: Opaque
 stringData:
-  redis_cluster_node_uris: '["redis://node-0:6379","redis://node-1:6379","redis://node-2:6379"]'
+  # The cluster's discovery endpoint, for example redis://10.1.2.3:6379
+  redis_cluster_node_uris: '["redis://<discovery-endpoint-ip>:6379"]'
 ```
 
 #### Required annotations

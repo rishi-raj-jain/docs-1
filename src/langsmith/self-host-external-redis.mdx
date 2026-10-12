@@ -125,35 +125,75 @@ Once configured, you should be able to reinstall your LangSmith instance. If eve
 ## Redis cluster
 As of LangSmith helm version **0.12.25**, we officially support **Redis Cluster**.
 
-### Host names
+### Cluster endpoint
 
-When using Redis Cluster, provide one or more node URIs. LangSmith discovers the rest of the cluster from the nodes it reaches. A single endpoint that serves the cluster topology is enough, such as a [Memorystore Cluster discovery endpoint](#memorystore-for-redis-iam-authentication) or an ElastiCache configuration endpoint. Listing several nodes lets LangSmith start while one of them is down.
+LangSmith discovers the nodes of a Redis Cluster from the endpoint it connects to. Set `redis.external.connectionUrl` to one endpoint that serves the cluster topology, such as a [Memorystore Cluster discovery endpoint](#memorystore-for-redis-iam-authentication), an ElastiCache configuration endpoint, or any node.
 
-Each node URI must be in the form:
-
-```text
-redis://hostname:port
-```
-
-For example:
+The URL uses the same format as for standalone Redis, with the password in the URL:
 
 ```text
-redis://redis-node-0:6379
-redis://redis-node-1:6379
-redis://redis-node-2:6379
+redis://:password@hostname:port
 ```
 
-Do not include a password in these URIs, and do not use `rediss` here. For Redis Cluster:
+Percent-encode special characters in the password. TLS is controlled by `redis.external.cluster.tlsEnabled`, which defaults to `true`. Set it to `false` if your cluster does not use TLS.
 
-- Provide the password separately via `redis.external.cluster.password` or through a Secret using `passwordSecretKey`.
-- TLS is enabled by default for Redis Cluster (`redis.external.cluster.tlsEnabled: true`). Set `tlsEnabled: false` if your cluster does not use TLS.
+<Note>
+Configuring Redis Cluster with `connectionUrl` requires LangSmith v0.18.0 or later. Earlier versions use [node URIs](#node-uris-deprecated), which are deprecated in v0.18.0 but still work.
+</Note>
 
 ### Configuration
 
-When connecting to an external Redis Cluster, configure the Helm values under `redis.external.cluster`. You can either:
+Set `redis.external.cluster.enabled` and provide the cluster endpoint either directly in `values.yaml` or through an existing Kubernetes `Secret`.
 
-* Provide node URIs and (optionally) a password directly in `values.yaml`.
-* Or reference an existing Kubernetes `Secret` containing node URIs and password.
+<CodeGroup>
+
+```yaml Helm (inline values)
+redis:
+  external:
+    enabled: true
+    # One endpoint that serves the cluster topology, with the password if your cluster requires one.
+    connectionUrl: "redis://:your_redis_password@redis-cluster.example.internal:6379"
+    cluster:
+      enabled: true
+      # TLS is enabled by default. Set to false if your cluster does not use TLS.
+      tlsEnabled: true
+```
+
+```yaml Helm (using an existing Secret)
+redis:
+  external:
+    enabled: true
+    # Name of an existing Secret that contains the cluster endpoint
+    existingSecretName: "my-redis-cluster-secret"
+    connectionUrlSecretKey: "connection_url"
+    cluster:
+      enabled: true
+      tlsEnabled: true
+```
+
+</CodeGroup>
+
+If using an existing Secret, it should contain:
+
+<CodeGroup>
+
+```yaml Kubernetes Secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: my-redis-cluster-secret
+type: Opaque
+stringData:
+  connection_url: "redis://:your_redis_password@redis-cluster.example.internal:6379"
+```
+
+</CodeGroup>
+
+### Node URIs (deprecated)
+
+Before v0.18.0, Redis Cluster is configured with a list of node URIs and a separate password. These values are deprecated in v0.18.0 but still work. When node URIs are set, LangSmith uses them instead of `connectionUrl`.
+
+Each node URI must be in the form `redis://hostname:port`. Do not include a password in these URIs, and do not use `rediss` here. Provide the password separately with `redis.external.cluster.password`, or through a Secret using `passwordSecretKey`.
 
 <CodeGroup>
 
@@ -170,7 +210,6 @@ redis:
         - "redis://redis-node-2:6379"
       # Optional. If your cluster requires auth, set a password or use a Secret (recommended).
       password: "your_redis_password"
-      # TLS is enabled by default. Set to false if your cluster does not use TLS.
       tlsEnabled: true
 ```
 
@@ -178,7 +217,6 @@ redis:
 redis:
   external:
     enabled: true
-    # Name of an existing Secret that contains cluster connection details
     existingSecretName: "my-redis-cluster-secret"
     cluster:
       enabled: true
@@ -187,12 +225,6 @@ redis:
       passwordSecretKey: "redis_cluster_password"
       tlsEnabled: true
 ```
-
-</CodeGroup>
-
-If using an existing Secret, it should contain:
-
-<CodeGroup>
 
 ```yaml Kubernetes Secret
 apiVersion: v1
@@ -496,10 +528,10 @@ IAM authentication is only available for Memorystore Cluster, not standalone Mem
 
 #### Configuration
 
-Set the node URI to the cluster's discovery endpoint. LangSmith discovers the cluster's shards from it.
+Set the connection URL to the cluster's discovery endpoint. LangSmith discovers the cluster's shards from it. IAM authentication replaces the password, so the URL has none.
 
 <Note>
-Connecting through the discovery endpoint with IAM authentication requires LangSmith v0.18.0 or later.
+Connecting to Memorystore Cluster through `connectionUrl` requires LangSmith v0.18.0 or later.
 </Note>
 
 **Memorystore Cluster with IAM:**
@@ -509,10 +541,10 @@ redis:
   external:
     enabled: true
     existingSecretName: "redis-cluster-secret"
+    connectionUrlSecretKey: "connection_url"
     iamAuthProvider: "gcp"
     cluster:
       enabled: true
-      nodeUrisSecretKey: "redis_cluster_node_uris"
       # Set to false if in-transit encryption is disabled on the cluster.
       tlsEnabled: true
 ```
@@ -525,7 +557,7 @@ metadata:
 type: Opaque
 stringData:
   # The cluster's discovery endpoint, for example redis://10.1.2.3:6379
-  redis_cluster_node_uris: '["redis://<discovery-endpoint-ip>:6379"]'
+  connection_url: "redis://<discovery-endpoint-ip>:6379"
 ```
 
 #### Required annotations

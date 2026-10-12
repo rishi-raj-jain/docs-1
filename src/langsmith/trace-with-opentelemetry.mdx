@@ -229,10 +229,29 @@ By default, the LangSmith OpenTelemetry exporter will send data to the LangSmith
 
 ```bash
 OTEL_EXPORTER_OTLP_ENDPOINT: Override the endpoint URL
-OTEL_EXPORTER_OTLP_HEADERS: Add custom headers (LangSmith API keys and Project are added automatically)
+OTEL_EXPORTER_OTLP_HEADERS: Override the OTLP export headers entirely; replaces the LangSmith defaults (x-api-key and Langsmith-Project) rather than appending to them
 OTEL_SERVICE_NAME: Set a custom service name (defaults to "langsmith")
 OTEL_RESOURCE_ATTRIBUTES: Attach custom metadata fields at the process level (see below)
 ```
+
+<Warning>
+**Hybrid mode and non-LangSmith collectors:** When `LANGSMITH_TRACING_MODE=hybrid` and `OTEL_EXPORTER_OTLP_ENDPOINT` points at a third-party collector (Datadog, Honeycomb, Grafana, etc.), the SDK injects `x-api-key` and `Langsmith-Project` headers into every OTLP export request by default. Those headers travel to the external collector along with your spans.
+
+To prevent your LangSmith API key from being sent to the external endpoint, set `OTEL_EXPORTER_OTLP_HEADERS` explicitly. Any value — including an empty string — replaces the LangSmith defaults and stops the headers from being injected:
+
+```bash
+# Suppresses x-api-key and Langsmith-Project from going to the external collector
+OTEL_EXPORTER_OTLP_HEADERS=""
+```
+
+If the external collector requires its own authentication headers, include them here:
+
+```bash
+OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer <your-collector-token>"
+```
+
+Note that when you set `OTEL_EXPORTER_OTLP_HEADERS`, LangSmith no longer injects its own headers automatically. If you are sending traces directly to LangSmith (without a collector) in the same process, ensure you include `x-api-key=<your-langsmith-api-key>` in the value.
+</Warning>
 
 ### Add process-level resource attributes
 

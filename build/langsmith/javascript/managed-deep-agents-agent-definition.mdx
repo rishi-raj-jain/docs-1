@@ -55,6 +55,25 @@ export const agent = defineDeepAgent({
   model: "google:gemini-3.6-flash",
 });
 ```
+
+```ts Microsoft Foundry
+// To use ChatOpenAI, run: npm install @langchain/openai
+import { defineDeepAgent } from "managed-deepagents";
+import { ChatOpenAI } from "@langchain/openai";
+
+const model = new ChatOpenAI({
+  model: process.env.AZURE_OPENAI_DEPLOYMENT_NAME,
+  apiKey: process.env.AZURE_OPENAI_API_KEY,
+  configuration: {
+    baseURL: process.env.AZURE_AI_OPENAI_ENDPOINT,
+  },
+});
+
+export const agent = defineDeepAgent({
+  name: "research-assistant",
+  model,
+});
+```
 </CodeGroup>
 
 

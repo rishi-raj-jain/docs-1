@@ -79,6 +79,7 @@ def test_strict_turns_type_lists_into_any_of() -> None:
         ),
         ("Flag: real_flag\n```\nFlag: example", ["real_flag"]),
         ("Flag: <!--\n-->none", []),
+        ("```Flag: none```\nFlag: real_flag", ["real_flag"]),
         ("Flag: Some_Flag\nFlag: some_flag", ["Some_Flag"]),
     ],
 )

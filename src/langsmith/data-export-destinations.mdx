@@ -453,6 +453,10 @@ See [AWS S3 permissions](#aws-s3-permissions) for optional permissions.
 
 ## Authenticate to GCS with workload identity
 
+<Note>
+GCS workload identity is not yet available on BYOC deployments.
+</Note>
+
 Workload identity lets LangSmith export to a GCS bucket without HMAC keys. LangSmith signs a short-lived OpenID Connect (OIDC) token for your workspace, and Google Cloud [Workload Identity Federation](https://cloud.google.com/iam/docs/workload-identity-federation) exchanges it for a short-lived access token. LangSmith stores no Google credentials for the destination.
 
 Each token identifies the workspace that is exporting:

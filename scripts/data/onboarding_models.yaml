@@ -18,9 +18,10 @@
 #                              `claude-haiku-4-5-20251001`.
 #   ignore          IDs that look like chat models but are not, so never flag.
 #
-# Keep `current` in step with the models the docs examples use (see
-# src/snippets/chat-model-tabs.mdx). Add a model here when it ships GA; remove
-# one when the docs move off it.
+# `preferred` is the provider's latest GA model at the snippet's tier.
+# `current` is the provider's current GA lineup plus the release before it.
+# Add a model here when it ships GA; remove one when the provider supersedes
+# it twice.
 
 source:
   repo: langchain-ai/langchainplus
@@ -34,23 +35,27 @@ providers:
     preferred: gpt-6-luna
     current:
       - gpt-6-luna
+      - gpt-6-astra
+      - gpt-6.1-sol
       - gpt-6-sol
       - gpt-5.5
       - gpt-5.4-mini
       # LLM-as-judge model in the OSS and LangSmith evaluation examples.
       - o3-mini
   anthropic:
-    preferred: claude-sonnet-4-6
+    preferred: claude-sonnet-5-5
     current:
-      - claude-sonnet-4-6
-      - claude-haiku-4-5
-      - claude-opus-4-8
+      - claude-sonnet-5-5
+      - claude-opus-5-5
+      - claude-haiku-5-5
+      - claude-fable-5-1
+      - claude-sonnet-5
       - claude-opus-5
   google:
-    preferred: gemini-3.7-flash
+    preferred: gemini-3.8-flash
     current:
+      - gemini-3.8-flash
       - gemini-3.7-flash
-      - gemini-3.6-flash
 
 ignore:
   # Speech-to-text model in the LiveKit snippet, not a chat model.

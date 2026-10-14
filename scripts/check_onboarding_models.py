@@ -1,26 +1,13 @@
 """Report outdated model IDs in LangSmith's in-product onboarding snippets.
 
-The tracing quickstart in the LangSmith UI ships its own code snippets, kept in
-langchainplus rather than in the docs. Nothing ties their model IDs to the ones
-the docs use, so they drift: in October 2026 the OpenAI snippet still hardcoded
-`gpt-4o-mini`, and every org that ran the quickstart once showed up as a
-`gpt-4o-mini` user in the LangSmith Signal usage report.
-
-This script reads the snippet files named in
-``scripts/data/onboarding_models.yaml``, finds every model ID, and reports each
-one that is not listed as current for its provider. It never edits the
-snippets. A product UI change needs a frontend review, and a snippet can pin a
-model on purpose.
+Reads the snippet files named in ``scripts/data/onboarding_models.yaml`` and
+reports each model ID not listed as current for its provider. Never edits them.
 
     uv run python scripts/check_onboarding_models.py
     uv run python scripts/check_onboarding_models.py --repo-dir ../langchainplus
-    uv run python scripts/check_onboarding_models.py --output report.md
 
-Reading langchainplus over the API needs a token with read access to it, in
-``GITHUB_TOKEN`` or ``GH_TOKEN``. ``--repo-dir`` reads a local checkout instead.
-
-Exit status is 0 when every model is current, 1 when something is outdated,
-and 2 when the snippets could not be read.
+Reading over the API needs ``GITHUB_TOKEN`` or ``GH_TOKEN`` with read access to
+langchainplus. Exits 0 if all current, 1 if any are outdated, 2 if unreadable.
 """
 
 from __future__ import annotations

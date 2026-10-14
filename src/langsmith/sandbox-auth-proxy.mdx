@@ -241,7 +241,7 @@ Workload identity is available on [AWS IAM role rules](#authenticate-with-an-iam
 
 Your cloud trusts tokens by issuer, audience, and subject:
 
-- **Issuer**: Your LangSmith API URL, for example `https://api.smith.langchain.com` (US) or `https://eu.api.smith.langchain.com` (EU). For self-hosted deployments, your LangSmith URL followed by `/api`, such as `https://langsmith.example.com/api`.
+- **Issuer**: Your LangSmith API URL, for example `https://api.smith.langchain.com` (US) or `https://eu.api.smith.langchain.com` (EU). For self-hosted deployments, your LangSmith URL followed by `/api`, such as `https://langsmith.example.com/api`, or `https://langsmith.example.com/<basePath>/api` if you serve LangSmith under a base path.
 - **Audience**: `sts.amazonaws.com` for AWS, `api://AzureADTokenExchange` for Azure, and for Google Cloud the `https://iam.googleapis.com/...` form of your provider name, which Google accepts by default.
 - **Subject**: Set by the rule's optional `subject_scope`:
 
@@ -701,7 +701,7 @@ az identity federated-credential create --name langsmith-<LANGSMITH_WORKSPACE_ID
   --audiences api://AzureADTokenExchange
 ```
 
-Entra ID matches the issuer (no trailing slash), subject, and audience exactly, so a tag-scoped rule needs its own credential. Then grant the identity Azure roles on what the sandbox may reach.
+Entra ID matches the issuer (no trailing slash), subject, and audience exactly, so a tag-scoped rule needs its own credential. An identity holds at most 20 federated credentials. Then grant the identity Azure roles on what the sandbox may reach.
 
 `resources` limits which Entra resources LangSmith obtains tokens for and defaults to all of them. The proxy picks the resource from the request's host, in the Azure public cloud only; other hosts are not authenticated:
 

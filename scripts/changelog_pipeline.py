@@ -1324,7 +1324,8 @@ def _mask_non_declarations(body: str) -> str:
         indented = len(line) - len(trimmed) > 3
         m = None if indented else FENCE_RE.match(trimmed)
         if not opener:
-            if m:
+            # A backtick opener cannot contain another backtick: "```x```" is inline code.
+            if m and not (m.group(1)[0] == "`" and "`" in trimmed[len(m.group(1)) :]):
                 opener = m.group(1)
                 lines[i] = ""
             continue

@@ -233,16 +233,16 @@ Every sandbox also has the common CA-bundle environment variables pointed at the
 
 ## Use workload identity for cloud access
 
-Workload identity lets a sandbox reach AWS, Google Cloud, and Azure with short-lived federated credentials instead of stored access keys, service account keys, or client secrets. LangSmith acts as an OpenID Connect (OIDC) identity provider: it signs a five-minute token that identifies your workspace, your cloud's token service exchanges it for temporary credentials, and the auth proxy applies those credentials to matching requests. You create the trust once in your own cloud account, and LangSmith never holds a long-lived cloud secret. Neither the LangSmith token nor the cloud credential enters the sandbox.
+Workload identity lets a sandbox reach AWS, Google Cloud, and Azure with short-lived federated credentials instead of stored keys or client secrets. LangSmith acts as an OpenID Connect (OIDC) identity provider: it signs a five-minute token for your workspace, your cloud exchanges it for temporary credentials, and the auth proxy applies them to matching requests. Neither the token nor the cloud credential enters the sandbox.
 
-Workload identity is available on AWS [IAM role rules](#authenticate-with-an-iam-role), [GCP rules](#authenticate-gcp-requests-with-workload-identity), [Azure rules](#authenticate-azure-requests-with-workload-identity), and the matching [mount authentication](/langsmith/sandbox-mounts). Self-hosted deployments must [enable workload identity](/langsmith/enable-self-hosted-sandboxes#optional-enable-workload-identity) first. Otherwise, LangSmith rejects federated rules with `workload identity is not enabled on this deployment`.
+Workload identity is available on [AWS IAM role rules](#authenticate-with-an-iam-role), [GCP rules](#authenticate-gcp-requests-with-workload-identity), [Azure rules](#authenticate-azure-requests-with-workload-identity), and the matching [mount authentication](/langsmith/sandbox-mounts). Self-hosted deployments must [enable workload identity](/langsmith/enable-self-hosted-sandboxes#optional-enable-workload-identity) first; otherwise LangSmith rejects federated rules.
 
 ### Configure the issuer, audience, and subject
 
 Your cloud trusts tokens by issuer, audience, and subject:
 
-- **Issuer**: Your LangSmith API URL, for example `https://api.smith.langchain.com` in the US region or `https://eu.api.smith.langchain.com` in the EU region. For self-hosted deployments, the issuer is your LangSmith URL followed by `/api`, such as `https://langsmith.example.com/api`. When you select **AWS IAM role** in the **Create sandbox** form, it displays the issuer.
-- **Audience**: `sts.amazonaws.com` for AWS, `api://AzureADTokenExchange` for Azure, and, for Google Cloud, the `https://iam.googleapis.com/...` form of your workload identity provider name, which a Google OIDC provider accepts by default.
+- **Issuer**: Your LangSmith API URL, for example `https://api.smith.langchain.com` (US) or `https://eu.api.smith.langchain.com` (EU). For self-hosted deployments, your LangSmith URL followed by `/api`, such as `https://langsmith.example.com/api`.
+- **Audience**: `sts.amazonaws.com` for AWS, `api://AzureADTokenExchange` for Azure, and for Google Cloud the `https://iam.googleapis.com/...` form of your provider name, which Google accepts by default.
 - **Subject**: Set by the rule's optional `subject_scope`:
 
 | `subject_scope` | Token subject | Accepted from |
@@ -251,24 +251,61 @@ Your cloud trusts tokens by issuer, audience, and subject:
 | `tag:<tag_value_id>` | `ws:<workspace_id>:sandbox:tag:<tag_value_id>` | Only sandboxes that carry that [resource tag](/langsmith/set-up-resource-tags) value |
 
 <Warning>
-Every workspace in a region shares the same issuer. Always pin the exact subject in your cloud's trust configuration, not only the audience. A trust policy that checks only the audience, or a grant to a whole Google workload identity pool, accepts tokens from workspaces you do not control.
+Every workspace in a region shares the same issuer. Always pin the exact subject in your cloud's trust configuration, not only the audience.
 </Warning>
 
-A tag-scoped rule must name a tag value that is in the sandbox's `tag_value_ids` when you create it. LangSmith checks the tag every time the sandbox host requests credentials, so removing the tag from the sandbox stops new credentials from being issued.
+A tag-scoped rule must name a tag value that the sandbox is created with. LangSmith re-checks the tag on every credential request, so removing it from the sandbox stops new credentials:
+
+<CodeGroup>
+
+```python Python
+tag_value_id = "<TAG_VALUE_ID>"
+client.create_sandbox(
+    name="tagged-sandbox",
+    proxy_config=proxy_config(
+        rules=[
+            aws_auth(
+                role_arn="arn:aws:iam::123456789012:role/LangSmithSandbox",
+                subject_scope=f"tag:{tag_value_id}",
+            )
+        ]
+    ),
+    tag_value_ids=[tag_value_id],
+)
+```
+
+```ts TypeScript
+const tagValueId = "<TAG_VALUE_ID>";
+await client.createSandbox({
+  name: "tagged-sandbox",
+  proxyConfig: proxyConfig({
+    rules: [
+      awsAuth({
+        roleArn: "arn:aws:iam::123456789012:role/LangSmithSandbox",
+        subjectScope: `tag:${tagValueId}`,
+      }),
+    ],
+  }),
+  tagValueIds: [tagValueId],
+});
+```
+
+</CodeGroup>
+
+In the HTTP API, set `"subject_scope": "tag:<TAG_VALUE_ID>"` on the rule and `"tag_value_ids": ["<TAG_VALUE_ID>"]` on the create request. `gcp_auth` / `gcpAuth` and `azure_auth` / `azureAuth` take the same argument.
+
+<Note>
+SDK examples for workload identity, Azure, and `tag_value_ids` require an SDK release that supports them. Backend support alone does not add these helpers to an older SDK release.
+</Note>
 
 ### Review workload identity constraints
 
-- **Fixed at creation**: The role, provider, service account, scopes, Azure tenant, client, resources, and subject scope of a federated rule cannot change after creation. An update that adds, changes, removes, or disables a federated rule is rejected. Create a new sandbox instead.
-- **Delegated access**: A caller using sandbox [delegated credentials](#delegate-langsmith-access) cannot create or update a sandbox with a federated rule.
-- **Revocation**: Credentials that were already issued remain valid until they expire. Allow about 15 minutes for removed cloud trust, a removed tag, or a deleted sandbox to take full effect.
-- **Guest authority**: The proxy applies federated credentials to every sandbox request that matches the rule. Sandbox code can do anything the role, service account, or identity is allowed to do, including minting credentials it can keep, for example through `sts:AssumeRole` into another role or Google `generateAccessToken`. Grant only what the sandbox needs.
+- **Fixed at creation**: An update that adds, changes, removes, or disables a federated rule is rejected. Create a new sandbox instead.
+- **Delegated access**: A caller using [delegated credentials](#delegate-langsmith-access) cannot create or update a sandbox with a federated rule.
+- **Revocation**: Issued credentials remain valid until they expire. Allow about 15 minutes for removed cloud trust, a removed tag, or a deleted sandbox to take full effect.
+- **Guest authority**: Sandbox code can do anything the role, service account, or identity is allowed to do, including minting credentials it can keep. Grant only what the sandbox needs.
 
-### Troubleshoot workload identity errors
-
-The sandbox host fetches the first credentials while the sandbox boots, so a cloud that rejects the token fails sandbox creation or start, and no sandbox is left behind:
-
-- **`422 WorkloadIdentityDenied`**: The cloud refused the exchange, for example because the trust policy does not match the issuer, audience, or subject. The `detail.message` names the cloud and its error code, such as `aws web identity denied: AccessDenied: ...` or `azure workload identity denied: invalid_client: AADSTS700213: ...`. Fix the cloud configuration, then retry.
-- **`503 WorkloadIdentityUnavailable`**: The exchange failed in a way a retry can clear, such as throttling or the cloud being unable to fetch LangSmith's signing keys. The response includes a `Retry-After` header.
+A cloud that refuses the exchange while the sandbox boots fails the create or start with `422 WorkloadIdentityDenied`, whose `detail.message` names the cloud's error code. A failure a retry can clear, such as throttling, returns `503 WorkloadIdentityUnavailable` with a `Retry-After` header. No sandbox is left behind.
 
 ## Authenticate AWS requests
 
@@ -375,13 +412,11 @@ Static AWS auth accepts an access key ID and secret access key, but not a caller
 
 ### Authenticate with an IAM role
 
-An AWS role rule lets LangSmith assume an IAM role in your AWS account through [workload identity](#use-workload-identity-for-cloud-access) and sign supported AWS HTTPS requests with temporary credentials. LangSmith exchanges a short-lived token for the role's credentials with `sts:AssumeRoleWithWebIdentity`, so you do not store or rotate access keys. It works with or without [S3 mounts](/langsmith/sandbox-mounts#authenticate-with-an-iam-role), without exposing credentials to sandbox code.
-
-In **Create sandbox > Network**, enable AWS authentication and select **AWS IAM role**. The form shows the issuer, audience, and subject for your workspace, generates the trust policy, and accepts the role in **AWS role ARN**. If **AWS IAM role** is not offered, workload identity is not enabled on your deployment.
+An AWS role rule assumes an IAM role in your AWS account through [workload identity](#use-workload-identity-for-cloud-access) (`sts:AssumeRoleWithWebIdentity`) and signs supported AWS HTTPS requests with 15-minute credentials that LangSmith renews on demand. It works with or without [S3 mounts](/langsmith/sandbox-mounts#authenticate-with-an-iam-role). In the UI, select **AWS IAM role** under **Create sandbox > Network**; the form shows the issuer, audience, and subject and generates the trust policy. If the option is missing, workload identity is not enabled on your deployment.
 
 #### Configure the role's trust policy
 
-Once per AWS account, register your LangSmith [issuer](#configure-the-issuer-audience-and-subject) as an IAM OIDC identity provider with the audience `sts.amazonaws.com`:
+Once per AWS account, register your LangSmith issuer as an IAM OIDC identity provider:
 
 ```bash
 aws iam create-open-id-connect-provider \
@@ -389,7 +424,7 @@ aws iam create-open-id-connect-provider \
   --client-id-list sts.amazonaws.com
 ```
 
-Then give the role a trust policy that allows `sts:AssumeRoleWithWebIdentity` from that provider and pins both the audience and the exact subject. The provider name and condition keys are the issuer without `https://`:
+Then give the role a trust policy that pins the audience and the exact subject. The provider name and condition keys are the issuer without `https://`:
 
 ```json
 {
@@ -412,15 +447,9 @@ Then give the role a trust policy that allows `sts:AssumeRoleWithWebIdentity` fr
 }
 ```
 
-For a tag-scoped rule, set the `sub` condition to `ws:<LANGSMITH_WORKSPACE_ID>:sandbox:tag:<TAG_VALUE_ID>`. Do not remove the `sub` condition or replace it with a wildcard. Then attach a least-privilege permissions policy for the AWS services and resources the sandbox needs. Cross-account S3 buckets may also require a bucket policy that permits the role.
+Use the tag form of `sub` for a tag-scoped rule, and never a wildcard. Attach a least-privilege permissions policy for what the sandbox needs.
 
 #### Create a sandbox with the role
-
-<Note>
-The SDK examples below require a release that supports `aws_auth(role_arn=...)` in Python or `awsAuth({ roleArn })` in TypeScript. Passing `subject_scope` / `subjectScope` requires an SDK release that supports it. Backend support alone does not add these helpers to an older SDK release.
-</Note>
-
-To configure a role without mounts, pass it in the proxy configuration:
 
 <CodeGroup>
 
@@ -477,13 +506,7 @@ const sandbox = await client.createSandbox({
 
 </CodeGroup>
 
-To trust only tagged sandboxes, add `"subject_scope": "tag:<TAG_VALUE_ID>"` to the `aws` object and create the sandbox with that tag value in `tag_value_ids`. In the SDK, pass `subject_scope="tag:<TAG_VALUE_ID>"` to `aws_auth` or `subjectScope` to `awsAuth`.
-
-`role_arn` and static access keys are mutually exclusive, and the single-rule limit still applies. Role authentication is configured at creation: an update can preserve the existing role, but cannot add, remove, change, or disable it. Create a new sandbox to change role authentication.
-
-The role's effective AWS permissions apply to all supported requests. LangSmith does not add a mount-derived session policy to this rule. A read-only S3 mount blocks filesystem writes, not direct S3 API writes that IAM allows. Restrict the role to the services, resources, and actions the sandbox needs.
-
-LangSmith renews 15-minute role sessions on demand and reacquires them after stop/start. If renewal is temporarily unavailable, cached credentials remain usable only until expiration. Authorization denial or expiration fails closed, without falling back to static keys.
+`role_arn` and static access keys are mutually exclusive. The role's effective AWS permissions apply to all supported requests: LangSmith adds no mount-derived session policy to this rule, so a read-only S3 mount does not block direct S3 API writes that IAM allows. If renewal is temporarily unavailable, cached credentials remain usable until expiration; denial or expiration fails closed, without falling back to static keys.
 
 ## Authenticate GCP requests
 
@@ -588,9 +611,9 @@ After the sandbox is ready, use `gcloud` or direct HTTPS calls to `googleapis.co
 
 ### Authenticate GCP requests with workload identity
 
-With [workload identity](#use-workload-identity-for-cloud-access), LangSmith exchanges a short-lived token at Google's Security Token Service, then optionally impersonates a service account. No service account key is stored.
+With [workload identity](#use-workload-identity-for-cloud-access), LangSmith exchanges a short-lived token at Google's Security Token Service and optionally impersonates a service account, so no key is stored.
 
-Create a workload identity pool and an OIDC provider for your LangSmith issuer. Both the subject mapping and the attribute condition are required. The condition limits the provider to your workspace:
+Create a workload identity pool and an OIDC provider for your issuer. The subject mapping and the attribute condition that limits the provider to your workspace are both required:
 
 ```bash
 gcloud iam workload-identity-pools create langsmith --location global
@@ -601,9 +624,7 @@ gcloud iam workload-identity-pools providers create-oidc langsmith \
   --attribute-condition "assertion.sub.startsWith('ws:<LANGSMITH_WORKSPACE_ID>:')"
 ```
 
-Leave the provider's allowed audiences at the default. If you set `--allowed-audiences`, include the `https://iam.googleapis.com/projects/<PROJECT_NUMBER>/locations/global/workloadIdentityPools/langsmith/providers/langsmith` form.
-
-Then let the exact subject impersonate a service account, or grant roles to the `principal://` subject directly. Do not grant roles to the whole pool (`principalSet://.../*`). For a tag-scoped rule, use the subject `ws:<LANGSMITH_WORKSPACE_ID>:sandbox:tag:<TAG_VALUE_ID>`:
+Leave the provider's allowed audiences at the default. Then let the exact subject impersonate a service account, or grant roles to the `principal://` subject directly. Do not grant roles to the whole pool (`principalSet://.../*`):
 
 ```bash
 gcloud iam service-accounts add-iam-policy-binding sandbox@example-project.iam.gserviceaccount.com \
@@ -611,102 +632,57 @@ gcloud iam service-accounts add-iam-policy-binding sandbox@example-project.iam.g
   --member "principal://iam.googleapis.com/projects/<PROJECT_NUMBER>/locations/global/workloadIdentityPools/langsmith/subject/ws:<LANGSMITH_WORKSPACE_ID>:sandbox"
 ```
 
-In the rule, set `workload_identity_provider` to the provider's full resource name with the project number. `service_account_email` and `subject_scope` are optional. Omit `service_account_email` to use the federated principal directly:
-
-<Note>
-The SDK examples below require an SDK release that supports `gcp_auth(workload_identity_provider=...)` in Python or `gcpAuth({ workloadIdentityProvider })` in TypeScript.
-</Note>
+In the rule, set `workload_identity_provider` to the provider's full resource name with the project number. Omit `service_account_email` to use the federated principal directly:
 
 <CodeGroup>
 
-```bash HTTP API
-curl -X POST "$LANGSMITH_ENDPOINT/v2/sandboxes/boxes" \
-  -H "x-api-key: $LANGSMITH_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "gcp-wi-sandbox",
-    "proxy_config": {
-      "rules": [
-        {
-          "name": "gcp",
-          "type": "gcp",
-          "enabled": true,
-          "gcp": {
-            "workload_identity_provider": "//iam.googleapis.com/projects/123456789012/locations/global/workloadIdentityPools/langsmith/providers/langsmith",
-            "service_account_email": "sandbox@example-project.iam.gserviceaccount.com"
-          }
-        }
-      ]
-    }
-  }'
+```json HTTP API
+{
+  "name": "gcp",
+  "type": "gcp",
+  "enabled": true,
+  "gcp": {
+    "workload_identity_provider": "//iam.googleapis.com/projects/123456789012/locations/global/workloadIdentityPools/langsmith/providers/langsmith",
+    "service_account_email": "sandbox@example-project.iam.gserviceaccount.com"
+  }
+}
 ```
 
 ```python Python
-from langsmith.sandbox import SandboxClient, gcp_auth, proxy_config
-
-client = SandboxClient()
-
-client.create_sandbox(
-    name="gcp-wi-sandbox",
-    proxy_config=proxy_config(
-        rules=[
-            gcp_auth(
-                workload_identity_provider=(
-                    "//iam.googleapis.com/projects/123456789012/locations/global/"
-                    "workloadIdentityPools/langsmith/providers/langsmith"
-                ),
-                service_account_email="sandbox@example-project.iam.gserviceaccount.com",
-            )
-        ]
+gcp_auth(
+    workload_identity_provider=(
+        "//iam.googleapis.com/projects/123456789012/locations/global/"
+        "workloadIdentityPools/langsmith/providers/langsmith"
     ),
+    service_account_email="sandbox@example-project.iam.gserviceaccount.com",
 )
 ```
 
 ```ts TypeScript
-import { SandboxClient, gcpAuth, proxyConfig } from "langsmith/sandbox";
-
-const client = new SandboxClient();
-
-await client.createSandbox({
-  name: "gcp-wi-sandbox",
-  proxyConfig: proxyConfig({
-    rules: [
-      gcpAuth({
-        workloadIdentityProvider:
-          "//iam.googleapis.com/projects/123456789012/locations/global/workloadIdentityPools/langsmith/providers/langsmith",
-        serviceAccountEmail: "sandbox@example-project.iam.gserviceaccount.com",
-      }),
-    ],
-  }),
+gcpAuth({
+  workloadIdentityProvider:
+    "//iam.googleapis.com/projects/123456789012/locations/global/workloadIdentityPools/langsmith/providers/langsmith",
+  serviceAccountEmail: "sandbox@example-project.iam.gserviceaccount.com",
 });
 ```
 
 </CodeGroup>
 
-Impersonated access tokens last 15 minutes and are renewed on demand. An enabled workload identity GCP rule whose scopes allow the required access also authenticates [GCS mounts](/langsmith/sandbox-mounts#mount-a-gcs-bucket) that have no mount authentication.
+Pass the rule in `proxy_config` as in [Configure GCP auth via SDK](#configure-gcp-auth-via-sdk). An enabled workload identity GCP rule also serves [GCS mounts](/langsmith/sandbox-mounts#mount-a-gcs-bucket) that have no mount authentication.
 
 ## Authenticate Azure requests
 
-Use an Azure auth rule when sandbox code needs to call Azure Storage, Key Vault, Azure Resource Manager, or Azure OpenAI. The proxy keeps Azure credentials outside the sandbox and authenticates matching HTTPS requests. A rule takes one of three forms:
+Use an Azure auth rule when sandbox code needs to call Azure Storage, Key Vault, Azure Resource Manager, or Azure OpenAI. Set `type` to `azure` and put one of three mutually exclusive forms under `azure`:
 
-- **Workload identity**: `tenant_id` and `client_id`, with optional `subject_scope` and `resources`. LangSmith exchanges a short-lived token at Microsoft Entra ID for access tokens. No secret is stored.
+- **Workload identity**: `tenant_id` and `client_id`, with optional `subject_scope` and `resources`. No secret is stored.
 - **Storage account key**: `storage_account` and `account_key`. The proxy signs each request to that account with Shared Key.
 - **SAS token**: `storage_account` and `sas_token`. The proxy appends the SAS to each request to that account.
 
-Azure auth rules are different from header injection rules:
-
-- Set `type` to `azure` and put the configuration under `azure`. The three forms are mutually exclusive.
-- Do not set `match_hosts`, `match_paths`, or `headers`; Azure host matching is built into the proxy.
-- Supply `account_key` and `sas_token` as `workspace_secret` or `opaque` values. They are write-only and never returned by the API.
-- Configure at most one Azure auth rule per sandbox.
-
-On each covered HTTPS request, the proxy first removes credentials the sandbox supplied, including `Authorization` headers and, on storage hosts, SAS query parameters. It then applies the rule's credentials. Plaintext HTTP to a covered host is refused. LangSmith sets no Azure environment variables in the sandbox: use anonymous clients or direct HTTPS calls, and the proxy authenticates the request.
+Do not set `match_hosts`, `match_paths`, or `headers`. Supply `account_key` and `sas_token` as `workspace_secret` or `opaque` values; they are write-only. Configure at most one Azure rule per sandbox. On covered HTTPS requests, the proxy removes credentials the sandbox supplied, including `Authorization` headers and SAS query parameters, then applies the rule's credentials. Plaintext HTTP to a covered host is refused. LangSmith sets no Azure environment variables in the sandbox: use anonymous clients or direct HTTPS calls.
 
 ### Authenticate Azure requests with workload identity
 
-With [workload identity](#use-workload-identity-for-cloud-access), `client_id` is the application (client) ID of an app registration or a user-assigned managed identity that trusts your LangSmith issuer. `tenant_id` and `client_id` must be GUIDs. No client secret or certificate is involved.
-
-Add a federated identity credential for the exact subject. An app registration also needs a service principal in the tenant:
+`client_id` is the application (client) ID of an app registration or user-assigned managed identity. Both IDs must be GUIDs. Add a federated identity credential for the exact subject; an app registration also needs a service principal in the tenant:
 
 ```bash
 # App registration
@@ -725,9 +701,9 @@ az identity federated-credential create --name langsmith-<LANGSMITH_WORKSPACE_ID
   --audiences api://AzureADTokenExchange
 ```
 
-Entra ID matches the issuer, subject, and audience exactly. Use the issuer with no trailing slash. A tag-scoped rule needs its own federated credential with the tag form of the subject. Then grant the identity Azure roles on what the sandbox may reach, such as **Storage Blob Data Reader** on a storage account.
+Entra ID matches the issuer (no trailing slash), subject, and audience exactly, so a tag-scoped rule needs its own credential. Then grant the identity Azure roles on what the sandbox may reach.
 
-`resources` limits which Entra resources LangSmith obtains tokens for and defaults to all of them. The proxy picks the resource from the request's host, in the Azure public cloud only:
+`resources` limits which Entra resources LangSmith obtains tokens for and defaults to all of them. The proxy picks the resource from the request's host, in the Azure public cloud only; other hosts are not authenticated:
 
 | Resource | Hosts |
 |----------|-------|
@@ -736,159 +712,76 @@ Entra ID matches the issuer, subject, and audience exactly. Use the issuer with 
 | `https://management.azure.com` | `management.azure.com` |
 | `https://cognitiveservices.azure.com` | `<name>.openai.azure.com`, `<name>.cognitiveservices.azure.com` |
 
-The rule does not authenticate requests to other hosts. On storage hosts, the proxy also sets `x-ms-version` when a request omits it or uses a version too old for bearer tokens.
-
-<Note>
-The SDK examples in this section require an SDK release that supports `azure_auth` in Python or `azureAuth` in TypeScript.
-</Note>
+Add the rule to `proxy_config.rules` when you create the sandbox:
 
 <CodeGroup>
 
-```bash HTTP API
-curl -X POST "$LANGSMITH_ENDPOINT/v2/sandboxes/boxes" \
-  -H "x-api-key: $LANGSMITH_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "azure-wi-sandbox",
-    "proxy_config": {
-      "rules": [
-        {
-          "name": "azure",
-          "type": "azure",
-          "enabled": true,
-          "azure": {
-            "tenant_id": "<TENANT_ID>",
-            "client_id": "<CLIENT_ID>",
-            "resources": ["https://storage.azure.com"]
-          }
-        }
-      ]
-    }
-  }'
+```json HTTP API
+{
+  "name": "azure",
+  "type": "azure",
+  "enabled": true,
+  "azure": {
+    "tenant_id": "<TENANT_ID>",
+    "client_id": "<CLIENT_ID>",
+    "resources": ["https://storage.azure.com"]
+  }
+}
 ```
 
 ```python Python
-from langsmith.sandbox import SandboxClient, azure_auth, proxy_config
-
-client = SandboxClient()
-
-client.create_sandbox(
-    name="azure-wi-sandbox",
-    proxy_config=proxy_config(
-        rules=[
-            azure_auth(
-                tenant_id="<TENANT_ID>",
-                client_id="<CLIENT_ID>",
-                resources=["https://storage.azure.com"],
-            )
-        ]
-    ),
+azure_auth(
+    tenant_id="<TENANT_ID>",
+    client_id="<CLIENT_ID>",
+    resources=["https://storage.azure.com"],
 )
 ```
 
 ```ts TypeScript
-import { SandboxClient, azureAuth, proxyConfig } from "langsmith/sandbox";
-
-const client = new SandboxClient();
-
-await client.createSandbox({
-  name: "azure-wi-sandbox",
-  proxyConfig: proxyConfig({
-    rules: [
-      azureAuth({
-        tenantId: "<TENANT_ID>",
-        clientId: "<CLIENT_ID>",
-        resources: ["https://storage.azure.com"],
-      }),
-    ],
-  }),
+azureAuth({
+  tenantId: "<TENANT_ID>",
+  clientId: "<CLIENT_ID>",
+  resources: ["https://storage.azure.com"],
 });
 ```
 
 </CodeGroup>
-
-The sandbox host fetches one token while the sandbox boots and others on first use. LangSmith treats Entra access tokens as expiring 15 minutes after it fetched them, so it re-checks the rule and any tag scope at least that often.
 
 ### Authenticate Azure requests with a storage account key or SAS token
 
-A static Azure rule authenticates requests to one storage account's `blob`, `dfs`, `queue`, `table`, and `file` endpoints. Set `storage_account` to the account name and exactly one of `account_key` or `sas_token`:
+A static rule authenticates requests to one storage account's `blob`, `dfs`, `queue`, `table`, and `file` endpoints:
 
 <CodeGroup>
 
-```bash HTTP API
-curl -X POST "$LANGSMITH_ENDPOINT/v2/sandboxes/boxes" \
-  -H "x-api-key: $LANGSMITH_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "azure-sas-sandbox",
-    "proxy_config": {
-      "rules": [
-        {
-          "name": "azure",
-          "type": "azure",
-          "enabled": true,
-          "azure": {
-            "storage_account": "examplestorage",
-            "sas_token": {
-              "type": "workspace_secret",
-              "value": "{AZURE_STORAGE_SAS_TOKEN}"
-            }
-          }
-        }
-      ]
-    }
-  }'
+```json HTTP API
+{
+  "name": "azure",
+  "type": "azure",
+  "enabled": true,
+  "azure": {
+    "storage_account": "examplestorage",
+    "sas_token": {"type": "workspace_secret", "value": "{AZURE_STORAGE_SAS_TOKEN}"}
+  }
+}
 ```
 
 ```python Python
-from langsmith.sandbox import (
-    SandboxClient,
-    azure_auth,
-    proxy_config,
-    workspace_secret,
-)
-
-client = SandboxClient()
-
-client.create_sandbox(
-    name="azure-sas-sandbox",
-    proxy_config=proxy_config(
-        rules=[
-            azure_auth(
-                storage_account="examplestorage",
-                sas_token=workspace_secret("AZURE_STORAGE_SAS_TOKEN"),
-            )
-        ]
-    ),
+azure_auth(
+    storage_account="examplestorage",
+    sas_token=workspace_secret("AZURE_STORAGE_SAS_TOKEN"),
 )
 ```
 
 ```ts TypeScript
-import {
-  SandboxClient,
-  azureAuth,
-  proxyConfig,
-  workspaceSecret,
-} from "langsmith/sandbox";
-
-const client = new SandboxClient();
-
-await client.createSandbox({
-  name: "azure-sas-sandbox",
-  proxyConfig: proxyConfig({
-    rules: [
-      azureAuth({
-        storageAccount: "examplestorage",
-        sasToken: workspaceSecret("AZURE_STORAGE_SAS_TOKEN"),
-      }),
-    ],
-  }),
+azureAuth({
+  storageAccount: "examplestorage",
+  sasToken: workspaceSecret("AZURE_STORAGE_SAS_TOKEN"),
 });
 ```
 
 </CodeGroup>
 
-To use an account key instead, replace `sas_token` with `account_key` (`account_key=` / `accountKey` in the SDK) that references a workspace secret holding the key.
+In the SDK, pass either helper's rule to `proxy_config`, as in [Configure GCP auth via SDK](#configure-gcp-auth-via-sdk). To use an account key, replace `sas_token` with `account_key` (`accountKey` in TypeScript).
 
 ## Single API example
 

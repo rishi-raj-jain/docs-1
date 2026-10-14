@@ -126,29 +126,23 @@ try {
 
 ### Authenticate with an IAM role
 
-IAM role authentication lets the [AWS auth proxy](/langsmith/sandbox-auth-proxy#authenticate-with-an-iam-role) assume a role in your AWS account through [workload identity](/langsmith/sandbox-auth-proxy#use-workload-identity-for-cloud-access): LangSmith exchanges a short-lived token for the role's temporary credentials with `sts:AssumeRoleWithWebIdentity`. S3 mounts use the same authentication as other supported AWS requests from the sandbox. LangSmith obtains and renews the credentials, so you do not need to store or rotate access keys in workspace secrets.
+IAM role authentication lets the [AWS auth proxy](/langsmith/sandbox-auth-proxy#authenticate-with-an-iam-role) assume a role in your AWS account through [workload identity](/langsmith/sandbox-auth-proxy#use-workload-identity-for-cloud-access). S3 mounts use the same authentication as other supported AWS requests from the sandbox. LangSmith obtains and renews temporary AWS credentials, so you do not need to store or rotate access keys in workspace secrets.
 
 <Note>
 This option requires workload identity to be enabled on your LangSmith deployment. If **AWS IAM role** is absent from the AWS authentication options, use static access keys or contact your LangSmith administrator. The role-based SDK examples require a release with `aws_auth(role_arn=...)` and `mount_config(proxy_config=...)` in Python, or `awsAuth({ roleArn })` and `mountConfig({ proxyConfig })` in TypeScript. The mount versions listed at the top of this page do not establish support for these newer options.
 </Note>
 
-You need permission to create an IAM OIDC identity provider and configure the role's trust and access policies. One AWS auth rule applies to the sandbox's AWS requests, including all S3 mounts. Choose either static access keys or an IAM role; do not configure both. Role authentication is configured at creation. Create a new sandbox to add, remove, disable, or change its role. Cross-account S3 buckets may also require a bucket policy that permits the role.
+One AWS auth rule applies to the sandbox's AWS requests, including all S3 mounts. Choose either static access keys or an IAM role; do not configure both. Role authentication is configured at creation. Create a new sandbox to add, remove, disable, or change its role. Cross-account S3 buckets may also require a bucket policy that permits the role.
 
 To configure the role and create the sandbox:
 
 1. Open **Sandboxes > Create sandbox**, add an **S3 bucket** in the **Mounts** section, and configure its bucket, region, prefix, mount path, and read-only setting.
 2. Go to the **Network** section, enable AWS authentication, and select **AWS IAM role**. To use the role without mounts, skip the mount configuration in step 1.
-3. Note the three values displayed below **AWS role ARN**:
-   - **Issuer**: Your LangSmith deployment's OIDC issuer URL.
-   - **Audience**: `sts.amazonaws.com`.
-   - **Subject**: `ws:<workspace_id>:sandbox`, which identifies sandboxes in your current workspace.
-4. Once per AWS account, add an IAM OpenID Connect identity provider in AWS IAM with the displayed issuer URL and audience.
-5. Expand **AWS role setup**, select **Copy trust policy**, and apply that policy to the role. It permits `sts:AssumeRoleWithWebIdentity` only from the identity provider, for the displayed audience and subject. For the policy structure and CLI commands, see [Configure the role's trust policy](/langsmith/sandbox-auth-proxy#configure-the-roles-trust-policy).
-6. Attach a least-privilege permissions policy for the AWS services and resources the sandbox needs. For configured S3 mounts, **Copy S3 permissions** supplies a starting policy. Review it before attaching it; LangSmith does not apply it automatically.
-7. Enter the role's ARN in **AWS role ARN**.
-8. Select **Create Sandbox**, then verify that sandbox code can read the mounted path and, for writable mounts, write to it.
+3. Using the **Issuer**, **Audience**, and **Subject** displayed below **AWS role ARN**, add an IAM OIDC identity provider for the issuer once per AWS account. Then expand **AWS role setup**, select **Copy trust policy**, and apply it to the role. For the policy structure, see [Configure the role's trust policy](/langsmith/sandbox-auth-proxy#configure-the-roles-trust-policy).
+4. Attach a least-privilege permissions policy for the AWS services and resources the sandbox needs. For configured S3 mounts, **Copy S3 permissions** supplies a starting policy. Review it before attaching it; LangSmith does not apply it automatically.
+5. Enter the role's ARN in **AWS role ARN**, select **Create Sandbox**, then verify that sandbox code can read the mounted path and, for writable mounts, write to it.
 
-Do not remove the subject condition from the trust policy or replace it with a wildcard: every workspace in a region shares the same issuer. Entering the role ARN in LangSmith does not create the role or update its AWS policies.
+Entering the role ARN in LangSmith does not create the role or update its AWS policies.
 
 #### Limit S3 access
 
@@ -246,7 +240,7 @@ const sandbox = await client.createSandbox({
 
 </CodeGroup>
 
-The shared rule retains its effective IAM permissions. The read-only mount in this example does not prevent direct S3 API writes that the role allows. GCS and Azure Blob mounts can also use a shared proxy rule; see [Mount a GCS bucket](#mount-a-gcs-bucket) and [Use an Azure proxy rule](#use-an-azure-proxy-rule).
+The shared rule retains its effective IAM permissions. The read-only mount in this example does not prevent direct S3 API writes that the role allows. GCS and Azure Blob mounts can also use a shared proxy rule; see [Mount a GCS bucket](#mount-a-gcs-bucket) and [Mount an Azure Blob container](#mount-an-azure-blob-container).
 
 #### Restrict a role to S3 mount scopes
 
@@ -452,42 +446,32 @@ try {
 
 ### Authenticate with Google workload identity
 
-GCS mounts can authenticate through [Google workload identity](/langsmith/sandbox-auth-proxy#authenticate-gcp-requests-with-workload-identity) instead of a service account key. Set `workload_identity_provider` in `mount_config.auth.gcp`, with an optional `service_account_email` to impersonate and an optional `subject_scope`. The token's scope still follows the mounts' access mode. Configure the workload identity pool, provider, and IAM binding first, and grant the service account or principal access to the bucket.
-
-<Note>
-The SDK examples below require an SDK release that supports `gcp_auth(workload_identity_provider=...)` in Python or `gcpAuth({ workloadIdentityProvider })` in TypeScript.
-</Note>
+GCS mounts can authenticate through [Google workload identity](/langsmith/sandbox-auth-proxy#authenticate-gcp-requests-with-workload-identity) instead of a service account key. Set `workload_identity_provider` in `mount_config.auth.gcp`, with optional `service_account_email` and `subject_scope`. The token's scope still follows the mounts' access mode, so grant the service account or principal access to the bucket.
 
 <CodeGroup>
 
-```bash HTTP API
-curl -X POST "$LANGSMITH_ENDPOINT/v2/sandboxes/boxes" \
-  -H "x-api-key: $LANGSMITH_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "gcs-wi-mount-sandbox",
-    "mount_config": {
-      "auth": {
-        "gcp": {
-          "workload_identity_provider": "//iam.googleapis.com/projects/123456789012/locations/global/workloadIdentityPools/langsmith/providers/langsmith",
-          "service_account_email": "sandbox@example-project.iam.gserviceaccount.com"
-        }
-      },
-      "mounts": [
-        {
-          "id": "eval_datasets",
-          "type": "gcs",
-          "mount_path": "/mnt/mounts/eval-datasets",
-          "gcs": {"bucket": "example-bucket", "prefix": "datasets/evals"}
-        }
-      ]
-    }
-  }'
+```json HTTP API
+{
+  "mount_config": {
+    "auth": {
+      "gcp": {
+        "workload_identity_provider": "//iam.googleapis.com/projects/123456789012/locations/global/workloadIdentityPools/langsmith/providers/langsmith",
+        "service_account_email": "sandbox@example-project.iam.gserviceaccount.com"
+      }
+    },
+    "mounts": [
+      {
+        "id": "eval_datasets",
+        "type": "gcs",
+        "mount_path": "/mnt/mounts/eval-datasets",
+        "gcs": {"bucket": "example-bucket", "prefix": "datasets/evals"}
+      }
+    ]
+  }
+}
 ```
 
 ```python Python
-from langsmith.sandbox import SandboxClient, gcp_auth, gcs_mount, mount_config
-
 mount_cfg = mount_config(
     auth=[
         gcp_auth(
@@ -507,14 +491,9 @@ mount_cfg = mount_config(
         )
     ],
 )
-
-client = SandboxClient()
-sandbox = client.create_sandbox(name="gcs-wi-mount-sandbox", mount_config=mount_cfg)
 ```
 
 ```ts TypeScript
-import { SandboxClient, gcpAuth, gcsMount, mountConfig } from "langsmith/sandbox";
-
 const mountCfg = mountConfig({
   auth: [
     gcpAuth({
@@ -532,25 +511,19 @@ const mountCfg = mountConfig({
     }),
   ],
 });
-
-const client = new SandboxClient();
-const sandbox = await client.createSandbox({
-  name: "gcs-wi-mount-sandbox",
-  mountConfig: mountCfg,
-});
 ```
 
 </CodeGroup>
 
-Without mount authentication, an enabled workload identity [GCP proxy rule](/langsmith/sandbox-auth-proxy#authenticate-gcp-requests-with-workload-identity) serves GCS mounts when its scopes allow each mount's access, for example the default `cloud-platform` scope. A GCP rule with a service account key does not serve mounts. In both cases, rclone runs anonymously in the sandbox and the proxy sets the Google token on Cloud Storage requests, so no token reaches the sandbox.
+Without mount authentication, an enabled workload identity GCP proxy rule serves GCS mounts when its scopes allow each mount's access, for example the default `cloud-platform` scope. Pass the same proxy configuration to the mount helper and sandbox creation, as in [Use a shared role in the SDK](#use-a-shared-role-in-the-sdk). A GCP rule with a service account key does not serve mounts. Either way, rclone runs anonymously in the sandbox and the proxy sets the Google token on Cloud Storage requests.
 
 ## Mount an Azure Blob container
 
-An Azure Blob mount attaches a container, or a prefix in it, from `https://<storage_account>.blob.core.windows.net`. Each mount takes a `storage_account` (3 to 24 lowercase letters and digits), a `container`, and an optional `prefix`.
+An Azure Blob mount attaches a container, or a prefix in it, from `https://<storage_account>.blob.core.windows.net`. Each mount takes a `storage_account` (3 to 24 lowercase letters and digits), a `container`, and an optional `prefix`. rclone runs anonymously in the sandbox, and the egress proxy authenticates each request to the storage account, so no Azure credential reaches the sandbox.
 
-Azure Blob mounts require Azure authentication through `mount_config.auth.azure` or an [Azure proxy rule](/langsmith/sandbox-auth-proxy#authenticate-azure-requests), in one of three forms: workload identity, a storage account key, or a SAS token. rclone runs anonymously in the sandbox, and the egress proxy authenticates each request to the storage account, so no Azure credential reaches the sandbox.
+A read-only mount is mounted read-only. Azure has no token scope to narrow, so the identity's role assignments or the SAS token's permissions limit access. Azure Blob mounts accept [cache settings](#cache-bucket-mounts) but not `encryption`.
 
-A read-only mount is mounted read-only. Azure has no token scope to narrow, so the identity's role assignments or the SAS token's permissions are what limit access to the storage account. Azure Blob mounts accept [cache settings](#cache-bucket-mounts) but not `encryption`.
+Authenticate with `mount_config.auth.azure` in one of the forms below, or with an enabled [Azure proxy rule](/langsmith/sandbox-auth-proxy#authenticate-azure-requests) that covers the account: a workload identity rule whose `resources` include storage (the default), or a static rule for that `storage_account`. Pass a shared rule to the mount helper and sandbox creation, as in [Use a shared role in the SDK](#use-a-shared-role-in-the-sdk). Do not combine mount authentication with an Azure proxy rule.
 
 <Note>
 The SDK examples in this section require an SDK release that supports `azure_auth` and `azure_blob_mount` in Python, or `azureAuth` and `azureBlobMount` in TypeScript.
@@ -558,9 +531,7 @@ The SDK examples in this section require an SDK release that supports `azure_aut
 
 ### Authenticate with Azure workload identity
 
-With [workload identity](/langsmith/sandbox-auth-proxy#authenticate-azure-requests-with-workload-identity), LangSmith exchanges a short-lived token at Microsoft Entra ID for storage access tokens. Set `tenant_id` and `client_id`, with an optional `subject_scope`, in `mount_config.auth.azure`. Mount authentication obtains storage tokens only.
-
-Before creating the sandbox, add a federated identity credential that trusts your LangSmith issuer to an app registration or user-assigned managed identity, then grant that identity **Storage Blob Data Reader** for read-only mounts or **Storage Blob Data Contributor** for writable mounts, on the container or storage account:
+Set `tenant_id` and `client_id`, with an optional `subject_scope`. Mount authentication obtains storage tokens only. First [add a federated identity credential](/langsmith/sandbox-auth-proxy#authenticate-azure-requests-with-workload-identity) to an app registration or user-assigned managed identity, then grant it **Storage Blob Data Reader** for read-only mounts or **Storage Blob Data Contributor** for writable mounts:
 
 ```bash
 az role assignment create --assignee <CLIENT_ID> --role "Storage Blob Data Reader" \
@@ -569,34 +540,27 @@ az role assignment create --assignee <CLIENT_ID> --role "Storage Blob Data Reade
 
 <CodeGroup>
 
-```bash HTTP API
-curl -X POST "$LANGSMITH_ENDPOINT/v2/sandboxes/boxes" \
-  -H "x-api-key: $LANGSMITH_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "azure-blob-mount-sandbox",
-    "mount_config": {
-      "auth": {
-        "azure": {
-          "tenant_id": "<TENANT_ID>",
-          "client_id": "<CLIENT_ID>"
+```json HTTP API
+{
+  "mount_config": {
+    "auth": {
+      "azure": {"tenant_id": "<TENANT_ID>", "client_id": "<CLIENT_ID>"}
+    },
+    "mounts": [
+      {
+        "id": "agent_data",
+        "type": "azure_blob",
+        "mount_path": "/mnt/mounts/agent-data",
+        "read_only": true,
+        "azure_blob": {
+          "storage_account": "examplestorage",
+          "container": "agent-data",
+          "prefix": "runs/"
         }
-      },
-      "mounts": [
-        {
-          "id": "agent_data",
-          "type": "azure_blob",
-          "mount_path": "/mnt/mounts/agent-data",
-          "read_only": true,
-          "azure_blob": {
-            "storage_account": "examplestorage",
-            "container": "agent-data",
-            "prefix": "runs/"
-          }
-        }
-      ]
-    }
-  }'
+      }
+    ]
+  }
+}
 ```
 
 ```python Python
@@ -623,8 +587,7 @@ mount_cfg = mount_config(
 
 client = SandboxClient()
 with client.sandbox(name="azure-blob-mount-sandbox", mount_config=mount_cfg) as sb:
-    result = sb.run("ls /mnt/mounts/agent-data")
-    print(result.stdout)
+    print(sb.run("ls /mnt/mounts/agent-data").stdout)
 ```
 
 ```ts TypeScript
@@ -654,81 +617,44 @@ const sandbox = await client.createSandbox({
   name: "azure-blob-mount-sandbox",
   mountConfig: mountCfg,
 });
-
-try {
-  const result = await sandbox.run("ls /mnt/mounts/agent-data");
-  console.log(result.stdout);
-} finally {
-  await sandbox.delete();
-}
 ```
 
 </CodeGroup>
 
 ### Authenticate with an account key or SAS token
 
-Static mount authentication takes exactly one of `account_key` or `sas_token` in `mount_config.auth.azure`, as a `workspace_secret` or `opaque` value. Every Azure Blob mount in the config must use the same storage account, because the credential applies to that account only. A SAS token for writable mounts needs read, write, delete, and list permissions on the container.
-
-```bash
-curl -X POST "$LANGSMITH_ENDPOINT/v2/sandboxes/boxes" \
-  -H "x-api-key: $LANGSMITH_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "azure-blob-sas-sandbox",
-    "mount_config": {
-      "auth": {
-        "azure": {
-          "sas_token": {
-            "type": "workspace_secret",
-            "value": "{AZURE_STORAGE_SAS_TOKEN}"
-          }
-        }
-      },
-      "mounts": [
-        {
-          "id": "agent_data",
-          "type": "azure_blob",
-          "mount_path": "/mnt/mounts/agent-data",
-          "azure_blob": {
-            "storage_account": "examplestorage",
-            "container": "agent-data"
-          }
-        }
-      ]
-    }
-  }'
-```
-
-To use an account key, replace `sas_token` with `account_key`. In the SDK, you can pass the same credential as a shared proxy rule, as shown in the next section.
-
-### Use an Azure proxy rule
-
-Without mount authentication, an enabled [Azure proxy rule](/langsmith/sandbox-auth-proxy#authenticate-azure-requests) that covers the mount's storage account serves Azure Blob mounts: a workload identity rule whose `resources` include `https://storage.azure.com` (the default), or a static rule for that `storage_account`. The rule also authenticates the sandbox's other Azure requests. Do not combine `mount_config.auth.azure` with an Azure proxy rule.
-
-Pass the same proxy configuration to the mount helper and sandbox creation:
+Static mount authentication takes exactly one of `account_key` or `sas_token`, as a `workspace_secret` or `opaque` value. Every Azure Blob mount in the config must use the same storage account, and in the SDK `storage_account` must match it. A SAS token for writable mounts needs read, write, delete, and list permissions on the container.
 
 <CodeGroup>
 
-```python Python
-from langsmith.sandbox import (
-    SandboxClient,
-    azure_auth,
-    azure_blob_mount,
-    mount_config,
-    proxy_config,
-    workspace_secret,
-)
+```json HTTP API
+{
+  "mount_config": {
+    "auth": {
+      "azure": {
+        "sas_token": {"type": "workspace_secret", "value": "{AZURE_STORAGE_SAS_TOKEN}"}
+      }
+    },
+    "mounts": [
+      {
+        "id": "agent_data",
+        "type": "azure_blob",
+        "mount_path": "/mnt/mounts/agent-data",
+        "azure_blob": {"storage_account": "examplestorage", "container": "agent-data"}
+      }
+    ]
+  }
+}
+```
 
-proxy_cfg = proxy_config(
-    rules=[
+```python Python
+mount_cfg = mount_config(
+    auth=[
         azure_auth(
             storage_account="examplestorage",
             sas_token=workspace_secret("AZURE_STORAGE_SAS_TOKEN"),
         )
-    ]
-)
-mount_cfg = mount_config(
-    proxy_config=proxy_cfg,
+    ],
     mounts=[
         azure_blob_mount(
             id="agent_data",
@@ -738,35 +664,16 @@ mount_cfg = mount_config(
         )
     ],
 )
-
-client = SandboxClient()
-sandbox = client.create_sandbox(
-    name="azure-shared-rule-sandbox",
-    mount_config=mount_cfg,
-    proxy_config=proxy_cfg,
-)
 ```
 
 ```ts TypeScript
-import {
-  SandboxClient,
-  azureAuth,
-  azureBlobMount,
-  mountConfig,
-  proxyConfig,
-  workspaceSecret,
-} from "langsmith/sandbox";
-
-const proxyCfg = proxyConfig({
-  rules: [
+const mountCfg = mountConfig({
+  auth: [
     azureAuth({
       storageAccount: "examplestorage",
       sasToken: workspaceSecret("AZURE_STORAGE_SAS_TOKEN"),
     }),
   ],
-});
-const mountCfg = mountConfig({
-  proxyConfig: proxyCfg,
   mounts: [
     azureBlobMount({
       id: "agent_data",
@@ -776,16 +683,11 @@ const mountCfg = mountConfig({
     }),
   ],
 });
-
-const client = new SandboxClient();
-const sandbox = await client.createSandbox({
-  name: "azure-shared-rule-sandbox",
-  mountConfig: mountCfg,
-  proxyConfig: proxyCfg,
-});
 ```
 
 </CodeGroup>
+
+To use an account key, replace `sas_token` with `account_key` (`accountKey` in TypeScript).
 
 ## Mount a public Git repository
 

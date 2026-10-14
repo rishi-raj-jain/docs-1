@@ -36,6 +36,11 @@ import SkillsToolsResolverPy from '/snippets/python/code-samples/skills-tools-re
 import SkillsToolsIntegrationPy from '/snippets/python/code-samples/skills-tools-integration-py.mdx';
 import SkillsToolsPerUserPy from '/snippets/python/code-samples/skills-tools-per-user-py.mdx';
 import SkillsToolsSearchPy from '/snippets/python/code-samples/skills-tools-search-py.mdx';
+import SkillsToolsListJs from '/snippets/python/code-samples/skills-tools-list-js.mdx';
+import SkillsToolsResolverJs from '/snippets/python/code-samples/skills-tools-resolver-js.mdx';
+import SkillsToolsIntegrationJs from '/snippets/python/code-samples/skills-tools-integration-js.mdx';
+import SkillsToolsPerUserJs from '/snippets/python/code-samples/skills-tools-per-user-js.mdx';
+import SkillsToolsSearchJs from '/snippets/python/code-samples/skills-tools-search-js.mdx';
 import SkillsPinInvokePy from '/snippets/python/code-samples/skills-pin-invoke-py.mdx';
 import SkillsPinParsePy from '/snippets/python/code-samples/skills-pin-parse-py.mdx';
 
@@ -339,6 +344,9 @@ Skill tools are a Deep Agents feature, not part of the [Agent Skills specificati
 
 <Note>Skill tools require `deepagents>=0.7.22`.</Note>
 
+
+
+
 List the tools under `metadata.include_tools` in the skill's frontmatter, separated by spaces. A YAML list does not match any tool.
 
 ```yaml
@@ -352,11 +360,15 @@ Passing `skills` to `create_deep_agent` creates a `SkillsMiddleware` for you. To
 
 <SkillsToolsListPy />
 
+
+
+
 Skill tools follow these rules:
 
 - Skill tools are gated. Until the agent reads the skill's `SKILL.md`, a call to one fails as an unknown tool, even if the model guesses its name and arguments.
 - When [summarization](/oss/python/deepagents/context-engineering#summarization) drops that read from the conversation, the tool is unavailable until the agent reads the skill again.
 - [Pinning a skill](#pin-skills) makes its tools available the same way reading its `SKILL.md` does. They stay available until summarization drops the pinned skill's message.
+
 
 <Note>
 On models that accept new tools mid-conversation, Deep Agents adds a skill tool after the read, which keeps the prompt cache valid. On other models, it adds the tool to the request's `tools`, which invalidates the cache. See the [Anthropic](/oss/python/integrations/chat/anthropic#change-tools-mid-conversation) and [OpenAI](/oss/python/integrations/chat/openai#add-tools-mid-conversation) integration pages.
@@ -379,6 +391,9 @@ The resolver maps each one to its real tool:
 
 <SkillsToolsResolverPy />
 
+
+
+
 One name can also stand for many tools, such as every tool from the Linear MCP server. List one name in the skill:
 
 ```yaml
@@ -390,20 +405,31 @@ Then return all of the server's tools from the resolver:
 
 <SkillsToolsIntegrationPy />
 
+
+
+
 The resolver also receives the graph's `Runtime`, so it can return different tools for each run based on [runtime context](/oss/python/deepagents/context-engineering#runtime-context). For example, look up tools by user:
 
 <SkillsToolsPerUserPy />
+
+
+
 
 When you write a resolver:
 
 - Keep it fast. It runs on every model call after the agent reads the skill, and again before each skill tool call.
 - The resolver can be async. If it is, run the agent through its async methods, such as `ainvoke`.
 
+
+
 ### Keep a tool searchable
 
 Skill tools, the ones you pass to `SkillsMiddleware`, are reachable only through their skill. With [`ProviderToolSearchMiddleware`](https://reference.langchain.com/python/langchain/agents/middleware/provider_tool_search/ProviderToolSearchMiddleware), the model finds [deferred tools](/oss/python/langchain/middleware/built-in#provider-tool-search), marked with `extras={"defer_loading": True}`, by searching for them. To make a tool reachable either way, through search or by reading a skill, pass it to the agent's `tools` and defer it. Reading the skill then reveals it without a search:
 
 <SkillsToolsSearchPy />
+
+
+
 
 Unlike a skill tool, a deferred tool is not gated. The model can find and call it through search before the agent reads the skill.
 
@@ -416,6 +442,7 @@ How the agent reaches a tool depends on where you pass it:
 | The agent's `tools` | Visible, so `include_tools` has no effect | Visible |
 
 When a skill lists a tool the agent already has, including built-in tools such as `edit_file`, Deep Agents uses the agent's tool, not one with the same name in `SkillsMiddleware`.
+
 
 
 
@@ -795,6 +822,7 @@ Use [LangSmith](https://smith.langchain.com?utm_source=docs&utm_medium=cta&utm_c
 2. **Write `include_tools` as a string.** Separate names with spaces. A YAML list never matches a tool.
 
 3. **Check the names.** Each name must match a tool passed to the agent or to `SkillsMiddleware`, or a name your resolver handles. Deep Agents logs unmatched names at `DEBUG` level only, so enable debug logging for the `deepagents` logger to see them.
+
 
 
 

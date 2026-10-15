@@ -8,11 +8,14 @@ boost: 2
 ---
 
 import IntegrationDownloads from '/snippets/python/oss/python-document_loaders-downloads.mdx';
+import { PythonIntegrationComponentMap } from '/snippets/oss/python-integration-component-map.tsx';
 
 Document loaders provide a **standard interface** for reading data from different sources (such as Slack, Notion, or Google Drive) into LangChain’s [Document](https://reference.langchain.com/python/langchain-core/documents/base/Document) format.
 This ensures that data can be handled consistently regardless of the source.
 
 All document loaders implement the [`BaseLoader`](https://reference.langchain.com/python/langchain-core/document_loaders/base/BaseLoader) interface.
+
+<PythonIntegrationComponentMap active="document-loaders" />
 
 <Warning>
 Community document loaders are user-contributed and unverified. LangChain does not review or endorse these integrations; use them at your own risk.

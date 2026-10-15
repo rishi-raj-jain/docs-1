@@ -1,4 +1,4 @@
 # Files
 
-- [Build system architecture](build-system.md) - How the Python documentation builder turns authored src content into disposable Mintlify output, including language routing, incremental rebuilds, shared artifacts, preprocessing, and LLM-oriented artifacts.
-- [Source directory map](source-map.md) - Maps authored documentation, metadata, assets, snippets, and API specifications to emitted routes and Mintlify navigation. Explains why source folders are inputs to route generation rather than the site map.
+- [Build System Architecture](build-system.md) - How the documentation pipeline transforms authored src content into the disposable Mintlify build tree, including routing, language-aware preprocessing, shared assets, npm overlays, and local development.
+- [Source Directory Map](source-map.md) - Maps documentation source families and docs.json projections to emitted routes, explicit Mintlify navigation and redirects, deployment-generated API reference, and current LangSmith and OSS product clusters. Use it to identify the source of truth for a route, menu placement, redirect, or generated reference change.

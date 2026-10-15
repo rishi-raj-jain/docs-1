@@ -45,15 +45,21 @@ A layer names whose memory the agent reads and writes. Each enabled layer mounts
 | **Agent** | `/memories/agent/` | The deployment, shared by every caller | Knowledge appropriate for everyone, such as team conventions and reusable procedures |
 | **User** | `/memories/user/` | The authenticated person who started the run | Personal preferences and caller-specific context |
 
-Most agents need one layer, not both. Decide which by asking whose knowledge the agent retains.
+Most agents need one layer. One mount means one hot file in every model call, and no routing decision on each save. Decide which by asking whose knowledge the agent retains.
 
 **Use agent memory alone** when every caller benefits from the same knowledge: a support agent that learns an escalation path, a research agent that learns which sources your team trusts, a build agent that learns a repository's conventions. Agent memory has no identity requirement, so it works with the default [identity](/langsmith/managed-deep-agents-identity) and in any channel.
 
 **Use user memory alone** when the agent serves many people and adapts to each one: an assistant that learns a person's office, their preferred answer format, or the product area they work on. User memory requires a deployment that authenticates callers as people.
 
-<Note>
-**Declaring both layers is a tradeoff.** When both mount, the runtime tells the agent what belongs in each: shareable knowledge in `/memories/agent/`, caller-specific knowledge in `/memories/user/`, and no copying between them. That guidance is not enforced, so the target of each save stays a model decision. A personal detail that lands in agent memory is readable by every caller. Declare both only when the agent retains both kinds of knowledge, and use `instructions.md` to say what is worth remembering. To serve both kinds of caller while keeping one layer mounted per run, select the layer in a factory instead: see [Select layers for each run](#select-layers-for-each-run). To review the target layer before a write is stored, see [Require approval before a memory write](#require-approval-before-a-memory-write).
-</Note>
+**Declare both** when the agent retains both kinds of knowledge: a team assistant that learns shared conventions and each person's preferences. The runtime tells the agent what belongs in each mount, and the agent chooses one on every save. To review that choice before a write is stored, see [Require approval before a memory write](#require-approval-before-a-memory-write). To serve both kinds of caller with one layer mounted at a time, select the layer in a factory instead: see [Select layers for each run](#select-layers-for-each-run).
+
+<Warning>
+**Agent memory is readable by every caller.** On a deployment that serves more than one person, a caller-specific detail saved to `/memories/agent/` is exposed to all of them.
+
+The runtime tells the agent not to save private or caller-specific information there, whether agent memory mounts alone or beside user memory. That instruction is guidance, not a guard.
+
+Declaring user memory gives such a detail a correct destination. Agent memory alone gives it none, because no other durable mount exists. Only user memory alone removes the exposure by construction. Where agent memory has to mount, [require approval before a memory write](#require-approval-before-a-memory-write).
+</Warning>
 
 Omitting a layer disables it, and removing the memory declaration turns durable memory off entirely. Neither deletes what is already stored. The runtime never copies content between layers.
 
@@ -302,7 +308,7 @@ Exercise a selection or a policy from a real caller against a deployment: a Slac
 
 A policy decides whether a layer mounts. It does not decide what the agent writes once it has. When a person should see a change before it is saved, pause the tool call instead.
 
-This matters most when both layers mount. The runtime tells the agent what belongs in each layer, but nothing enforces that split. A personal detail can still land in agent memory, where every caller can read it. An approval card names the target path, so a reviewer sees which layer the write is headed for and can correct or reject it before anything is stored.
+This matters wherever agent memory mounts on a deployment with many callers. The runtime tells the agent not to save caller-specific information there, but nothing enforces it. An approval card names the target path, so a reviewer sees which mount the write is headed for and can correct or reject it before anything is stored.
 
 :::python
 Add a `FilesystemPermission` rule in `mode="interrupt"` over the memory mounts:

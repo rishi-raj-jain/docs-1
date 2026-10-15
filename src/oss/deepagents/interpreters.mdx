@@ -252,11 +252,11 @@ Every tool you expose through PTC is an outside capability that interpreter code
 <Note>
     **How code execution works**
 
-    The Python interpreter bundles a [WebAssembly](https://webassembly.org/docs/security/) binary that calls into QuickJS. On each thread, a fresh WASM object is initialized, so interpreter state does not share memory with the host process and corrupted state on one thread cannot affect other threads.
+    In `langchain-quickjs>=0.3.1`, interpreter code runs in QuickJS compiled to WebAssembly, provided by [`quickjs-rs`](https://github.com/langchain-ai/quickjs-rs) v0.2.3 or later. The WebAssembly sandbox is the isolation boundary: JavaScript executes in the guest's linear memory and cannot read or write the host process's memory. Each LangGraph thread gets its own WebAssembly instance, so interpreter state on one thread cannot reach another.
 
-    The `JS_ReadObject` serialization path is still present; it is not eliminated. Any bad instructions that reach QuickJS are compartmentalized to the initiating thread. Side effects from a compromised interpreter environment are limited to the capabilities explicitly bridged into it, primarily the PTC allowlist, which is why keeping that allowlist narrow matters.
+    The sandbox runs inside the host process on [wasmtime](https://wasmtime.dev/), so a wasmtime vulnerability is the remaining path out of the sandbox. Keep `wasmtime` updated. For hostile multi-tenant workloads, also run agents in isolated worker processes or containers. For details, see the `quickjs-rs` [Security guide](https://github.com/langchain-ai/quickjs-rs#security).
 
-    Treat interpreters as a capability-scoped execution layer with per-thread memory isolation. For workloads where thread-level isolation is not sufficient, run agents in isolated worker processes or containers.
+    The sandbox contains the engine, not the capabilities you give it. Interpreter code can call every tool bridged into it, so keep the PTC allowlist narrow.
 </Note>
 :::
 

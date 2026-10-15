@@ -335,7 +335,7 @@ Compare isolated and forked modes along these dimensions:
 | Dimension | Isolated (default) | Forked |
 |-----------|---------------------|--------|
 | **Context** | Only the task description you pass in | The parent's effective conversation history and inherited state, plus the task description |
-| **System prompt and skills** | You set them on the subagent | Inherits skills and the parent's prompt. An optional system prompt appends instructions and can reduce cache reuse. |
+| **System prompt and skills** | You set them on the subagent | Inherits skills and the parent's base prompt. An optional system prompt appends instructions and can reduce cache reuse. |
 | **Calling other subagents** | Can use the `task` tool | Cannot use `task`; must finish the work itself |
 | **Best for** | Focused work that needs little prior context | Continuing an investigation the parent has already started |
 

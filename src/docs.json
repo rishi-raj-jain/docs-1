@@ -209,7 +209,6 @@
                           {
                             "group": "Going to production",
                             "root": "oss/python/deepagents/going-to-production",
-                            "expanded": true,
                             "pages": [
                               "oss/python/deepagents/fault-tolerance"
                             ]
@@ -331,7 +330,8 @@
                             ]
                           },
                           "langsmith/python/managed-deep-agents-schedules",
-                          "langsmith/python/managed-deep-agents-evals"
+                          "langsmith/python/managed-deep-agents-evals",
+                          "langsmith/python/managed-deep-agents-runtime"
                         ]
                       },
                       {
@@ -672,6 +672,7 @@
                           "oss/python/langchain/component-architecture",
                           "oss/python/concepts/memory",
                           "oss/python/concepts/context",
+                          "oss/python/concepts/human-in-the-loop",
                           "oss/python/langgraph/graph-api",
                           "oss/python/langgraph/functional-api"
                         ]
@@ -797,7 +798,6 @@
                           {
                             "group": "Going to production",
                             "root": "oss/javascript/deepagents/going-to-production",
-                            "expanded": true,
                             "pages": [
                               "oss/javascript/deepagents/fault-tolerance"
                             ]
@@ -918,7 +918,8 @@
                             ]
                           },
                           "langsmith/javascript/managed-deep-agents-schedules",
-                          "langsmith/javascript/managed-deep-agents-evals"
+                          "langsmith/javascript/managed-deep-agents-evals",
+                          "langsmith/javascript/managed-deep-agents-runtime"
                         ]
                       },
                       {
@@ -1792,7 +1793,14 @@
                     "pages": [
                       "langsmith/caching",
                       "langsmith/configure-iam-auth",
-                      "langsmith/encryption",
+                      {
+                        "group": "Encryption at rest",
+                        "root": "langsmith/encryption",
+                        "pages": [
+                          "langsmith/aes-encryption",
+                          "langsmith/custom-encryption"
+                        ]
+                      },
                       "langsmith/graph-rebuild",
                       {
                         "group": "Replace built-in backends",
@@ -2044,6 +2052,8 @@
                         "group": "Project & environment settings",
                         "pages": [
                           "langsmith/log-traces-to-project",
+                          "langsmith/log-traces-to-agent",
+                          "langsmith/trace-replicas",
                           "langsmith/trace-without-env-vars",
                           "langsmith/conditional-tracing",
                           "langsmith/sample-traces"
@@ -2200,12 +2210,30 @@
           {
             "item": "LangSmith setup",
             "icon": "server",
-            "description": "Host on Cloud, BYOC, or Self-hosted",
+            "description": "Hosting and administration",
             "tabs": [
               {
                 "tab": "Overview",
                 "pages": [
-                  "langsmith/platform-setup"
+                  "langsmith/langsmith-setup-overview",
+                  {
+                    "group": "Hosting",
+                    "pages": [
+                      "langsmith/platform-setup"
+                    ]
+                  },
+                  {
+                    "group": "Agent-based workspaces",
+                    "tag": "Beta",
+                    "pages": [
+                      "langsmith/agents",
+                      "langsmith/agent-environments",
+                      "langsmith/navigate-agents",
+                      "langsmith/create-an-agent",
+                      "langsmith/build-an-agent",
+                      "langsmith/deploy-to-agent-environment"
+                    ]
+                  }
                 ]
               },
               {
@@ -2255,6 +2283,7 @@
                   "langsmith/byoc-usage",
                   "langsmith/byoc-operations",
                   "langsmith/byoc-billing",
+                  "langsmith/byoc-data-plane-cost",
                   "langsmith/byoc-faq"
                 ]
               },
@@ -2307,37 +2336,49 @@
                     ]
                   },
                   {
-                    "group": "Setup guides",
+                    "group": "Install an instance",
                     "pages": [
                       "langsmith/self-host-dependency-versions",
                       "langsmith/kubernetes",
-                      "langsmith/deploy-self-hosted-full-platform",
-                      "langsmith/engine-self-hosted-link",
+                      "langsmith/self-host-insights-chat",
                       {
-                        "group": "Manage an installation",
+                        "group": "Additional features",
+                        "root": "langsmith/self-host-additional-features",
+                        "expanded": true,
                         "pages": [
-                          "langsmith/self-host-usage",
-                          "langsmith/self-host-upgrades",
-                          "langsmith/self-host-disaster-recovery",
-                          "langsmith/self-host-egress",
-                          "langsmith/self-host-organization-charts",
-                          "langsmith/langsmith-managed-clickhouse",
-                          "langsmith/self-host-ingress",
-                          "langsmith/self-host-mirroring-images",
-                          "langsmith/self-host-fips"
+                          {
+                            "group": "Enable Sandboxes",
+                            "root": "langsmith/enable-self-hosted-sandboxes",
+                            "pages": [
+                              "langsmith/self-host-sandbox-architecture",
+                              "langsmith/self-host-sandbox-scaling",
+                              "langsmith/self-host-sandbox-operations",
+                              "langsmith/self-host-sandbox-egress-proxy"
+                            ]
+                          },
+                          "langsmith/engine-self-hosted-link",
+                          "langsmith/enable-self-hosted-fleet",
+                          "langsmith/llm-gateway-self-hosted",
+                          "langsmith/deploy-self-hosted-full-platform"
                         ]
-                      }
+                      },
+                      "langsmith/self-host-usage"
                     ]
                   },
                   {
-                    "group": "Configuration",
+                    "group": "Configure an instance",
                     "pages": [
                       "langsmith/llm-auth-proxy-self-hosted",
                       "langsmith/self-host-environment-variables",
                       "langsmith/self-host-scale",
                       "langsmith/self-host-ttl",
+                      "langsmith/self-host-gke-vertex-ai-workload-identity",
                       "langsmith/self-host-playground-environment-settings",
                       "langsmith/self-host-ui-customization",
+                      "langsmith/self-host-ingress",
+                      "langsmith/self-host-egress",
+                      "langsmith/self-host-mirroring-images",
+                      "langsmith/self-host-fips",
                       "langsmith/troubleshooting"
                     ]
                   },
@@ -2346,6 +2387,7 @@
                     "pages": [
                       "langsmith/self-host-blob-storage",
                       "langsmith/self-host-external-clickhouse",
+                      "langsmith/langsmith-managed-clickhouse",
                       "langsmith/self-host-external-postgres",
                       "langsmith/self-host-external-redis",
                       "langsmith/self-host-slack"
@@ -2365,6 +2407,7 @@
                     "group": "SmithDB",
                     "pages": [
                       "langsmith/self-host-smithdb",
+                      "langsmith/self-host-smithdb-features",
                       "langsmith/self-host-smithdb-install",
                       "langsmith/self-host-smithdb-infrastructure",
                       "langsmith/self-host-smithdb-scale",
@@ -2375,9 +2418,18 @@
                     ]
                   },
                   {
+                    "group": "Manage an instance",
+                    "pages": [
+                      "langsmith/self-host-upgrades",
+                      "langsmith/self-host-disaster-recovery",
+                      "langsmith/self-host-organization-charts"
+                    ]
+                  },
+                  {
                     "group": "Self-hosted observability",
                     "pages": [
                       "langsmith/export-backend",
+                      "langsmith/self-host-observability-dashboards",
                       "langsmith/langsmith-collector",
                       "langsmith/observability-stack",
                       "langsmith/self-hosted-mission-control"
@@ -2426,10 +2478,12 @@
                         "pages": [
                           "langsmith/set-up-hierarchy",
                           "langsmith/workload-isolation",
+                          "langsmith/migrate-to-agent-based-workspaces",
                           "langsmith/set-up-resource-tags",
                           "langsmith/model-configurations"
                         ]
                       },
+                      "langsmith/tunnels",
                       "langsmith/manage-organization-by-api",
                       "langsmith/manage-with-terraform"
                     ]
@@ -2490,19 +2544,25 @@
             "item": "LLM Gateway",
             "icon": "route",
             "description": "Route, control, and observe LLM traffic",
-            "tag": "Beta",
             "pages": [
-              "langsmith/llm-gateway",
-              "langsmith/llm-gateway-quickstart",
-              "langsmith/llm-gateway-how-it-works",
-              "langsmith/llm-gateway-api-formats",
+              {
+                "group": "Get started",
+                "tag": "BETA",
+                "pages": [
+                  "langsmith/llm-gateway",
+                  "langsmith/llm-gateway-quickstart",
+                  "langsmith/llm-gateway-how-it-works",
+                  "langsmith/llm-gateway-api-formats"
+                ]
+              },
               {
                 "group": "Core capabilities",
                 "pages": [
                   "langsmith/llm-gateway-coding-agents",
                   "langsmith/llm-gateway-credits",
                   "langsmith/llm-gateway-decision-models",
-                  "langsmith/llm-gateway-fallbacks"
+                  "langsmith/llm-gateway-fallbacks",
+                  "langsmith/llm-gateway-model-configurations"
                 ]
               },
               {
@@ -2641,6 +2701,14 @@
     }
   },
   "redirects": [
+    {
+      "source": "/langsmith/self-host-sandbox-observability",
+      "destination": "/langsmith/self-host-observability-dashboards"
+    },
+    {
+      "source": "/langsmith/engine-github-self-hosted",
+      "destination": "/langsmith/engine-github#self-hosted-configuration"
+    },
     {
       "source": "/langsmith/engine-issue-categories",
       "destination": "/langsmith/engine"
@@ -2852,6 +2920,10 @@
     {
       "source": "/langsmith/managed-deep-agents-middleware",
       "destination": "/langsmith/python/managed-deep-agents-middleware"
+    },
+    {
+      "source": "/langsmith/managed-deep-agents-runtime",
+      "destination": "/langsmith/python/managed-deep-agents-runtime"
     },
     {
       "source": "/langsmith/managed-deep-agents-project-structure",
@@ -3111,11 +3183,11 @@
     },
     {
       "source": "/langsmith/agent-builder-self-hosted",
-      "destination": "/langsmith/deploy-self-hosted-full-platform#enable-fleet-insights-and-chat"
+      "destination": "/langsmith/enable-self-hosted-fleet"
     },
     {
       "source": "/langsmith/self-host-sandboxes",
-      "destination": "/langsmith/deploy-self-hosted-full-platform#enable-sandboxes"
+      "destination": "/langsmith/enable-self-hosted-sandboxes"
     },
     {
       "source": "/langsmith/self-host-engine",
@@ -3131,15 +3203,15 @@
     },
     {
       "source": "/langsmith/fleet/self-hosted",
-      "destination": "/langsmith/deploy-self-hosted-full-platform#enable-fleet-insights-and-chat"
+      "destination": "/langsmith/enable-self-hosted-fleet"
     },
     {
       "source": "/langsmith/insights-self-hosted",
-      "destination": "/langsmith/deploy-self-hosted-full-platform#enable-fleet-insights-and-chat"
+      "destination": "/langsmith/self-host-insights-chat"
     },
     {
       "source": "/langsmith/polly-self-hosted",
-      "destination": "/langsmith/deploy-self-hosted-full-platform#enable-fleet-insights-and-chat"
+      "destination": "/langsmith/self-host-insights-chat"
     },
     {
       "source": "/labs/swe/:path*",

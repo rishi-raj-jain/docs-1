@@ -498,7 +498,7 @@ Header forwarding is enabled on LangSmith Cloud. On self-hosted LangSmith, an ad
 Header forwarding works only through the Fleet API, not the deployment URL used in the earlier examples. The LangGraph SDK calls the deployment URL, so call the Fleet API directly instead. The Fleet API base URL is:
 
 - **Cloud**: `https://api.smith.langchain.com/v1/fleet`
-- **Self-hosted**: `https://<your-langsmith-host>/api/v1/fleet`
+- **Self-hosted**: `https://<your-langsmith-host>/api/v1/fleet`. If you set `config.basePath`, use `https://<your-langsmith-host>/<basePath>/api/v1/fleet`.
 
 To forward headers, prefix each one with `X-Fleet-Forward-` and send it on a request that starts a run:
 

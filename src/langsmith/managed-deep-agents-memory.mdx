@@ -52,7 +52,7 @@ Most agents need one layer, not both. Decide which by asking whose knowledge the
 **Use user memory alone** when the agent serves many people and adapts to each one: an assistant that learns a person's office, their preferred answer format, or the product area they work on. User memory requires a deployment that authenticates callers as people.
 
 <Note>
-**Declaring both layers is a tradeoff.** When both mount, the agent chooses which one to write to on each save, following the routing rules in your `instructions.md`. State those rules explicitly, and keep personal details out of agent memory, which every caller can read. Declare both only when the agent retains both kinds of knowledge. To review the target layer before a write is stored, see [Require approval before a memory write](#require-approval-before-a-memory-write).
+**Declaring both layers is a tradeoff.** When both mount, the runtime tells the agent what belongs in each: shareable knowledge in `/memories/agent/`, caller-specific knowledge in `/memories/user/`, and no copying between them. That guidance is not enforced, so the target of each save stays a model decision. A personal detail that lands in agent memory is readable by every caller. Declare both only when the agent retains both kinds of knowledge, and use `instructions.md` to say what is worth remembering. To review the target layer before a write is stored, see [Require approval before a memory write](#require-approval-before-a-memory-write).
 </Note>
 
 Omitting a layer disables it, and removing the memory declaration turns durable memory off entirely. Neither deletes what is already stored. The runtime never copies content between layers.
@@ -269,17 +269,19 @@ A policy widens access within the caller the runtime already authenticated. It c
 
 ### Test a policy
 
-A verified Studio user receives every declared layer, and the runtime does not call the user layer's policy. The local `mda dev` principal resolves the same way. Policy behavior is therefore not observable in either environment.
+The Studio bypass covers the user layer alone. A verified Studio user always receives user memory, and the runtime does not call that layer's policy. The local `mda dev` principal resolves the same way. A user policy is therefore not observable in either environment.
+
+An agent layer has no such bypass. Its `allow` policy runs for every caller, a verified Studio user included, so you can test an agent policy in Studio.
 
 The runtime evaluates a policy only while a run executes, so inspecting a graph does not call it. Native Node additionally requires Agent Server to pass run context to the graph factory.
 
-Exercise a policy from a real caller against a deployment: a Slack message, or your own application sending its own context.
+Exercise a user policy from a real caller against a deployment: a Slack message, or your own application sending its own context.
 
 ## Require approval before a memory write
 
 A policy decides whether a layer mounts. It does not decide what the agent writes once it has. When a person should see a change before it is saved, pause the tool call instead.
 
-This matters most when both layers mount. The agent then chooses which one to write to on every save, following the routing rules in your `instructions.md`, and a personal detail that lands in agent memory is readable by every caller. An approval card names the target path, so a reviewer sees which layer the write is headed for and can correct or reject it before anything is stored.
+This matters most when both layers mount. The runtime tells the agent what belongs in each layer, but nothing enforces that split. A personal detail can still land in agent memory, where every caller can read it. An approval card names the target path, so a reviewer sees which layer the write is headed for and can correct or reject it before anything is stored.
 
 :::python
 Add a `FilesystemPermission` rule in `mode="interrupt"` over the memory mounts:

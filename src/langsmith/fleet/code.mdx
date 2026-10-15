@@ -493,7 +493,9 @@ For the full API specification, see the [Agent Server API reference](/langsmith/
 
 Header forwarding passes headers from a run request to your agent's custom MCP servers on each tool call. Use it to give an MCP server per-run context, such as the end user's ID or a downstream token.
 
+<Note>
 Header forwarding is available on self-hosted LangSmith only. An administrator must [enable it](/langsmith/enable-self-hosted-fleet#optional-forward-caller-headers-to-mcp-servers) first.
+</Note>
 
 Header forwarding works only through the Fleet API, not the deployment URL used in the earlier examples. The LangGraph SDK calls the deployment URL, so call the Fleet API directly instead. The Fleet API base URL is `https://<your-langsmith-host>/api/v1/fleet`. If you set `config.basePath`, use `https://<your-langsmith-host>/<basePath>/api/v1/fleet`.
 

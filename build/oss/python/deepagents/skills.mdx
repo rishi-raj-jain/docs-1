@@ -43,6 +43,8 @@ import SkillsToolsPerUserJs from '/snippets/python/code-samples/skills-tools-per
 import SkillsToolsSearchJs from '/snippets/python/code-samples/skills-tools-search-js.mdx';
 import SkillsPinInvokePy from '/snippets/python/code-samples/skills-pin-invoke-py.mdx';
 import SkillsPinParsePy from '/snippets/python/code-samples/skills-pin-parse-py.mdx';
+import SkillsPinInvokeJs from '/snippets/python/code-samples/skills-pin-invoke-js.mdx';
+import SkillsPinParseJs from '/snippets/python/code-samples/skills-pin-parse-js.mdx';
 
 Skills package domain expertise, such as workflows, best practices, scripts, reference docs, and templates, into reusable directories. The agent gets a summary of the contents on startup and discovers and reads the contained files only when relevant.
 
@@ -220,7 +222,6 @@ In Deep Agents, [`SkillsMiddleware`](https://reference.langchain.com/python/deep
 
 To give the agent a skill's instructions without waiting for it to choose the skill, [pin the skill](#pin-skills).
 
-
 ## When to use skills
 
 If you find yourself giving similar instructions to an agent, especially if they are detailed and contain multiple steps, consider codifying the instructions for the agent. That way, in future when you want to accomplish a similar task, the agent will already know what to do.
@@ -368,7 +369,6 @@ Skill tools follow these rules:
 - Skill tools are gated. Until the agent reads the skill's `SKILL.md`, a call to one fails as an unknown tool, even if the model guesses its name and arguments.
 - When [summarization](/oss/python/deepagents/context-engineering#summarization) drops that read from the conversation, the tool is unavailable until the agent reads the skill again.
 - [Pinning a skill](#pin-skills) makes its tools available the same way reading its `SKILL.md` does. They stay available until summarization drops the pinned skill's message.
-
 
 <Note>
 On models that accept new tools mid-conversation, Deep Agents adds a skill tool after the read, which keeps the prompt cache valid. On other models, it adds the tool to the request's `tools`, which invalidates the cache. See the [Anthropic](/oss/python/integrations/chat/anthropic#change-tools-mid-conversation) and [OpenAI](/oss/python/integrations/chat/openai#add-tools-mid-conversation) integration pages.
@@ -593,6 +593,9 @@ Pass skill names in `pinned_skills` with the run input:
 
 <SkillsPinInvokePy />
 
+
+
+
 Before the next model call, `SkillsMiddleware` reads each named skill's `SKILL.md` and appends it to the conversation as a `HumanMessage`. It adds one message per skill, in the order you name them. Each message holds the file without its frontmatter:
 
 ```text
@@ -606,11 +609,17 @@ Before the next model call, `SkillsMiddleware` reads each named skill's `SKILL.m
 
 Each message also sets `additional_kwargs["lc_source"]` to `"pinned_skill"`, and puts the skill's `name`, `path`, and `description` in `additional_kwargs["skill"]`. A chat UI can use these fields to show a pinned skill as a label instead of its full text.
 
+
+
+
 Pinned skills follow these rules:
 
 - The message stays in the conversation as written. Editing `SKILL.md` later does not change it, and pinning the skill again appends the current text. Earlier messages never change, so the prompt cache stays valid.
 - The middleware skips a name that matches no loaded skill, and a skill whose `SKILL.md` it cannot read. It logs each skip at debug level.
--When you pin a skill, its [skill tools](#add-tools-to-skills) become available to the agent, the same as when the agent reads its `SKILL.md`.
+- When you pin a skill, its [skill tools](#add-tools-to-skills) become available to the agent, the same as when the agent reads its `SKILL.md`.
+
+
+
 
 ### Pin skills named in a message
 
@@ -618,9 +627,10 @@ Deep Agents does not look for skill names in messages. Your app chooses the synt
 
 <SkillsPinParsePy />
 
+
+
+
 The pattern matches a `/` followed by a skill name, at the start of the message or after a space. It does not check names against your skills, because the middleware skips unknown names. To support another syntax, such as `$skill-name`, change the pattern.
-
-
 
 ## Skills for subagents
 
@@ -771,7 +781,6 @@ Use [LangSmith](https://smith.langchain.com?utm_source=docs&utm_medium=cta&utm_c
 3. **Confirm the skill is in the `skills` array.** Skills load only from paths you pass at agent creation or from subagent-specific `skills` parameters.
 
 4. **Pin the skill.** When the user or your app already knows which skill applies, [pin it](#pin-skills). The agent then gets the skill's instructions without having to choose the skill.
-
 
 ### Skills missing at startup
 

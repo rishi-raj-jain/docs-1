@@ -52,7 +52,7 @@ Most agents need one layer, not both. Decide which by asking whose knowledge the
 **Use user memory alone** when the agent serves many people and adapts to each one: an assistant that learns a person's office, their preferred answer format, or the product area they work on. User memory requires a deployment that authenticates callers as people.
 
 <Note>
-**Declaring both layers is a tradeoff.** When both mount, the runtime tells the agent what belongs in each: shareable knowledge in `/memories/agent/`, caller-specific knowledge in `/memories/user/`, and no copying between them. That guidance is not enforced, so the target of each save stays a model decision. A personal detail that lands in agent memory is readable by every caller. Declare both only when the agent retains both kinds of knowledge, and use `instructions.md` to say what is worth remembering. To review the target layer before a write is stored, see [Require approval before a memory write](#require-approval-before-a-memory-write).
+**Declaring both layers is a tradeoff.** When both mount, the runtime tells the agent what belongs in each: shareable knowledge in `/memories/agent/`, caller-specific knowledge in `/memories/user/`, and no copying between them. That guidance is not enforced, so the target of each save stays a model decision. A personal detail that lands in agent memory is readable by every caller. Declare both only when the agent retains both kinds of knowledge, and use `instructions.md` to say what is worth remembering. To serve both kinds of caller while keeping one layer mounted per run, select the layer in a factory instead: see [Select layers for each run](#select-layers-for-each-run). To review the target layer before a write is stored, see [Require approval before a memory write](#require-approval-before-a-memory-write).
 </Note>
 
 Omitting a layer disables it, and removing the memory declaration turns durable memory off entirely. Neither deletes what is already stored. The runtime never copies content between layers.
@@ -108,7 +108,7 @@ export const memory = defineMemory({ user: memoryLayer() });
 ```
 :::
 
-Each layer uses its [default access policy](#control-access-to-a-layer) unless you supply your own.
+Each layer uses its [default access](#control-access-to-a-layer) unless a factory selects layers for the run.
 
   </Step>
   <Step title="Guide what to remember (Optional)" id="guide-what-to-remember">
@@ -141,63 +141,88 @@ authorization. When you decide to persist something, use `edit_file` or
 
 ## Control access to a layer
 
-Declaring a layer makes it available. Whether the agent actually reaches it on a given run is a second decision, made once at the start of that run:
+Declaring a layer makes it available. Whether the agent reaches it on a given run is a second decision, made once at the start of that run:
 
 1. The runtime resolves the caller. User memory stops here unless the caller is an authenticated person.
-2. The layer's `allow(context)` policy runs, or its default applies when you declare no policy.
+2. The agent factory selects the layers for that run, or the project's declaration applies when no factory selects them.
 3. Layers that pass mount at their paths, and their hot memory loads.
 
-Without `allow`, Managed Deep Agents applies these defaults:
+When nothing selects layers for a run, Managed Deep Agents applies these defaults:
 
 | Run source | Agent memory | User memory |
 | --- | --- | --- |
 | Slack one-to-one DM | Allowed | Allowed |
 | Slack channel or group DM | Allowed | Denied |
 | Direct API run | Allowed | Denied |
-| Studio, verified user | Allowed | Allowed, policy not called |
+| Studio, verified user | Allowed | Allowed |
 
-Agent memory is deployment-shared, so it is available by default. User memory is personal, so it mounts by default only where the conversation is already private to one person. A Slack channel, a group DM, and a direct API run all fall outside that, and the runtime cannot tell from the outside whether such a run is private. Denying by default means personal memory never reaches a shared conversation unless you opt in with a policy of your own.
+Agent memory is deployment-shared, so it is available by default. User memory is personal, so it mounts by default only where the conversation is already private to one person. A Slack channel, a group DM, and a direct API run all fall outside that, and the runtime cannot tell from the outside whether such a run is private. Denying by default means personal memory never reaches a shared conversation unless the deployment opts in.
 
-The runtime evaluates a policy once per run, before it mounts storage. Returning `false` removes only that layer's mount and its automatic memory content for that run. Stored memory is not deleted.
+### Select layers for each run
 
-The section below covers the case where an application replaces the default.
+To decide per run, export an agent factory and pass `memory` to the definition it returns. The factory receives the runtime, so it can read the application context the caller sent, or the [channel](/langsmith/managed-deep-agents-runtime#channel) the run arrived on. For the factory itself, see [Select configuration per run](/langsmith/managed-deep-agents-agent-definition#select-configuration-per-run).
 
-### Mount user memory for your own application's callers
-
-Your application signs users in and calls the deployment over the API. The default policy allows user memory in Slack direct messages, so these callers reach agent memory but not their own.
-
-Supply `allow` to replace that default. Policies can be synchronous or asynchronous. Read whatever your application sends on the run, and mount user memory when the caller opts in:
+A direct API run is denied user memory by default, because the runtime cannot tell whether it is private. Your own application can tell. This example gives a caller their own memory when the application marks the run as one to remember, and shared agent memory otherwise:
 
 :::python
-```python memory.py
+```python agent.py
 from typing import TypedDict
 
-from managed_deepagents import MemoryLayer, define_memory
+from managed_deepagents import (
+    ManagedServerRuntime,
+    MemoryLayer,
+    define_deep_agent,
+    define_memory,
+)
 
 
-class Context(TypedDict, total=False):
+class AppContext(TypedDict, total=False):
     remember: bool
 
 
-memory = define_memory(
-    user=MemoryLayer(allow=lambda context: context.get("remember") is True),
-)
+def agent(runtime: ManagedServerRuntime[AppContext]):
+    execution = runtime.execution_runtime
+    context = execution.context if execution is not None else None
+    remember = context is not None and context.get("remember") is True
+    return define_deep_agent(
+        name="office-helpdesk",
+        model="openai:gpt-5.5",
+        memory=(
+            define_memory(user=MemoryLayer())
+            if remember
+            else define_memory(agent=MemoryLayer())
+        ),
+        context_schema=AppContext,
+    )
 ```
 :::
 
 :::js
-```ts memory.ts
-import { defineMemory, memoryLayer } from "managed-deepagents";
+```ts agent.ts
+import {
+  defineDeepAgent,
+  defineMemory,
+  memoryLayer,
+  type ManagedServerRuntime,
+} from "managed-deepagents";
+import { z } from "zod";
 
-type Context = {
-  remember?: boolean;
-};
+const contextSchema = z.object({ remember: z.boolean().optional() });
 
-export const memory = defineMemory<Context>({
-  user: memoryLayer({
-    allow: (context) => context.remember === true,
-  }),
-});
+export function agent(
+  runtime: ManagedServerRuntime<z.infer<typeof contextSchema>>
+) {
+  const remember = runtime.executionRuntime?.context?.remember === true;
+
+  return defineDeepAgent({
+    name: "office-helpdesk",
+    model: "openai:gpt-5.5",
+    memory: remember
+      ? defineMemory({ user: memoryLayer() })
+      : defineMemory({ agent: memoryLayer() }),
+    contextSchema,
+  });
+}
 ```
 :::
 
@@ -227,55 +252,51 @@ await client.runs.create(threadId, assistantId, {
 ```
 :::
 
-This policy mounts nothing until your deployment authenticates callers as people. Configure [Supabase](/langsmith/managed-deep-agents-identity#configure-identity-with-supabase) or your own backend first.
-
-### Read the run context
-
-`allow` receives the run context. Managed channel runs carry the current delivery under `context.channel`, with the original provider event alongside it, so a policy can read the channel and the person the event resolves to. The default user-memory policy is itself this shape, where `"im"` means a one-to-one direct message:
+A selection replaces the project's declaration for that run, and the selection is the decision, so the defaults in the table above no longer apply. The authenticated-person requirement still does. A user layer selected for a service principal does not mount, so configure [Supabase](/langsmith/managed-deep-agents-identity#configure-identity-with-supabase) or your own backend before a deployment can reach user memory at all.
 
 :::python
-```python
-from managed_deepagents import ManagedChannelContext, MemoryLayer
+Pass `memory=None` to give a run no durable memory. Omit `memory` to keep what the project declares.
+:::
 
+:::js
+Pass `memory: null` to give a run no durable memory. Omit `memory` to keep what the project declares.
+:::
 
-def allow_direct_message(context: object) -> bool:
-    if not isinstance(context, ManagedChannelContext):
-        return False
-    raw_event = context.channel.get("raw_event")
-    return isinstance(raw_event, dict) and raw_event.get("channel_type") == "im"
+Agent Server calls the factory to inspect the graph as well as to run it, so keep the selection a pure function of the runtime it receives. See [Keep the factory repeatable](/langsmith/managed-deep-agents-agent-definition#keep-the-factory-repeatable).
 
+### Migrate from an allow policy
 
-user = MemoryLayer(allow=allow_direct_message)
+A layer could previously carry an `allow(context)` policy that returned a boolean. That callback is deprecated as of `managed-deepagents` 0.9.0. A policy declared in `memory.py` or `memory.ts` still runs, so an existing project keeps working, and selecting layers in a factory replaces it.
+
+Memory selected in a factory rejects the callback:
+
+:::python
+```text
+Dynamically selected memory cannot use `allow`. Select memory layers or return None from the dynamic agent resolver instead.
 ```
 :::
 
 :::js
-```ts
-allow: (context) => context.channel?.rawEvent?.channel_type === "im";
+```text
+Dynamically selected memory cannot use `allow`. Select memory layers or return null from the dynamic agent resolver instead.
 ```
 :::
 
-Read the channel rather than the event type when you widen this. A message sent to a channel reports a `channel_type`, but an app mention does not carry that field.
-
-Deliveries that carry no provider event do not receive user memory under the default policy.
-
 <Warning>
-A policy that raises fails the run rather than denying the mount. Catch exceptions inside your policy and return `false`, so that an unavailable datastore denies user memory and the run continues.
+A policy that raises fails the run rather than denying the mount. Catch exceptions inside a policy you still run, and return `false`, so that an unavailable datastore denies user memory and the run continues.
 </Warning>
 
-<Warning>
-A policy widens access within the caller the runtime already authenticated. It cannot enable user memory for a service principal, and it cannot select another person's memory. The runtime checks the authenticated principal before it calls `allow`, so these examples grant a caller access to their own memory and never to anyone else's.
-</Warning>
+Neither form widens access past the caller the runtime already authenticated. Neither reaches memory for a service principal, and neither selects another person's memory.
 
-### Test a policy
+### Test memory access
 
-The Studio bypass covers the user layer alone. A verified Studio user always receives user memory, and the runtime does not call that layer's policy. The local `mda dev` principal resolves the same way. A user policy is therefore not observable in either environment.
+The Studio bypass covers the user layer alone. A verified Studio user always receives user memory, and the runtime does not call that layer's policy. The local `mda dev` principal resolves the same way.
 
-An agent layer has no such bypass. Its `allow` policy runs for every caller, a verified Studio user included, so you can test an agent policy in Studio.
+An agent layer has no such bypass. A policy on an agent layer runs for every caller, a verified Studio user included.
 
-The runtime evaluates a policy only while a run executes, so inspecting a graph does not call it. Native Node additionally requires Agent Server to pass run context to the graph factory.
+Run context is absent when Agent Server calls a factory to inspect the graph, so a selection that reads context falls back to its default there. Native Node additionally requires Agent Server to pass run context to the graph factory.
 
-Exercise a user policy from a real caller against a deployment: a Slack message, or your own application sending its own context.
+Exercise a selection or a policy from a real caller against a deployment: a Slack message, or your own application sending its own context.
 
 ## Require approval before a memory write
 
@@ -391,7 +412,7 @@ Where Studio writes depends on what you are running:
 
 Local memory and deployed memory are separate stores, so a fact you teach the agent under `mda dev` does not appear after you deploy.
 
-Policies are the exception to all of this, because neither environment calls them. See [Test a policy](#test-a-policy).
+Access decisions are the exception. See [Test memory access](#test-memory-access).
 
 For more information, see [Local development](/langsmith/managed-deep-agents-local-development).
 

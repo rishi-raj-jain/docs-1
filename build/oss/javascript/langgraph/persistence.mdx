@@ -27,10 +27,10 @@ Compile your graph with a checkpointer, a store, or both:
 
 
 ```typescript
-import { MemorySaver, MemoryStore } from "@langchain/langgraph";
+import { MemorySaver, InMemoryStore } from "@langchain/langgraph";
 
 const checkpointer = new MemorySaver();
-const store = new MemoryStore();
+const store = new InMemoryStore();
 
 const graph = builder.compile({ checkpointer, store });
 

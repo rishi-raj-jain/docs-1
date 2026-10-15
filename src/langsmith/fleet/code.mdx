@@ -493,18 +493,15 @@ For the full API specification, see the [Agent Server API reference](/langsmith/
 
 Header forwarding passes headers from a run request to your agent's custom MCP servers on each tool call. Use it to give an MCP server per-run context, such as the end user's ID or a downstream token.
 
-Header forwarding is enabled on LangSmith Cloud. On self-hosted LangSmith, an administrator must [enable it](/langsmith/enable-self-hosted-fleet#optional-forward-caller-headers-to-mcp-servers) first.
+Header forwarding is available on self-hosted LangSmith only. An administrator must [enable it](/langsmith/enable-self-hosted-fleet#optional-forward-caller-headers-to-mcp-servers) first.
 
-Header forwarding works only through the Fleet API, not the deployment URL used in the earlier examples. The LangGraph SDK calls the deployment URL, so call the Fleet API directly instead. The Fleet API base URL is:
-
-- **Cloud**: `https://api.smith.langchain.com/v1/fleet`
-- **Self-hosted**: `https://<your-langsmith-host>/api/v1/fleet`. If you set `config.basePath`, use `https://<your-langsmith-host>/<basePath>/api/v1/fleet`.
+Header forwarding works only through the Fleet API, not the deployment URL used in the earlier examples. The LangGraph SDK calls the deployment URL, so call the Fleet API directly instead. The Fleet API base URL is `https://<your-langsmith-host>/api/v1/fleet`. If you set `config.basePath`, use `https://<your-langsmith-host>/<basePath>/api/v1/fleet`.
 
 To forward headers, prefix each one with `X-Fleet-Forward-` and send it on a request that starts a run:
 
 ```bash
 curl --request POST \
-    --url "https://api.smith.langchain.com/v1/fleet/threads/runs" \
+    --url "https://<your-langsmith-host>/api/v1/fleet/threads/runs" \
     --header "Content-Type: application/json" \
     --header "X-Api-Key: $LANGSMITH_API_KEY" \
     --header "X-Tenant-Id: $LANGSMITH_WORKSPACE_ID" \
@@ -528,7 +525,7 @@ Your MCP server receives each header with the prefix in place. Read `X-Fleet-For
 LangSmith does not verify forwarded header values. The caller sets them, so do not treat them as proof of identity in your MCP server.
 </Warning>
 
-The following Fleet API endpoints forward headers. Replace `<FLEET_API_URL>` with the base URL for your installation.
+The following Fleet API endpoints forward headers. Replace `<FLEET_API_URL>` with your Fleet API base URL.
 
 | Operation | Method | Endpoint |
 |---|---|---|

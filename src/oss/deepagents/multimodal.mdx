@@ -48,6 +48,19 @@ The harness `read_file` tool returns [standard content blocks](/oss/langchain/me
 
 </Accordion>
 
+## Unsupported content
+
+When a message or tool result includes a content type the active model cannot accept, Deep Agents replaces those blocks with a text placeholder before the next model call. That keeps one rejected modality from failing every later turn.
+
+:::python
+`create_deep_agent` and each subagent add @[`UnsupportedContentMiddleware`] automatically, last in the [middleware stack](/oss/deepagents/customization#full-stack) before excluded-tool filtering. Support is read from the model's profile fields (for example, `image_inputs` and `pdf_inputs`). Requires `deepagents>=0.7.19`.
+:::
+
+:::js
+`createDeepAgent` and each subagent add @[`UnsupportedContentMiddleware`] automatically, last in the [middleware stack](/oss/deepagents/customization#full-stack) before excluded-tool filtering. File support is read from `model.profile.fileMimeTypes` (requires `@langchain/core@^1.2.14`, and `@langchain/openai@^1.6.1` for OpenAI and Azure models). Requires `deepagents>=1.14.2`.
+:::
+
+If `read_file` still returns media the filter missed, @[`FilesystemMiddleware`] retries once with the content replaced and persists the swap to state.
 
 ## Custom tool outputs
 

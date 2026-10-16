@@ -240,7 +240,8 @@ With only a `model` (no other optional arguments), the main agent typically incl
 3. @[`SummarizationMiddleware`]
 4. @[`PatchToolCallsMiddleware`]
 5. **Prompt caching** middleware (always registered; each entry no-ops on models it does not support)
-6. **Harness profile extras** and **excluded-tool filtering**, if the resolved model profile defines them
+6. @[`UnsupportedContentMiddleware`]
+7. **Harness profile extras** and **excluded-tool filtering**, if the resolved model profile defines them
 :::
 
 :::js
@@ -251,7 +252,8 @@ With only a `model` (no other optional arguments), the main agent typically incl
 3. @[`SummarizationMiddleware`]
 4. @[`PatchToolCallsMiddleware`]
 5. **Prompt caching** middleware (added for supported providers; no-ops elsewhere)
-6. **Harness profile extras** and **excluded-tool filtering**, if the resolved model profile defines them
+6. @[`UnsupportedContentMiddleware`]
+7. **Harness profile extras** and **excluded-tool filtering**, if the resolved model profile defines them
 :::
 
 #### Full stack
@@ -276,7 +278,8 @@ From first to last:
     </Note>
 
 11. `HumanInTheLoopMiddleware`: Only when you pass `interrupt_on`. Pauses for human approval or input at configured tool calls.
-12. **Excluded-tool filtering**: When the harness profile lists excluded tools, middleware removes those tools from the agent.
+12. @[`UnsupportedContentMiddleware`]: Replaces input content blocks the active model cannot accept with a text placeholder before each model call. See [Unsupported content](/oss/deepagents/multimodal#unsupported-content).
+13. **Excluded-tool filtering**: When the harness profile lists excluded tools, middleware removes those tools from the agent.
 
 :::
 
@@ -298,7 +301,8 @@ From first to last:
     </Note>
 
 11. `HumanInTheLoopMiddleware`: Only when you pass `interruptOn`. Pauses for human approval or input at configured tool calls.
-12. **Excluded-tool filtering**: When the harness profile lists excluded tools, middleware removes those tools from the agent.
+12. @[`UnsupportedContentMiddleware`]: Replaces input content blocks the active model cannot accept with a text placeholder before each model call. See [Unsupported content](/oss/deepagents/multimodal#unsupported-content).
+13. **Excluded-tool filtering**: When the harness profile lists excluded tools, middleware removes those tools from the agent.
 
 :::
 

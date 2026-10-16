@@ -97,6 +97,14 @@ The @[`AsyncSubAgentMiddleware`] which is included in the [Deep Agents stack](/o
 | `cancel_async_task` | Stop a running task | Confirmation |
 | `list_async_tasks` | List all tracked tasks with live statuses | Summary of all tasks |
 
+:::python
+Task status values include `running`, `waiting`, `success`, `error`, and `cancelled`. A task is `waiting` when the subagent paused for a human (for example, an approval or an answer). The user answers that subagent directly; the supervisor cannot approve or reply on their behalf. `list_async_tasks` can filter by any of these statuses. Reporting `waiting` requires `deepagents>=0.7.26`.
+:::
+
+:::js
+Task status values include `running`, `success`, `error`, and `cancelled`, plus server-reported values such as `pending`, `timeout`, and `interrupted`. `list_async_tasks` can filter by status.
+:::
+
 The supervisor's LLM calls these tools like any other tool. The middleware handles thread creation, run management, and state persistence automatically.
 
 ### Understand the lifecycle

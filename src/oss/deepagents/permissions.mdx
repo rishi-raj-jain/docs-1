@@ -99,6 +99,28 @@ Paths must be absolute (start with `/`) and cannot contain `..` or `~`. Invalid 
 
 :::
 
+## Symlink-resolved paths
+
+:::python
+<Note>
+    Checking symlink-resolved paths requires `deepagents>=0.7.25`.
+</Note>
+:::
+
+:::js
+<Note>
+    Checking symlink-resolved paths requires `deepagents>=1.15.0`.
+</Note>
+:::
+
+Permission rules match against the path the call requests. With @[`FilesystemBackend`] (directly or behind a @[`CompositeBackend`] route), they also match against the symlink-resolved target. A deny on either path blocks the call, so an allow rule must cover the resolved target as well. That includes OS-level links such as macOS `/tmp` resolving to `/private/tmp` when virtual mode is off.
+
+:::python
+The same dual-path check applies to `interrupt_on` approvals for filesystem tools.
+:::
+
+Rule matching also drops `.` path segments before comparing patterns.
+
 :::python
 
 ## Pause for human approval

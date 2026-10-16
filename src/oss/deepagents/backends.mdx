@@ -502,6 +502,7 @@ Behavior:
 
 Notes:
 - Longer prefixes win (for example, route `"/memories/projects/"` can override `"/memories/"`).
+- Register route keys with a trailing slash (for example, `"/memories/"`). @[`CompositeBackend`] treats `"/memories"` and `"/memories/"` as the same route, and a prefix must not capture a longer sibling path such as `/memories_extra/file.txt`.
 - For StoreBackend routing, ensure a store is provided via `create_deep_agent(model=..., store=...)` or provisioned by the platform.
 - Deep Agents write internal data (offloaded tool results, conversation history) to the default backend. Use `StateBackend` as the default to keep these artifacts ephemeral and avoid writing them to disk or a persistent store. See the [FilesystemBackend tip](#filesystembackend-local-disk) for a complete example.
 

@@ -1,11 +1,11 @@
 ---
 type: contributor guide
 title: Repository Wiki Quickstart
-description: Route a documentation change to its durable input, configuration, generator, or external owner before choosing local commands and validation. Use this map to avoid editing generated output or confusing navigation with route generation.
-tags: [quickstart, documentation, mintlify, validation, repository]
+description: Route a documentation or tooling request to its durable owner, the relevant repository workflow, and the smallest validation boundary. Use this map before editing so generated output and externally owned surfaces are not changed directly.
+tags: [quickstart, documentation, tooling, validation, repository]
 verified:
   - by: openwiki/0.4.3
-    at: 2026-10-09T08:24:05.435Z
+    at: 2026-10-16T08:20:25.784Z
 sources:
   - id: openwiki-source-5c124605ed6e394bffee862c
     resource: repo://.github/workflows/_check-links.yml
@@ -19,6 +19,8 @@ sources:
     resource: repo://AGENTS.md
   - id: openwiki-source-012f2c78e3b1446dfc35803f
     resource: repo://Makefile
+  - id: openwiki-source-6e6efa1569f158fcdb678ef0
+    resource: repo://pipeline/cli.py
   - id: openwiki-source-b481a230af378c0c50ed9994
     resource: repo://pipeline/commands/dev.py
   - id: openwiki-source-d0cdf44431684bdedf34705a
@@ -41,18 +43,18 @@ sources:
     resource: repo://scripts/test_code_samples.py
   - id: openwiki-source-a9a8730b7e43a5ad2d0af4f1
     resource: repo://src/docs.json
-generated: { by: "openwiki/0.4.3", at: "2026-10-09T08:24:05.435Z" }
+generated: { by: "openwiki/0.4.3", at: "2026-10-16T08:20:25.784Z" }
 ---
 
 # Repository Wiki Quickstart
 
-This repository builds the Mintlify site at [docs.langchain.com](https://docs.langchain.com). It does not build the generated SDK reference at [reference.langchain.com](https://reference.langchain.com/python/). Start with a durable input: authored source, navigation/configuration, metadata, or generator code. Do not edit `build/`; every full build deletes and recreates it. Report problems with the external reference site through the [reference documentation issue template](https://github.com/langchain-ai/docs/issues/new?template=04-reference-docs.yml).
+This repository builds the Mintlify site at [docs.langchain.com](https://docs.langchain.com), not the generated SDK reference at [reference.langchain.com](https://reference.langchain.com/python/). Start by locating the durable owner of the requested change. A rendered page, sidebar label, generated table, changelog, endpoint reference, or `build/` file can be a result rather than an authoring target.
 
-## Start here
+Read `AGENTS.md` before editing. It is the repository-wide authoring guide: manually authored documentation belongs in `src/`, frontmatter descriptions contain no Markdown, new pages require `src/docs.json`, Tabler icons are required, and examples must be tested. Task-specific procedures live in `.agents/skills/`; `make skills` links that canonical tree into `.claude/skills/` for Claude Code. Use `docs-tooling-notion` before handoff whenever a script, workflow, Make target, PR check, scheduled job, or skill changes.
 
-Read `AGENTS.md` before changing content. It defines repository-wide authoring rules and directs task-specific work to `.agents/skills/`. Run `make skills` to link those skills into `.claude/skills/` for Claude Code.
+## Start locally
 
-The project requires Python 3.13 or later, Node.js, and `uv`:
+The project requires Python 3.13 or later. Run the standard setup and preview from the repository root:
 
 ```bash
 git clone https://github.com/langchain-ai/docs.git
@@ -61,65 +63,75 @@ make install
 make dev
 ```
 
-`make install` synchronizes all Python dependency groups, installs project npm dependencies and the global Mintlify CLI, and links skills. `make dev` performs an initial build, watches `src/`, and serves the generated `build/` tree at <http://localhost:3000>. It stops if that initial build fails. Use `uv run pipeline dev --skip-build` only when an appropriate generated tree already exists.
+`make install` synchronizes all Python dependency groups, installs project npm dependencies and the global Mintlify CLI. `make dev` performs an initial build, watches `src/`, and serves `build/` through Mintlify at <http://localhost:3000>. It exits when the initial build fails. Use `uv run docs dev --skip-build` only when an appropriate existing `build/` tree is available. The installed `docs` console script is the Python pipeline CLI; it provides `dev`, `build`, `mv`, and migration commands, while `mint` is the separate Mintlify CLI used for preview and rendered-site checks.
 
-## Route the change by owner
+## Route the request before editing
 
-A page's source owner, emitted route family, Mintlify navigation, and deployment-generated reference surface are separate concerns. Reader-facing menu labels do not determine source ownership or builder behavior.
+| Requested change | Durable owner | First maintained guide | Smallest meaningful validation |
+| --- | --- | --- | --- |
+| Existing authored prose, MDX, reusable snippet, image, or style | Applicable authored input under `src/` | [Adding and Maintaining Documentation Pages](/openwiki/operations/adding-pages.md) | Focused prose check; add rendered link checking for routes or links. |
+| Add, move, rename, retire, or expose a page | Source under `src/` **and** explicit `src/docs.json` navigation and redirects | [Adding and Maintaining Documentation Pages](/openwiki/operations/adding-pages.md) | Build plus `make broken-links-with-anchors`. |
+| Source family, public route, language variant, menu placement, redirect, or OpenAPI declaration | Route-emitting source and `src/docs.json` are separate owners | [Source Directory Map](/openwiki/architecture/source-map.md) | Inspect all emitted routes; run link and redirect checks. |
+| Shared or language-specific OSS content | The applicable `src/oss/` family and its conditional fences | [Versioned Content Workflow](/openwiki/workflows/versioned-content.md) | `make check-cross-refs`, then validate affected variants. |
+| Build routing, preprocessing, CLI, Make target, helper, or pipeline test | `pipeline/`, `scripts/`, or `Makefile`, with focused tests | [Documentation Build System](/openwiki/architecture/build-system.md), [Builder and Pipeline Tests](/openwiki/testing/builder-tests.md) | `make test TEST_FILE=tests/unit_tests/path_or_test.py`. |
+| GitHub workflow, CI check, scheduled job, secret-bearing automation, or failure triage | `.github/workflows/` and its invoked scripts | [GitHub Actions and CI/CD](/openwiki/integrations/github-actions.md) | The focused local command; preserve event and credential boundaries. |
+| Runnable example or extracted displayed snippet | Executable source in `src/code-samples/` | [Code Sample Lifecycle](/openwiki/workflows/code-sample-lifecycle.md) | `make test-code-samples FILES="src/code-samples/..."`, then `make code-snippets`. |
+| `@[ref]` API reference, MDX link, redirect, or anchor | Authored page/link and source link map | [Cross-References and Links](/openwiki/operations/cross-references.md) | `make check-cross-refs` or `make broken-links-with-anchors`, as applicable. |
+| Integration discovery, download, or featured listing | Hosted-guide `integration:` frontmatter or `scripts/data/integration_external_docs.yaml` | [Integration Listing Automation](/openwiki/workflows/integration-listing-automation.md) | `uv run python scripts/refresh_integration_downloads.py --check-docs-urls`, then regenerate. |
+| Provider overview table | `packages.yml` or `pipeline/tools/partner_pkg_table.py` | [Integration Listing Automation](/openwiki/workflows/integration-listing-automation.md) | Regenerate the overview and review its diff. |
+| Cloud or Fleet changelog | Weekly changelog workflow, upstream PRs, rollout state, and review PR | [LangSmith Changelog Publication](/openwiki/workflows/changelog-publication.md) | Its focused deterministic tests; use the workflow for publication. |
+| LangSmith platform OpenAPI input | Scheduled refresh workflow and processor | [LangSmith OpenAPI Refresh](/openwiki/workflows/langsmith-openapi-refresh.md) | `make check-openapi`; do not hand-edit the transformed spec. |
+| API endpoint reference declared in Mintlify | Committed specification, remote Control Plane specification, and `src/docs.json` declaration | [Reference Documentation Integrations](/openwiki/integrations/reference-docs.md) | `make check-openapi` where applicable; recognize endpoints are deployment-generated. |
+| API reference at `reference.langchain.com` | External reference build | [Reference documentation issue template](https://github.com/langchain-ai/docs/issues/new?template=04-reference-docs.yml) | Route the issue; this repository has no reference build output. |
 
-| If the task is to... | Change the durable owner | Follow-up |
+## Keep the ownership planes separate
+
+`src/docs.json` is the Mintlify navigation and site-configuration source of truth, but navigation does not select the source directory or cause route emission. The builder recreates `build/` on every full build. Most OSS content produces Python and JavaScript variants; language-owned OSS subtrees produce only the matching route family. Ordinary LangSmith content is unversioned, while OpenWiki and Deep Agents Code are unversioned OSS exceptions and direct Managed Deep Agents sources produce language-prefixed variants.
+
+Choose the source family before a reader-facing menu label. The Build menu mixes OSS and LangSmith content, **No-code agents** is Fleet, and **Deep Agents Code** is a Products and setup item. Then identify every emitted route, update the actual `docs.json` menu branch, and add redirects deliberately if a published path changes. See [Source Directory Map](/openwiki/architecture/source-map.md) for the full model and [Adding and Maintaining Documentation Pages](/openwiki/operations/adding-pages.md) for the operational procedure.
+
+For shared OSS `@[ref]` cross-references, an unfenced reference must resolve in both Python and JavaScript scopes. Place a language-only API name in a `:::python` or `:::js` block and run the strict `make check-cross-refs` source gate.
+
+## Do not edit a derived surface
+
+Never edit `build/`: it is disposable Mintlify output. Change the upstream authored input or generator, regenerate, and review the diff.
+
+| Derived surface | Edit or operate instead | Required follow-through |
 | --- | --- | --- |
-| Write or revise a maintained page | The applicable `src/` page, reusable snippet, or asset | Keep frontmatter descriptions free of Markdown, use Tabler icons, and test included examples. |
-| Add, move, rename, retire, or place a page | Its `src/` source plus `src/docs.json` | Add navigation; update redirects for moved, renamed, or removed public paths. See [Adding and Maintaining Documentation Pages](/openwiki/operations/adding-pages.md). |
-| Find the correct source subtree or route family | The source family, not the menu label | See [Source Directory Map](/openwiki/architecture/source-map.md) and [Versioned Documentation and Routes](/openwiki/concepts/versioning.md). |
-| Change site settings, menu order, labels, redirects, or OpenAPI declarations | `src/docs.json` | Navigation is explicit configuration, not route generation. |
-| Change a processor, build rule, or emitted route | `pipeline/` and its focused tests | See [Testing Overview](/openwiki/testing/test-overview.md). |
-| Change a runnable example or displayed extracted snippet | `src/code-samples/` | Test it, then regenerate snippets. See [Code Sample Lifecycle](/openwiki/workflows/code-sample-lifecycle.md). |
-| Change an integration listing | Hosted integration frontmatter or `scripts/data/integration_external_docs.yaml` | Validate URLs and regenerate. See [Integration Listing Automation](/openwiki/workflows/integration-listing-automation.md). |
-| Fix generated API reference at `reference.langchain.com` | The owning external reference build, not this repository | File the reference-documentation issue. |
+| `build/` | Authored `src/`, configuration, or pipeline input | Rebuild; do not preserve a manual output edit. |
+| `src/oss/python/integrations/providers/overview.mdx` | `packages.yml` or `pipeline/tools/partner_pkg_table.py` | Run `uv run python pipeline/tools/partner_pkg_table.py`; CI rejects drift. |
+| `src/code-samples-generated/` and `src/snippets/code-samples/` | `src/code-samples/` | Test source, run `make code-snippets`, and review generated MDX. |
+| Integration listings or download outputs | Hosted integration frontmatter or external-listing YAML | Validate URLs, regenerate, and review. |
+| `src/langsmith/changelog.mdx` and `src/snippets/langsmith/fleet-changelog.mdx` | Weekly changelog pipeline and its upstream state | Use scheduled/manual workflow and review PR. |
+| `src/langsmith/self-hosted-changelog.mdx` | Helm changelog automation and release owner | Route the correction to its external workflow owner. |
+| `src/langsmith/langsmith-platform-openapi.json` | Refresh workflow and processor input | Do not hand-edit the transformed specification. |
+| Mintlify endpoint pages | Declared specification and `src/docs.json` | Generated at deployment, not in local build output. |
 
-`src/docs.json` is the Mintlify site-configuration and navigation source of truth. Add new pages there. Its two product menus organize the agent-development lifecycle and product/setup material, but labels are not a source map: Build mixes OSS and LangSmith content, Fleet is labeled **No-code agents**, and Deep Agents Code is a product/setup item.
+`src/langsmith/agent-server-openapi.json` is also externally maintained by update PRs from `langgraph-api`, not ordinary prose. Use `make check-openapi` to validate the configured Agent Server specification.
 
-The builder clears `build/` and emits Python and JavaScript OSS variants, unversioned OpenWiki and Deep Agents Code content, ordinary LangSmith content, language-prefixed Managed Deep Agents variants, and shared files. Source ownership and emitted route family are therefore independent of Mintlify navigation. Treat generated files as preview and validation evidence, not as an authoring surface.
+## Select the narrowest validation boundary
 
-For shared OSS `@[ref]` cross-references, an unfenced reference must resolve in both Python and JavaScript scopes. Put an API name that exists in only one scope inside a `:::python` or `:::js` block, then run `make check-cross-refs`.
+Start with the smallest check that proves the changed contract, then add regeneration or rendered-route validation only where the change crosses that boundary. [Testing Overview](/openwiki/testing/test-overview.md) explains what each level proves and what it does not.
 
-## Regenerate instead of editing a derivative
-
-When a visible file is derived, edit its input or generator and regenerate it:
-
-- **Provider overview**: `src/oss/python/integrations/providers/overview.mdx` is generated by `pipeline/tools/partner_pkg_table.py` from `packages.yml`. Update the generator or metadata, run `uv run python pipeline/tools/partner_pkg_table.py`, and commit the result. CI rejects drift.
-- **Runnable samples and snippets**: `src/code-samples/` is executable source. `make code-snippets` extracts marked blocks into `src/code-samples-generated/` and creates imported MDX in `src/snippets/code-samples/`; neither output is authored input. Test a changed sample first with `make test-code-samples FILES="src/code-samples/..."`, then regenerate.
-- **Integration listings**: the listing generator combines hosted-guide `integration:` frontmatter with `scripts/data/integration_external_docs.yaml`. Check accepted documentation URLs before regeneration with `uv run python scripts/refresh_integration_downloads.py --check-docs-urls`.
-- **OpenAPI endpoint pages**: Mintlify generates configured endpoint reference during deployment. Change the specification or its `src/docs.json` declaration, not local build output. See [Adding and Maintaining Documentation Pages](/openwiki/operations/adding-pages.md).
-
-## Choose focused validation
-
-| Changed boundary | Start with | Why |
+| Changed boundary | Start with | What it proves |
 | --- | --- | --- |
-| Pipeline, builder, preprocessor, or generator | `make test TEST_FILE=tests/unit_tests/path_or_test.py` | `make test` runs pytest with network sockets disabled except Unix sockets. |
-| Source `@[ref]` or conditional content | `make check-cross-refs` | Rejects a shared unfenced reference that does not resolve for every emitted scope. |
-| Page prose | `make lint_prose FILES="src/path/to/page.mdx"` | Runs the repository's pinned Vale workflow. |
-| Python tooling or spelling | `make lint` | Checks formatting, linting, types, and source spelling. |
+| Pipeline, builder, preprocessor, generator, or helper | `make test TEST_FILE=tests/unit_tests/path_or_test.py` | A focused pytest contract with network sockets disabled except Unix sockets. |
+| General Python tooling | `make test` and, when appropriate, `make lint` | Deterministic test suite; formatting, lint, types, and source spelling for `make lint`. |
+| Shared or conditional `@[ref]` content | `make check-cross-refs` | References resolve in each applicable source scope. |
+| Authored prose | `make lint_prose FILES="src/path/to/page.mdx"` | Selected Vale prose rules. |
 | Route, redirect, link, or anchor | `make broken-links-with-anchors` | Builds first, then checks links, anchors, and redirect destinations. |
-| Agent Server OpenAPI | `make check-openapi` | Builds first and validates the configured Agent Server spec. |
-| Runnable example and its rendered snippet | `make test-code-samples FILES="src/code-samples/..."` and `make code-snippets` | Executes the selected source sample, then refreshes its derived snippet artifacts. |
+| Agent Server OpenAPI specification | `make check-openapi` | Mintlify OpenAPI validation of the built input. |
+| Runnable sample and displayed snippet | `make test-code-samples FILES="src/code-samples/..."` then `make code-snippets` | The selected executable source runs before generated snippets refresh. |
 
-Core CI runs on pushes to `main`, pull requests, and manual dispatch. It runs tests, lint, built link and OpenAPI validation, strict cross-reference and external-integration URL checks, and the provider-overview drift check. The code-sample workflow runs for relevant pull requests, manually, and monthly; it skips fork pull requests because some samples need repository secrets. See [GitHub Actions and CI/CD](/openwiki/integrations/github-actions.md) for CI behavior and failure triage.
+Core CI runs on pull requests, pushes to `main`, and manual dispatch. It invokes test, lint, and link/OpenAPI workflows, and separately checks merge markers, cross-references, external integration URLs, and generated provider-overview drift. The credentialed code-sample workflow runs for eligible pull requests affecting `src/code-samples/`, manual dispatch, and a monthly schedule; it skips fork pull requests because some samples require repository secrets.
 
-## Finish safely
+## Continue by domain
 
-1. Confirm that the edit targets authored input, configuration, metadata, or generator policy—not `build/` or a hosted rendering.
-2. Identify source ownership and emitted route variants before changing navigation. Update `src/docs.json` and redirects explicitly when needed.
-3. Regenerate affected derivatives, then inspect every language or unversioned route family the source owns.
-4. Run the smallest source check first. Run build, link, or deployment-facing validation when the change crosses that boundary.
-
-## Task-routing map
-
-- [Source Directory Map](/openwiki/architecture/source-map.md): source ownership, route families, navigation, redirects, and generated references.
-- [Versioned Documentation and Routes](/openwiki/concepts/versioning.md): shared, language-owned, unversioned, and Managed Deep Agents content.
-- [Adding and Maintaining Documentation Pages](/openwiki/operations/adding-pages.md): page creation, moves, retirement, navigation, redirects, and deployment surfaces.
-- [Testing Overview](/openwiki/testing/test-overview.md): focused, rendered, credentialed, remote, and hosted validation.
-- [Code Sample Lifecycle](/openwiki/workflows/code-sample-lifecycle.md): executable examples, snippet generation, trace refresh, and sample automation.
-- [Integration Listing Automation](/openwiki/workflows/integration-listing-automation.md): integration metadata, URL validation, and listing refresh.
-- [GitHub Actions and CI/CD](/openwiki/integrations/github-actions.md): CI gates, trust boundaries, and sample workflows.
+- [Local Development Workflow](/openwiki/workflows/local-development.md): installation, preview, rebuilding, and environment failures.
+- [Source Directory Map](/openwiki/architecture/source-map.md): source owners, route variants, navigation, redirects, and generated references.
+- [Adding and Maintaining Documentation Pages](/openwiki/operations/adding-pages.md): page lifecycle and safe public-route changes.
+- [Documentation Preprocessing](/openwiki/concepts/preprocessing.md) and [Language Versions and Route Variants](/openwiki/concepts/versioning.md): transformations and both-language invariants.
+- [Developer CLI Tools](/openwiki/operations/cli-tools.md) and [Agent Authoring Skills](/openwiki/operations/agent-skills.md): supported commands and task procedures.
+- [Testing Overview](/openwiki/testing/test-overview.md): unit, generated-output, rendered, credentialed, and automation validation.
+- [GitHub Actions and CI/CD](/openwiki/integrations/github-actions.md): CI gates, trusted writers, and secret boundaries.
+- [Code Sample Lifecycle](/openwiki/workflows/code-sample-lifecycle.md), [Integration Listing Automation](/openwiki/workflows/integration-listing-automation.md), and [LangSmith Changelog Publication](/openwiki/workflows/changelog-publication.md): generator-owned operational workflows.

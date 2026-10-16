@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:dc4a46e7764cfc3bcf04d55d1d339598ff85bfc2f31e51eb85cf883546477bd6",
+  "pageVersion": "sha256:ad1b7427626748154553b484d77e61a75e449a4e5f43711462e3119ae880ee6e",
   "claims": [
     {
       "id": "claim_5a0048f3b3ca4390bc60a9abdcb5e5d2",
@@ -12,7 +12,7 @@
         },
         {
           "resource": "repo://src/docs.json",
-          "version": "repo-file-v1:sha256:154a20cadfa626ea4ecfb7fc1024b0439ea25c285d22f5cd222fa998d145a964"
+          "version": "repo-file-v1:sha256:f6815b9dd1dd336dcc9f7645e83f31f2d0f6dee2df6ecb3dab240995045e26cf"
         }
       ]
     },
@@ -30,7 +30,7 @@
         },
         {
           "resource": "repo://src/docs.json",
-          "version": "repo-file-v1:sha256:154a20cadfa626ea4ecfb7fc1024b0439ea25c285d22f5cd222fa998d145a964"
+          "version": "repo-file-v1:sha256:f6815b9dd1dd336dcc9f7645e83f31f2d0f6dee2df6ecb3dab240995045e26cf"
         }
       ]
     },
@@ -44,7 +44,7 @@
         },
         {
           "resource": "repo://src/docs.json",
-          "version": "repo-file-v1:sha256:154a20cadfa626ea4ecfb7fc1024b0439ea25c285d22f5cd222fa998d145a964"
+          "version": "repo-file-v1:sha256:f6815b9dd1dd336dcc9f7645e83f31f2d0f6dee2df6ecb3dab240995045e26cf"
         }
       ]
     },
@@ -54,15 +54,15 @@
       "evidence": [
         {
           "resource": "repo://src/docs.json",
-          "version": "repo-file-v1:sha256:154a20cadfa626ea4ecfb7fc1024b0439ea25c285d22f5cd222fa998d145a964"
+          "version": "repo-file-v1:sha256:f6815b9dd1dd336dcc9f7645e83f31f2d0f6dee2df6ecb3dab240995045e26cf"
         },
         {
           "resource": "repo://src/oss/python/integrations/chat/index.mdx",
-          "version": "repo-file-v1:sha256:a4ed4019f12615b95bab5ebd441ff6714fea28819e43e2c482551460064b0168"
+          "version": "repo-file-v1:sha256:0d00336f892592417da32d4838384bc982687e2f6d62006aefea6de1a4fe8ac5"
         },
         {
           "resource": "repo://src/oss/python/integrations/document_loaders/index.mdx",
-          "version": "repo-file-v1:sha256:1304440f1ca0cb7dec985dd4ddc4307445780c5dd330e5fccb9b9dd7a78ad822"
+          "version": "repo-file-v1:sha256:c3edfe51dccbc1e7904f0ca355ce5871961521f47e8b91c1378bb93a90f105f6"
         }
       ]
     },
@@ -76,15 +76,15 @@
         },
         {
           "resource": "repo://src/docs.json",
-          "version": "repo-file-v1:sha256:154a20cadfa626ea4ecfb7fc1024b0439ea25c285d22f5cd222fa998d145a964"
+          "version": "repo-file-v1:sha256:f6815b9dd1dd336dcc9f7645e83f31f2d0f6dee2df6ecb3dab240995045e26cf"
         },
         {
           "resource": "repo://src/langsmith/application-structure.mdx",
-          "version": "repo-file-v1:sha256:98ee783d0194bdc27dc81c6ddb2fb1d015e68332ed035fa41174260a8e706048"
+          "version": "repo-file-v1:sha256:21c33db04236cbffbf35a69055f3c67b985cdaca7367eeef9325b84ce175c36a"
         },
         {
           "resource": "repo://src/langsmith/sandboxes.mdx",
-          "version": "repo-file-v1:sha256:8a7bbee79b8a9fc50d7128aa33158bc77be291ea2692dff7324ae9dd17b9ca34"
+          "version": "repo-file-v1:sha256:e7e4fa7c8c4245ad9e79acae9e1bb9df8ecabfa917330850681cb9d922a714b5"
         }
       ]
     },
@@ -93,12 +93,12 @@
       "statement": "docs.json configures Agent Server, Control Plane, and LangSmith REST OpenAPI surfaces; Mintlify generates their endpoint pages at deployment rather than from authored MDX.",
       "evidence": [
         {
-          "resource": "repo://AGENTS.md#L233-L245",
-          "version": "repo-lines-v1:sha256:28d8b0f603db48ee3140d586c55f832ac2412a4dfa5ba76b13236e1038ccd409:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwNmZhN2IwOTc1OWNiYzBhOGQ1NjBkYWViNjllN2U0YTljNWYyMDA1MGQyZWRmMjY5MjU5MmQxNzRmZGNhZDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIzYzcxNjhiNGVlMTlmNjZlZTY3ZTg1YmNmMWI1OTRkNjQyODg5NjAxZWJkYTAzNzg1M2E0ZTgxZTE3NWM5MDAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU1YWVjZmI0NmQ5Yjg5N2E3YmNkNTQzMmY1ZjFkMzNlYTc5YzYxODQ3NDRlZDMxN2M5YTYwYjMyNjVkZDRkODIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc3Zjg0MWY0OTE4ZWIzN2VjNDdlOTI0ZGFiMDU0YTkzZDlmOTY4N2JjZjFlNDEzYTkwZDllOGEwODI3NWJjYjQifQ"
+          "resource": "repo://AGENTS.md",
+          "version": "repo-file-v1:sha256:9cb969d03130a7646cd07d46d5c9886539a3fd1300a30a57d19648e091088453"
         },
         {
           "resource": "repo://src/docs.json",
-          "version": "repo-file-v1:sha256:154a20cadfa626ea4ecfb7fc1024b0439ea25c285d22f5cd222fa998d145a964"
+          "version": "repo-file-v1:sha256:f6815b9dd1dd336dcc9f7645e83f31f2d0f6dee2df6ecb3dab240995045e26cf"
         }
       ]
     },
@@ -113,16 +113,6 @@
         {
           "resource": "repo://tests/unit_tests/test_builder.py#L425-L451",
           "version": "repo-lines-v1:sha256:2c288d8d59f35e8db2480f09030ee87c0c7a5a2f96058369107869c245fbf3a4:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI4N2EyY2Q0NDhlZTljNzYzNGJmYWQyMTQyZGYzODk0ODQ0N2M1YTljMTA0OTVjMmVmZmJlYjgxYjA5MTM1OGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIxYjllNDMyMjIwN2YxYzRlMjkwZWY1ZDUzOGIyZDc3MDM0OTNjYWUxNjFiYzQ4NDlhN2MyOTQ0ZGQ0NGY0MmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI5OWE3ZDQ0NGM2ZDNmNjk0ZTYwZTdkYjVkMGMzZDNlOTBhYTdiMTgwNmUyNmMyMGMwMTJmN2FiZTBjODU0ZjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVmZDBmZmRmMDQ2OWRiZjE1Y2Y4NjBlODkwNDkzOGJjNjVjY2VmZTM5YzI0OTEwY2JlY2NmMzhiOWZmMDQ1NDcifQ"
-        }
-      ]
-    },
-    {
-      "id": "claim_d2b21467e53f4206a06614bf58ef0cd1",
-      "statement": "The Products and setup navigation separately projects unversioned LangSmith content as LLM Gateway, No-code agents, and Engine: Gateway has core capabilities, administration and governance, and advanced groups; Fleet is labeled No-code agents; Engine presents overview, issue workflow, GitHub, notifications, security, and self-hosted routes.",
-      "evidence": [
-        {
-          "resource": "repo://src/docs.json",
-          "version": "repo-file-v1:sha256:154a20cadfa626ea4ecfb7fc1024b0439ea25c285d22f5cd222fa998d145a964"
         }
       ]
     },
@@ -176,7 +166,7 @@
         },
         {
           "resource": "repo://src/docs.json",
-          "version": "repo-file-v1:sha256:154a20cadfa626ea4ecfb7fc1024b0439ea25c285d22f5cd222fa998d145a964"
+          "version": "repo-file-v1:sha256:f6815b9dd1dd336dcc9f7645e83f31f2d0f6dee2df6ecb3dab240995045e26cf"
         },
         {
           "resource": "repo://src/oss/javascript/migrate/langchain-mcp-adapters.mdx",
@@ -198,7 +188,7 @@
         },
         {
           "resource": "repo://src/docs.json",
-          "version": "repo-file-v1:sha256:154a20cadfa626ea4ecfb7fc1024b0439ea25c285d22f5cd222fa998d145a964"
+          "version": "repo-file-v1:sha256:f6815b9dd1dd336dcc9f7645e83f31f2d0f6dee2df6ecb3dab240995045e26cf"
         },
         {
           "resource": "repo://src/langsmith/agents.mdx",
@@ -216,17 +206,21 @@
         },
         {
           "resource": "repo://src/langsmith/data-plane.mdx",
-          "version": "repo-file-v1:sha256:b292c13bf6feafa9f4a5b74cf3db498046f3ac5dd14ed769236af89cc7832d29"
+          "version": "repo-file-v1:sha256:3c6c6d16b305a864ebd92021f06b7c34ab7034af88845a7abd03df7d2b6e7b3a"
         }
       ]
     },
     {
       "id": "claim_a9a307c847f64ddaa62f8cab10e94f4d",
-      "statement": "`docs.json` lists the self-hosted sandbox architecture, scaling, and operations pages in a separate Sandboxes group, while the Deploy Sandboxes tab owns the managed-resource landing page and its usage documentation.",
+      "statement": "`docs.json` places the self-hosted sandbox architecture, scaling, operations, and egress-proxy pages beneath Products and setup → LangSmith setup → self-hosted → Additional features → Enable Sandboxes, whose root is the self-hosted sandbox enablement page; the Deploy → Sandboxes tab separately owns the managed-resource landing page and usage documentation.",
       "evidence": [
         {
-          "resource": "repo://src/docs.json",
-          "version": "repo-file-v1:sha256:154a20cadfa626ea4ecfb7fc1024b0439ea25c285d22f5cd222fa998d145a964"
+          "resource": "repo://src/docs.json#L1929-L1942",
+          "version": "repo-lines-v1:sha256:a15fe1d23f861febf6cd481b7882a8cbceb375d241df625ab0772288ecc273f7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVhYjZmYTdkN2Y5NWZmYTg2NDcwMWQ2MzVhMmM3YmI3NDQ2MTZkYWVlMWRiZTNhMzc2NGRlZTM4NmI4Y2FmMzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQzODJmMjUyNDAxMTJiNjExNGUzZDMxNTg4ZDU2ODAxNjA1Y2YxMWI2NWFlMDczZjk0OTk0YTNiYzBhOThmMzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk0YjE5OTNlNDVmMDc0NjJjMmJjYWI2ZTgxODNiYTYxY2IyY2I1OGE0YzE2NGRlZTI5ZTQ2NzUzMDZkMTEwOTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcwMzIxY2E1ZTdkOGU0OTlkZGYyNzMwODIyZWY0ZTk1YzhiZmRhMDE4NGJkNmNkY2Y2YWUwYjc5YzJhNDBkOGUifQ"
+        },
+        {
+          "resource": "repo://src/docs.json#L2335-L2360",
+          "version": "repo-lines-v1:sha256:4c85d4c2f470a67256aa5ee9e7673b6827db01154adc29702c107e482a429d37:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjNWEwM2JiNDAyZjc3OTdmZjZhNjBjNTVlNWVlYmIwNzVkZTFmYjgwNmFmZmIyMGU0MGIyOTM1YThlYmFkOTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU1YTVjMGZlMjgxZjNjNDFmYjAxMDcyZmI5Yjk0Njg3MzU2ZDQyMzAzNjExNDRhNjhiYzQxMTM0NGM3ZWU2YTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcwYTY3NzAwMGQ2YTVjYTRlYzVhYzE1ZTA5MzZmMzlmYzQwYjY0NWJkYjFiMTExMDU2MzFhODgyOWEzNWUxMDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU4MTVkYjQzOWRmMDMwOTBjMTQzZmJkY2UxYjVmOTU4MjQ3ZTI1NjgyZWJlNWRhMmQ3Y2Q2OTRkOTcwMmU3M2IifQ"
         }
       ]
     },
@@ -260,7 +254,7 @@
       "evidence": [
         {
           "resource": "repo://src/docs.json",
-          "version": "repo-file-v1:sha256:154a20cadfa626ea4ecfb7fc1024b0439ea25c285d22f5cd222fa998d145a964"
+          "version": "repo-file-v1:sha256:f6815b9dd1dd336dcc9f7645e83f31f2d0f6dee2df6ecb3dab240995045e26cf"
         },
         {
           "resource": "repo://src/oss/deepagents/code/remote-sandboxes.mdx",
@@ -274,7 +268,7 @@
       "evidence": [
         {
           "resource": "repo://src/langsmith/self-host-sandbox-architecture.mdx",
-          "version": "repo-file-v1:sha256:350bf0b95fc5bbbda304d1e2b59ef7cb316d248106c8cfecaf9d11c5888ba22f"
+          "version": "repo-file-v1:sha256:687a3f112e5e5f025ac153f7a8237cae5c9ff78fe110878b747adcc3f8fce189"
         }
       ]
     },
@@ -367,10 +361,38 @@
           "version": "repo-lines-v1:sha256:3d1fac25f9a52d4fb09b428461adfea8ab8ee8383ff2cc96eee2c4b2aab6fc5f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIzMjAxMzQ5MWFhYWY2NDg1NGFjNzE3N2Q2NzhmN2RhYTk0OTg4NDBmZDE5ZmUzZmZkNmI1MDhkZmY4MzNhMzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUzZTdjM2RhZGMxNDQzMDVjNDE5ZTcyNDBmYjA0MTY3NmM4MjcyMmQwMDE2Y2I3ODA4NDVhNzg1ZTExYzQzM2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjExNzNmYjBlNmI3NmEyN2MzZDBjYWU0ZDU3NTk1MTY3ZTQ2ZjdiOWEyNDRhOGViN2FkNWM1ODQwMTAwYjk0YzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEzZWE4NmZjZTQ4YzE4MjIyOGM0MTUzYTE2ZWVjY2VlMmMxMDBiMjg0YmM2NGFmNzU2OTliOTc0NDI3YWI4NDkifQ"
         }
       ]
+    },
+    {
+      "id": "claim_25623e0d05c946f08e9d3378744d4ef8",
+      "statement": "Deep Agents Code resolves general settings in administrator-managed, Deep Agents Code environment override, canonical environment, user configuration, and default order; `DEEPAGENTS_HOME` is captured before dotenv loading so project dotenv files cannot relocate its trusted profile root.",
+      "evidence": [
+        {
+          "resource": "repo://src/oss/deepagents/code/configuration.mdx#L160-L175",
+          "version": "repo-lines-v1:sha256:768e38b1cd924d28ff1fab9f88e1515685aeb0280d4cdb255f48ba948c9a8869:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4OTRhODlkMjJkM2IzMzQ1MzAxNTczOTZkYzM2NjhmMGU4MTcyMTRjMTFiZmUwMzdkNzRkMzFiMDI2MzZlNTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4OGRiZTM0MWYxYmE5MDFmYjljMzNjZGJmNzc1YmFhYzk5NzIyNWI4OTFlZDYxNmI4ZWMzMDE2ZGZlNzUwMTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNhOGZhNjQyMDc2ODA2NGUyYjI0N2QwMjkwMDdjM2IxZjA4MTk0MmZlZGM0ZDg4YjIyZDY4ZWQwZGNiZTU2ZGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVjNTQzYWNmN2RkZmY4MDhkYWYyYmNlNTE3MWJlM2FmNTQwMTExMWRkNTlmMjMzN2JlZDhlY2M1MjZlZGM5MmEifQ"
+        },
+        {
+          "resource": "repo://src/oss/deepagents/code/configuration.mdx#L31-L49",
+          "version": "repo-lines-v1:sha256:e09f5bc77a99a02f64385672420c4f7696c072023ec54eeabbf8a38bf4c9bf43:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlZWQ0YWMxYjYwM2Y3Nzk5MTRhYTgyNmRiNzM2ZmMwY2ZkMzQ5NmIxOWE0MGQ4OTVkZjBiYjJmMGYxNmFkYmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEwZDBiMTllZjg5ZGZiZWY0ZjU5OTYzMGQ1NDhjYzFiZTcwNzk2ZjRkZmNmZGEzNTI2NjA3MWFkNGY4NDBmODgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA1ZmZiMDk2OTNlYWM0MWFjYTdjNmUzYWZiNmUxZjc3MTM0OTE4YmM5YzlmZWNhYWMyOTBkYmM0YjM1ZDE2NDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMwYTgzNmVjMWU5NzY2NjhjODRjODQ2YzU2ZDBjYjNiZDRhN2E0NGRjMWZiY2YyYzZjNjQyZTk2MmJmNTdmYjIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5dbb3afcb1794a83af3f9d590467902c",
+      "statement": "A LangSmith application deployment requires graph implementation, `langgraph.json`, a dependency definition, and optional `.env`; one configuration can define multiple graph IDs that share deployment dependencies, environment, and image while Agent Server creates a default assistant for each graph.",
+      "evidence": [
+        {
+          "resource": "repo://src/langsmith/application-structure.mdx#L148-L171",
+          "version": "repo-lines-v1:sha256:3ef942433dc600bd105a933948e372f149f4baf237b2563444c967e59ac6e45b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjMTBhZTY3NzA3MTU1MzZjYmNmYzIxNjZlYTk5NWRlYmRhZDA1MjQwYzU0YTc2M2ZhMjNlOGE0YmYzNzBmYWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNlM2Q1MzNhNmVlYWU1MzNkYzFiOGIzZDg2NzBiMmFhOGExZDAwZGMwMzQwM2U5NjMxMzg1NTNmNTY0ZTU1ZWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVlZTI5ODNmMDlkZDU5ZmFiY2MwYjU3YjNiMDgzMWVjMDA0M2UxODEwNTczNTFmZGQ3YWJiM2Q5YTI4NTQ2MTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhMTVhN2FhNTIyN2I3NmM2ZWNkMjNmM2RiNDM2ODJmNmI2NjJkZjFkNmQ5ZGVlNTRlY2ZlNGFlY2Q4ODMzNjMifQ"
+        },
+        {
+          "resource": "repo://src/langsmith/application-structure.mdx#L8-L19",
+          "version": "repo-lines-v1:sha256:b9531df61df51d595b457f9a40832054b10622727c5354ce2775f297fb27e9e3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ1M2IzOTA5YzlhMzY1ZTk0MjM5OTgzNzQwMGQ4YmJjOWE0ZGMzNTEyOTk4OGRhNmY4YmQ5YTQwMWQ3MmNjNjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2NzQzN2U2MTBmNjgyZGU5MmYwYjBmNzE5MzVlMzE4YTY4MjRhNDNkZDk2MmFhMTkwZjJmNGY1ZDdiYTM0MjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU3NjQyNzAyOTYyYTIzYjc0MDQ4MDc0Nzc0MTRkODk1NmNlM2YyYTE5MGY1ZjljMjA0NjE1MDY4NGU1N2NmMzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU2ODEyM2JhMDUyZjI5YTMxMjdmZjhmMDQzZmZhYzMyMDBiZDc0OWExNGM4MTZmYjJmNjJkZjUwZjYyZjA2MGYifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.4.3",
-    "at": "2026-10-09T08:24:05.435Z"
+    "at": "2026-10-16T08:20:25.784Z"
   }
 }

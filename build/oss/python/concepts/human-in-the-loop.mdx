@@ -11,12 +11,16 @@ Human-in-the-loop (HITL) pauses an agent before a tool call runs so a person can
 You add review with [`HumanInTheLoopMiddleware`](https://reference.langchain.com/python/langchain/agents/middleware/human_in_the_loop/HumanInTheLoopMiddleware) in [LangChain](/oss/python/langchain/human-in-the-loop), or with the `interrupt_on` parameter in [Deep Agents](/oss/python/deepagents/human-in-the-loop). The middleware pauses in one of two modes:
 
 
+
+
 - **Per-call**: One pause for each tool call that needs review.
 - **Batched**: One pause per model turn, covering every tool call in that turn. Batched mode is the current default.
 
 <Note>
 Per-call mode requires `langchain>=1.4.6`. Deep Agents uses batched mode.
 </Note>
+
+
 
 
 ## Follow an approval from pause to resume
@@ -29,8 +33,10 @@ Every approval follows the same steps in either mode:
 4. Your application shows the pending calls to a reviewer and collects a decision for each one.
 5. You resume the agent with a `Command(resume=...)`. The middleware applies each decision, and the agent continues.
 
-A decision is one of four types:
 
+
+
+A decision is one of four types:
 
 <HitlDecisionTypesTable />
 
@@ -69,6 +75,9 @@ Each interrupt value describes one call and has `type: "tool_approval"`. The `ex
 }
 ```
 
+
+
+
 Each interrupt also carries a [`response_schema`](/oss/python/langgraph/interrupts#define-an-interrupt-response-schema), a JSON schema of the answers that call accepts. For `execute_sql`, the schema allows `approve` and `reject`. For `write_file`, it also allows `respond` and `edit`. The `edit` branch includes `write_file`'s own argument schema. Clients can render a form from the schema instead of hardcoding the decision types. The [LangChain guide](/oss/python/langchain/human-in-the-loop#read-the-response-schema) shows the schema for each decision type.
 
 You answer each interrupt with one decision, keyed by the interrupt's ID:
@@ -79,6 +88,8 @@ Command(resume={
     execute_sql_interrupt.id: {"type": "reject", "message": "Archive the rows before deleting them."},
 })
 ```
+
+
 
 
 LangGraph rejects an invalid answer before saving it, so the reviewer can correct it and answer again. Interrupts you do not answer stay pending, which lets a reviewer answer them one at a time.
@@ -110,6 +121,8 @@ Command(resume={"decisions": [
 ```
 
 
+
+
 The interrupt has no `response_schema`. The middleware checks each decision only when it applies it, after LangGraph has saved the answer.
 
 ## Compare batched-mode problems
@@ -124,6 +137,8 @@ Batched mode matches answers to calls by position, and checks each answer only a
 | Edited arguments are not checked | An edit to `write_file` without `content` still runs the tool, and the model receives an error for a call it never made. | The edit is rejected with `edit.edited_action.args.content Field required`. |
 
 
+
+
 ## Choose an interrupt mode
 
 | | Per-call | Batched (default) |
@@ -135,12 +150,13 @@ Batched mode matches answers to calls by position, and checks each answer only a
 | **Best for** | New agents, one approval card or message per call, forms built from the schema | Approval UIs that already read `action_requests` |
 
 
+
+
 Use per-call mode for new agents. LangChain plans to make it the default in the next major release.
 
 Keep batched mode while your approval UI reads the batched format, such as one built with the [`useStream` approval pattern](/oss/python/langchain/frontend/human-in-the-loop).
 
 Per-call mode also changes how middleware order and multi-answer resumes behave. Before you switch, read [Order middleware for per-call review](/oss/python/langchain/human-in-the-loop#order-middleware-for-per-call-review) and [Resume each call by ID](/oss/python/langchain/human-in-the-loop#resume-each-call-by-id).
-
 
 ## See also
 

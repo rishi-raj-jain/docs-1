@@ -1906,6 +1906,10 @@ packages:
   name_title: FoddaContextRetriever
   repo: fodda-ai/langchain-fodda
   js: "n/a"
+- name: langchain-recall
+  name_title: RecallMiddleware
+  repo: recallmem/recall
+  js: "@recall-memory/sdk"
 - name: langchain-printfriendly
   name_title: PrintFriendlyReadPage
   repo: printfriendly/langchain-printfriendly

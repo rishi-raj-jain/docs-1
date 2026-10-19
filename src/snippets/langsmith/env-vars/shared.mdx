@@ -102,6 +102,16 @@ When [`BG_JOB_ISOLATED_LOOPS`](#bg_job_isolated_loops) is enabled, the pool is n
 
 Defaults to `150` connections.
 
+## `LANGGRAPH_THREAD_HISTORY_MAX_STATE_BYTES`
+
+Set `LANGGRAPH_THREAD_HISTORY_MAX_STATE_BYTES` to cap the size, in bytes, of one [thread history](/langsmith/agent-server-api/threads/get-thread-history) response. Every history entry includes the full thread state, so a request for many entries of a large thread can use a large amount of server memory.
+
+When set, the server stops before the entry that would take the response over the cap, so a response can hold fewer than `limit` states. The newest state is always returned, even when it alone exceeds the cap. Clients read older states by paging with `before`.
+
+The cap counts the JSON size of the response. The server also stops loading checkpoints once the response is full, so the cap limits the memory a history request uses. The server fails to start if the value is negative. Added in `langgraph-api==0.18.0`.
+
+Defaults to `0`, which disables the cap.
+
 ## `LS_CHECKPOINT_DELETE`
 
 JSON-valued configuration for deferred checkpoint deletion. When enabled, thread delete and prune operations enqueue checkpoints for background deletion instead of deleting synchronously, moving the I/O off the request hot path. Available in `langgraph-api>=0.8.1`.

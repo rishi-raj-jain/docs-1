@@ -13,10 +13,15 @@ import AsyncSubagentsDescriptionsBadPy from '/snippets/javascript/code-samples/a
 import AsyncSubagentsDescriptionsJs from '/snippets/javascript/code-samples/async-subagents-descriptions-js.mdx';
 import AsyncSubagentsTroubleshootingPollingPy from '/snippets/javascript/code-samples/async-subagents-troubleshooting-polling-py.mdx';
 import AsyncSubagentsTroubleshootingPollingJs from '/snippets/javascript/code-samples/async-subagents-troubleshooting-polling-js.mdx';
+import AsyncSubagentsNotificationsPy from '/snippets/javascript/code-samples/async-subagents-notifications-py.mdx';
+import AsyncSubagentsAnswerWaitingPy from '/snippets/javascript/code-samples/async-subagents-answer-waiting-py.mdx';
+import AsyncSubagentsParentThreadPy from '/snippets/javascript/code-samples/async-subagents-parent-thread-py.mdx';
 
 Async subagents let a supervisor agent launch background tasks that return immediately, so the supervisor can continue interacting with the user while subagents work concurrently. The supervisor can check progress, send follow-up instructions, or cancel tasks at any point.
 
 This builds on [subagents](/oss/javascript/deepagents/subagents), which run synchronously and block the supervisor until completion. Use async subagents when tasks are long-running, parallelizable, or need mid-flight steering.
+
+
 
 ```mermaid
 graph TB
@@ -118,6 +123,10 @@ sequenceDiagram
 - **Update** creates a new run on the same thread with an interrupt multitask strategy. The previous run is interrupted, and the subagent restarts with the full conversation history plus the new instructions. The task ID stays the same.
 - **Cancel** calls `runs.cancel()` on the server and marks the task as `"cancelled"`.
 - **List** iterates over all tracked tasks. For non-terminal tasks, it fetches live status from the server in parallel. Terminal statuses (`success`, `error`, `cancelled`) are returned from cache.
+
+
+
+
 
 ## Understand state management
 

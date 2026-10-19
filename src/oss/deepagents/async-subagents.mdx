@@ -131,12 +131,36 @@ sequenceDiagram
 - **Cancel** calls `runs.cancel()` on the server and marks the task as `"cancelled"`.
 - **List** iterates over all tracked tasks. For non-terminal tasks, it fetches live status from the server in parallel. Terminal statuses (`success`, `error`, `cancelled`) are returned from cache.
 
+:::python
+<Note>
+Human-input reporting is in beta and requires `deepagents>=0.7.26`.
+</Note>
+
+If a subagent pauses for approval or input, `check_async_task` and `list_async_tasks` report `waiting`, not `success`. Checking the task also returns its pending interrupts. The user answers on the subagent's own thread; the supervisor keeps working and cannot answer or approve for them. Updating a waiting task drops its pending request rather than answering it.
+
+### Receive automatic status updates
+
+<Note>
+Automatic status updates are in beta and require `deepagents>=0.7.27` and async invocation (`ainvoke`, as used by Agent Server). Synchronous `invoke` supports the tools but not automatic updates.
+</Note>
+
+The middleware checks unfinished tasks at run start, before each model call, and after the final answer. It notifies the supervisor when a task succeeds, fails, times out, or waits for input. A new update after the final answer gives the supervisor another turn.
+
+A co-deployed subagent created with `create_deep_agent` can wake an idle supervisor when it finishes or a model call fails. Remote subagents with `url`, other graph types, and paused subagents do not wake it; their updates arrive when the supervisor next runs. Wake-ups do not interrupt a busy supervisor or replace a pending human approval.
+:::
+
 ## Understand state management
 
 :::python
 Task metadata is stored in a dedicated state channel (`async_tasks`) on the supervisor's graph, separate from the message history. This is critical because deep agents [compact their message history](/oss/deepagents/context-engineering#summarization) when the context window fills up. If task IDs were only in tool messages, they would be lost during compaction. The dedicated channel ensures the supervisor can always recall its tasks through `list_async_tasks`, even after multiple rounds of summarization.
 
 Each tracked task records the task ID, agent name, thread ID, run ID, status, and timestamps (`created_at`, `last_checked_at`, `last_updated_at`).
+
+<Note>
+Thread metadata is in beta: `parent_thread_id` requires `deepagents>=0.7.26`, and `subagent_name` requires `deepagents>=0.7.27`.
+</Note>
+
+Subagent threads carry `parent_thread_id` and the configured `subagent_name`. Apps can find a parent's subagent threads by filtering `threads.search` on `parent_thread_id`. A subagent's graph factory can read these fields from `config["metadata"]`.
 :::
 
 :::js
@@ -186,6 +210,14 @@ The `mode` field on each @[`AsyncSubAgent`] spec controls what conversation cont
 | `"fork"` | Sends a snapshot of the parent's conversation at launch, followed by the task description. The subagent can use that context while working in the background. |
 
 `"isolated"` is the right choice for most tasks. Use `"fork"` when the subagent needs established context — for example, a background drafting agent that should write in the style and voice already set up in the conversation.
+
+:::python
+<Note>
+Runtime-context forwarding is in beta and requires `deepagents>=0.7.27`.
+</Note>
+
+Co-deployed subagents (no `url`) receive the parent's runtime context on launches and updates, independently of conversation mode. This does not share graph state or automatically provision shared resources such as a sandbox. Remote subagents do not receive runtime context automatically.
+:::
 
 ### Fork mode
 
@@ -265,7 +297,17 @@ The supervisor uses descriptions to decide which subagent to launch. Be specific
 
 ### Trace with thread IDs
 
+:::python
+<Note>
+Parent trace-header propagation is in beta and requires `deepagents>=0.7.26`.
+</Note>
+
+With tracing enabled, launches and updates of co-deployed subagents (no `url`) forward the parent's LangSmith trace headers. The receiving application must adopt those headers to nest runs under the parent's trace. Remote subagents do not receive them automatically. Use the thread ID (task ID) to correlate runs when traces remain separate.
+:::
+
+:::js
 When using LangGraph-based deployments, every async subagent run is a standard LangGraph run, fully visible in LangSmith. The supervisor's trace shows tool calls for `launch`, `check`, `update`, `cancel`, and `list`. Each subagent run appears as a separate trace, linked by thread ID. Use the thread ID (task ID) to correlate supervisor orchestration traces with subagent execution traces.
+:::
 
 ## Troubleshooting
 

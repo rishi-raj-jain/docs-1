@@ -10,6 +10,253 @@ rss: true
 
 [Self-hosted LangSmith](/langsmith/self-hosted) is an add-on to the Enterprise plan designed for our largest, most security-conscious customers. For more details, refer to [Pricing](https://www.langchain.com/pricing). [Contact our sales team](https://www.langchain.com/contact-sales) if you want a license key to trial LangSmith in your environment.
 
+<Update label="2026-10-20" tags={["Stable"]} rss={{ title: "2026-10-20 - self-hosted" }}>
+## langsmith-0.17.20
+
+**LangSmith version:** `0.17.47`
+
+- Fleet records lowercase user emails for new UI and API runs so email casing does not split usage into separate user rows.
+- Webhook bodies can include selected default alert fields or omit all default fields for receivers such as Google Chat that require a specific payload.
+
+**Download the Helm chart:** [`langsmith-0.17.20.tgz`](https://github.com/langchain-ai/helm/releases/download/langsmith-0.17.20/langsmith-0.17.20.tgz)
+{/* langsmith-release-image: 0.17.20 0.17.47 */}
+</Update>
+
+<Update label="2026-10-20" tags={["Stable"]} rss={{ title: "2026-10-20 - self-hosted" }}>
+## langsmith-0.17.19
+
+**LangSmith version:** `0.17.46`
+
+- Queue workers run `GO_INGESTION_CONCURRENCY_PER_CPU` tasks per CPU of the pod's CPU limit rather than the node, keeping task counts consistent across node sizes (2 tasks per ingest-queue pod with the default chart). To run more tasks, set `GO_INGESTION_CONCURRENCY_PER_CPU` in `ingestQueue.deployment.extraEnv`.
+- API requests return HTTP 429 instead of HTTP 503 when the query service reports exhausted resources, allowing clients to handle throttling correctly.
+- Bedrock model configurations support automatic routing or explicit selection of the Bedrock Runtime or Bedrock Mantle endpoint. This supports models available through both endpoints when AWS permissions allow access to only one.
+
+**Download the Helm chart:** [`langsmith-0.17.19.tgz`](https://github.com/langchain-ai/helm/releases/download/langsmith-0.17.19/langsmith-0.17.19.tgz)
+{/* langsmith-release-image: 0.17.19 0.17.46 */}
+</Update>
+
+<Update label="2026-10-20" tags={["Stable"]} rss={{ title: "2026-10-20 - self-hosted" }}>
+## langsmith-0.16.44
+
+**LangSmith version:** `0.16.72`
+
+- You can choose which default alert fields to include in webhook bodies or remove all default fields for receivers such as Google Chat that require a specific payload.
+
+**Download the Helm chart:** [`langsmith-0.16.44.tgz`](https://github.com/langchain-ai/helm/releases/download/langsmith-0.16.44/langsmith-0.16.44.tgz)
+{/* langsmith-release-image: 0.16.44 0.16.72 */}
+</Update>
+
+<Update label="2026-10-19" tags={["Preview"]} rss={{ title: "2026-10-19 - self-hosted" }}>
+## langsmith-0.18.0-rc.38
+
+**LangSmith version:** `0.18.14rc1`
+
+- This release packages the same LangSmith application version as langsmith-0.18.0-rc.37. Refer to the [langsmith-0.18.0-rc.37](#langsmith-0-18-0-rc-37) release notes below.
+
+**Download the Helm chart:** [`langsmith-0.18.0-rc.38.tgz`](https://github.com/langchain-ai/helm/releases/download/langsmith-0.18.0-rc.38/langsmith-0.18.0-rc.38.tgz)
+{/* langsmith-release-image: 0.18.0-rc.38 0.18.14-7d7f34b3e4157d414ef112dc29c42e237e8b7faf */}
+</Update>
+
+<Update label="2026-10-19" tags={["Preview"]} rss={{ title: "2026-10-19 - self-hosted" }}>
+## langsmith-0.18.0-rc.37
+
+**LangSmith version:** `0.18.14rc1`
+
+- Organization-owned API keys can submit traces and create tracing projects in selected workspaces without granting access to stored traces or administrative operations. Tracing keys use service-key expiration limits and can be deleted by authorized key managers.
+- Organization settings let you create and manage tracing-only API keys scoped to one or more workspaces, with fixed permissions and the same expiration policy as service keys. A dedicated Tracing tab supports searching, deleting, and exporting these keys.
+- The trace input view displays OpenAI Responses and Chat Completions requests as message cards instead of a raw data tree when SDK calls include request options, such as an abort signal. The JSON view preserves the complete original input, including request options and metadata.
+- Organization-scoped Playground model configurations are accessible without the `X-Tenant-Id` workspace header. Reads require `organization:read`, and changes require `organization:manage-model-configs`.
+- Insights reports generated from saved configurations through the job queue include trace feedback.
+- Thread event streams return HTTP 403 or 404 for access failures and 422 for malformed thread IDs before streaming starts, instead of returning 200 followed by a generic error that can trigger endless reconnects. WebSocket streams report these failures with close codes 4403, 4404, and 4422.
+- The protocol v2 API immediately applies the multitask strategy (queuing by default) to `run.start` input during active runs instead of waiting up to five seconds, and preserves messages during answered-interrupt processing and after cancellation. HTTP clients answering an interrupt during an active run should use `input.respond`.
+- Granting an organization-wide team access to a workspace automatically creates an empty workspace team, and revoking access deletes it. Workspace teams cannot be created, edited, or deleted directly through the teams API, but workspace admins can add members and access policies after the grant.
+- The composite score picker includes all feedback keys with numeric scores, including keys with categorical feedback configurations or no configuration. This makes keys from sources such as annotation queue rubrics and feedback links available in the picker.
+- The Playground rejects unsupported `seed` and `input_schema` settings for OpenAI and Azure OpenAI Responses API models with a 422 error that identifies the fields without exposing their values. Playground requests time out after at most 290 seconds with an actionable 504 error, while honoring shorter caller timeouts and cancellation.
+- The Playground hides unsupported seed settings when using the OpenAI Responses API and keeps reasoning settings consistent with the selected API mode.
+- The model pricing API supports case-insensitive filtering by one or more providers and sorting by start date. The `GET /model-price-map/providers` endpoint lists providers with counts for use in filters.
+- Opening a queued run that belongs to a thread shows the full conversation on the Trajectory tab instead of a single-run view. Runs without a thread continue to open in the single-run view.
+- Filter queries hide errors for trailing AND or OR operators while you type after the operator. The error returns when you leave the filter bar or move the cursor before the operator.
+- Studio no longer shows a misleading tracing upgrade warning when connected to a JavaScript Agent Server.
+- Feedback filter suggestions distinguish numeric scores from text values and category labels. Select a typed feedback field to build trace and thread filters.
+- Evaluator rule errors store only the exception message rather than the full response payload, preventing oversized error records from causing database errors.
+- Long runs display their full Input and Output in the annotation queue’s View item → Details pane. Attributes appear below them rather than overlapping the content.
+- Settings → Model pricing shows model types, input types, and consolidated pricing in a data grid. Click a row to view matching rules and the full price breakdown, or to edit, clone, or delete the pricing entry.
+- Settings → Model pricing supports filtering prices by provider and sorting by start date. Filter and sort selections are preserved in the URL.
+- The `GET /v1/fleet/usage/users` and `GET /v1/fleet/usage/agents` endpoints provide the Fleet usage UI’s user and agent cost reports. Each report supports a time window, sorting, and cursor pagination with up to 100 results per page.
+- Clicking the agent breadcrumb opens the agent overview. A separate arrow button opens the agent switcher.
+- Automation rule batches that exceed PostgreSQL size limits or model context limits fail permanently instead of being retried.
+- The side navigation clears the selected agent context when you navigate to a page spanning all agents, such as the list of all annotation queues. This keeps the navigation consistent with the breadcrumbs.
+- Engine separates organization configuration access from spend and pause controls using dedicated permissions. Existing Organization Admin and Operator access is preserved.
+- Slow GitHub installation lookups no longer delay unrelated requests handled by the same worker.
+- Prompt tag creation and update webhooks populate creator attribution using identity-provider display names and available stored names. Email fallback remains limited to private prompts in non-anonymous organizations.
+- Trace ingestion with tracing-only API keys no longer fails with HTTP 403 during quota checks for workspaces the key is authorized to access.
+- The `POST /feedback-configs/by-session/query` endpoint returns the feedback configuration IDs used by scores for each experiment and feedback key. It also indicates whether any scores lack a configuration ID.
+- Annotation queue and manual feedback forms follow each feedback key’s enforced configuration and flag out-of-range scores before submission.
+- Issue-validation replay accepts equivalent user-message formats and added memory-file context without rejecting valid histories. Replay also avoids unnecessary history scans in long-lived threads and retries transient history-read failures, reducing timeouts and failed validations.
+- Individual trace views use the same trajectory processing as thread views to display messages, tool results, and subagent previews.
+- Managed evaluation consent and organization evaluator spending controls check dedicated permissions. Existing Organization Admin and Operator access is preserved.
+- Workspace deletion, tool-cache expiration, and cache updates work on PostgreSQL databases configured to publish all tables for logical replication.
+- TypeSafe gateway configurations support selecting `jev-1.14.0`, and gateway Model Access suggestions include it. `jev-latest` remains the default.
+- Dashboard ratio KPI charts support a “Display as percentage” option that shows values such as 0.16 as 16%. Decimal display remains the default, and the display choice is saved with the chart.
+- Opening a deleted, missing, or inaccessible prompt shows a not-found page with a link back to the list instead of loading indefinitely. Other failures to load a prompt display an error message.
+- Polly caches system prompts when using Claude through Vertex AI model configurations, reducing input-token costs on repeated model calls.
+- Code evaluators enforce distinct trace, thread, and trajectory attachment scopes, preventing thread evaluators from being attached to trajectories and vice versa.
+- Issue recurrence and metric charts mark when fix pull requests merge, making it easier to see whether recurrences stop after a fix. Markers also appear for previously merged fixes when their merge times fall within the charted range.
+- The Engine and Set up breadcrumbs preserve the selected agent, including the All agents selection, when you navigate.
+- Annotation queues no longer display the previous item’s Reference Outputs when switching items in single-run or pairwise views. Add to Dataset also no longer prefills another run’s reference outputs for runs without a reference example.
+- EKS deployments support IPv4-only pod identity and KMS access for encrypted AMI snapshots, enabling node provisioning with hardened custom AMIs. Changing additional node subnet CIDRs replaces database access rules without failing.
+- Code evaluator rules no longer fail with “Evaluator prompt missing or deleted” or lose feedback when their code is not initially loaded. If the evaluator code is missing, scheduled rules report the error while still running other actions, such as webhooks and dataset updates.
+
+**Download the Helm chart:** [`langsmith-0.18.0-rc.37.tgz`](https://github.com/langchain-ai/helm/releases/download/langsmith-0.18.0-rc.37/langsmith-0.18.0-rc.37.tgz)
+{/* langsmith-release-image: 0.18.0-rc.37 0.18.14-7d7f34b3e4157d414ef112dc29c42e237e8b7faf */}
+</Update>
+
+<Update label="2026-10-19" tags={["Stable"]} rss={{ title: "2026-10-19 - self-hosted" }}>
+## langsmith-0.17.18
+
+**LangSmith version:** `0.17.45`
+
+- Internal improvements and maintenance updates
+
+**Download the Helm chart:** [`langsmith-0.17.18.tgz`](https://github.com/langchain-ai/helm/releases/download/langsmith-0.17.18/langsmith-0.17.18.tgz)
+{/* langsmith-release-image: 0.17.18 0.17.45 */}
+</Update>
+
+<Update label="2026-10-16" tags={["Preview"]} rss={{ title: "2026-10-16 - self-hosted" }}>
+## langsmith-0.18.0-rc.36
+
+**LangSmith version:** `0.18.13rc1`
+
+- This release packages the same LangSmith application version as langsmith-0.18.0-rc.32. Refer to the [langsmith-0.18.0-rc.32](#langsmith-0-18-0-rc-32) release notes below.
+
+**Download the Helm chart:** [`langsmith-0.18.0-rc.36.tgz`](https://github.com/langchain-ai/helm/releases/download/langsmith-0.18.0-rc.36/langsmith-0.18.0-rc.36.tgz)
+{/* langsmith-release-image: 0.18.0-rc.36 0.18.13-3e844eafc1ec0da535a682dcd1163bb775d3da34 */}
+</Update>
+
+<Update label="2026-10-16" tags={["Preview"]} rss={{ title: "2026-10-16 - self-hosted" }}>
+## langsmith-0.18.0-rc.35
+
+**LangSmith version:** `0.18.13rc1`
+
+- This release packages the same LangSmith application version as langsmith-0.18.0-rc.32. Refer to the [langsmith-0.18.0-rc.32](#langsmith-0-18-0-rc-32) release notes below.
+
+**Download the Helm chart:** [`langsmith-0.18.0-rc.35.tgz`](https://github.com/langchain-ai/helm/releases/download/langsmith-0.18.0-rc.35/langsmith-0.18.0-rc.35.tgz)
+{/* langsmith-release-image: 0.18.0-rc.35 0.18.13-3e844eafc1ec0da535a682dcd1163bb775d3da34 */}
+</Update>
+
+<Update label="2026-10-16" tags={["Preview"]} rss={{ title: "2026-10-16 - self-hosted" }}>
+## langsmith-0.18.0-rc.34
+
+**LangSmith version:** `0.18.13rc1`
+
+- This release packages the same LangSmith application version as langsmith-0.18.0-rc.32. Refer to the [langsmith-0.18.0-rc.32](#langsmith-0-18-0-rc-32) release notes below.
+
+**Download the Helm chart:** [`langsmith-0.18.0-rc.34.tgz`](https://github.com/langchain-ai/helm/releases/download/langsmith-0.18.0-rc.34/langsmith-0.18.0-rc.34.tgz)
+{/* langsmith-release-image: 0.18.0-rc.34 0.18.13-3e844eafc1ec0da535a682dcd1163bb775d3da34 */}
+</Update>
+
+<Update label="2026-10-16" tags={["Preview"]} rss={{ title: "2026-10-16 - self-hosted" }}>
+## langsmith-0.18.0-rc.33
+
+**LangSmith version:** `0.18.13rc1`
+
+- This release packages the same LangSmith application version as langsmith-0.18.0-rc.32. Refer to the [langsmith-0.18.0-rc.32](#langsmith-0-18-0-rc-32) release notes below.
+
+**Download the Helm chart:** [`langsmith-0.18.0-rc.33.tgz`](https://github.com/langchain-ai/helm/releases/download/langsmith-0.18.0-rc.33/langsmith-0.18.0-rc.33.tgz)
+{/* langsmith-release-image: 0.18.0-rc.33 0.18.13-3e844eafc1ec0da535a682dcd1163bb775d3da34 */}
+</Update>
+
+<Update label="2026-10-16" tags={["Stable"]} rss={{ title: "2026-10-16 - self-hosted" }}>
+## langsmith-0.17.17
+
+**LangSmith version:** `0.17.44`
+
+- Fleet usage reports return `agent_id` instead of `assistant_id` and `user_email` instead of `owner_email`, while agent reports no longer include `owner_email`. Reported costs are estimates in USD.
+
+**Download the Helm chart:** [`langsmith-0.17.17.tgz`](https://github.com/langchain-ai/helm/releases/download/langsmith-0.17.17/langsmith-0.17.17.tgz)
+{/* langsmith-release-image: 0.17.17 0.17.44 */}
+</Update>
+
+<Update label="2026-10-16" tags={["Stable"]} rss={{ title: "2026-10-16 - self-hosted" }}>
+## langsmith-0.17.16
+
+**LangSmith version:** `0.17.43`
+
+- Retrieve user and agent cost reports from the Fleet usage UI through `GET /v1/fleet/usage/users` and `GET /v1/fleet/usage/agents`. Each report supports a time window, sorting, and cursor pagination with up to 100 results per page.
+
+**Download the Helm chart:** [`langsmith-0.17.16.tgz`](https://github.com/langchain-ai/helm/releases/download/langsmith-0.17.16/langsmith-0.17.16.tgz)
+{/* langsmith-release-image: 0.17.16 0.17.43 */}
+</Update>
+
+<Update label="2026-10-16" tags={["Preview"]} rss={{ title: "2026-10-16 - self-hosted" }}>
+## langsmith-0.18.0-rc.32
+
+**LangSmith version:** `0.18.13rc1`
+
+- Queue worker concurrency scales with the pod’s CPU limit rather than the node’s CPU count, with 2 concurrent tasks per ingestion queue pod in the default Helm chart (`GOMAXPROCS` overrides the detected CPU count). To increase concurrency, set `GO_INGESTION_CONCURRENCY_PER_CPU` in `ingestQueue.deployment.extraEnv`.
+- You can add custom providers that use the Anthropic Messages API by specifying a full endpoint URL and a workspace API key. The gateway uses the configured URL without appending a path and does not forward Anthropic subscription credentials.
+- Tracing quickstart examples use updated OpenAI, Anthropic, and Google models, and the evaluation quickstart uses an updated OpenAI target model. The LangGraph example omits the temperature parameter to avoid errors with its new model.
+- Tracing quickstart snippets for Microsoft Agent Framework and LiveKit correctly quote OpenTelemetry headers and encode project names, including spaces and special characters. This prevents copied configurations from blocking trace export or sending traces to the default project instead of the selected project.
+- Role permission previews in the API key creation dialog stay within the dialog’s bounds, preventing content from being clipped on smaller screens.
+- When attaching an evaluator from a dataset, you can choose from all evaluators in the workspace. Adding a dataset to an evaluator also associates the dataset with the agent.
+- When adding a dataset to an agent, you can choose from all datasets in the workspace. The selected dataset is then tagged to the agent.
+- You can save ScaleDown Chat Completions and Decisions endpoints as model configurations served through the LLM Gateway.
+- Multi-turn validation replays restore cumulative conversation history when checkpoints lack write metadata, rather than evaluating only the current input. Replay execution is blocked if the restored thread does not match the expected state.
+- API keys the platform creates for new deployments use the Deployment Runtime role—Workspace Editor permissions plus LLM Gateway access, sandbox exec, and Agent Auth credential use—instead of Workspace Admin. Existing deployment keys remain unchanged.
+- Deployment logs remain available when application log timestamps are missing, invalid, or lack a timezone, using Kubernetes timestamps as a fallback. Valid application timestamps are preserved, and logs from multiple pods remain in order.
+- Run-rule webhooks honor `WEBHOOK_REQUEST_TIMEOUT_SEC` (10 seconds by default) instead of timing out after 5 seconds. Requests that time out continue to be retried.
+- LangSmith recognizes the current GenAI semantic convention attributes for cache reads, cache writes, and reasoning tokens, and applies the model’s cache prices instead of charging those tokens at the ordinary input rate. Older attribute names remain supported.
+- You can configure retention in tracing settings. The agent experience no longer includes name and description fields.
+- Typesafe model requests pass through client-supplied `typesafe-*` headers regardless of capitalization, enabling header-controlled options such as long-context support.
+
+**Download the Helm chart:** [`langsmith-0.18.0-rc.32.tgz`](https://github.com/langchain-ai/helm/releases/download/langsmith-0.18.0-rc.32/langsmith-0.18.0-rc.32.tgz)
+{/* langsmith-release-image: 0.18.0-rc.32 0.18.13-3e844eafc1ec0da535a682dcd1163bb775d3da34 */}
+</Update>
+
+<Update label="2026-10-15" tags={["Preview"]} rss={{ title: "2026-10-15 - self-hosted" }}>
+## langsmith-0.18.0-rc.31
+
+**LangSmith version:** `0.18.11rc1`
+
+- Internal improvements and maintenance updates
+
+**Download the Helm chart:** [`langsmith-0.18.0-rc.31.tgz`](https://github.com/langchain-ai/helm/releases/download/langsmith-0.18.0-rc.31/langsmith-0.18.0-rc.31.tgz)
+{/* langsmith-release-image: 0.18.0-rc.31 0.18.11rc1 */}
+</Update>
+
+<Update label="2026-10-15" tags={["Stable"]} rss={{ title: "2026-10-15 - self-hosted" }}>
+## langsmith-0.17.15
+
+**LangSmith version:** `0.17.42`
+
+- Internal improvements and maintenance updates
+
+**Download the Helm chart:** [`langsmith-0.17.15.tgz`](https://github.com/langchain-ai/helm/releases/download/langsmith-0.17.15/langsmith-0.17.15.tgz)
+{/* langsmith-release-image: 0.17.15 0.17.42 */}
+</Update>
+
+<Update label="2026-10-15" tags={["Stable"]} rss={{ title: "2026-10-15 - self-hosted" }}>
+## langsmith-0.17.14
+
+**LangSmith version:** `0.17.41`
+
+- Internal improvements and maintenance updates
+
+**Download the Helm chart:** [`langsmith-0.17.14.tgz`](https://github.com/langchain-ai/helm/releases/download/langsmith-0.17.14/langsmith-0.17.14.tgz)
+{/* langsmith-release-image: 0.17.14 0.17.41 */}
+</Update>
+
+<Update label="2026-10-15" tags={["Stable"]} rss={{ title: "2026-10-15 - self-hosted" }}>
+## langsmith-0.16.43
+
+**LangSmith version:** `0.16.71`
+
+- This release packages the same LangSmith application version as langsmith-0.16.42. Refer to the [langsmith-0.16.42](#langsmith-0-16-42) release notes below.
+
+**Download the Helm chart:** [`langsmith-0.16.43.tgz`](https://github.com/langchain-ai/helm/releases/download/langsmith-0.16.43/langsmith-0.16.43.tgz)
+{/* langsmith-release-image: 0.16.43 0.16.71 */}
+</Update>
+
 <Update label="2026-10-15" tags={["Preview"]} rss={{ title: "2026-10-15 - self-hosted" }}>
 ## langsmith-0.18.0-rc.30
 

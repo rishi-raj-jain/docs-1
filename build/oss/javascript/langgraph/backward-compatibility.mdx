@@ -36,7 +36,7 @@ Edge topology itself is *not* persisted in the checkpoint. Adding, removing, or 
 - Mark new state fields as optional (`z.string().optional()` or `.nullish()`) so old checkpoints still validate.
 - Treat removals as deprecations: keep the field on the schema for at least one drain cycle so existing checkpoints continue to load.
 - Rename via add-then-remove: add the new field or node alongside the old one, dual-write or route to both for a deprecation window, then remove the old one once no in-flight thread depends on it.
-- Use [time travel](/oss/javascript/langgraph/use-time-travel) and [`graph.getState`](https://reference.langchain.com/javascript/classes/_langchain_langgraph.pregel.Pregel.html#getState) to spot-check existing threads against the new code in a staging deployment before rolling out.
+- Use [time travel](/oss/javascript/langgraph/use-time-travel) and [`graph.getState`](https://reference.langchain.com/javascript/langchain-langgraph/pregel/Pregel/getState) to spot-check existing threads against the new code in a staging deployment before rolling out.
 
 
 
@@ -52,8 +52,8 @@ Before you remove a node, rename a State key, or otherwise make a change that ol
 
 
 
-- [`graph.getState(config)`](https://reference.langchain.com/javascript/classes/_langchain_langgraph.pregel.Pregel.html#getState) returns the latest checkpoint, including which node the thread is paused at and any pending interrupts.
-- [`graph.getStateHistory(config)`](https://reference.langchain.com/javascript/classes/_langchain_langgraph.pregel.Pregel.html#getStateHistory) returns the full chronological list of checkpoints for the thread.
+- [`graph.getState(config)`](https://reference.langchain.com/javascript/langchain-langgraph/pregel/Pregel/getState) returns the latest checkpoint, including which node the thread is paused at and any pending interrupts.
+- [`graph.getStateHistory(config)`](https://reference.langchain.com/javascript/langchain-langgraph/pregel/Pregel/getStateHistory) returns the full chronological list of checkpoints for the thread.
 
 
 

@@ -54,7 +54,7 @@ A retry policy automatically re-runs a failed node attempt based on exception ty
 
 
 
-Pass `retryPolicy` to [`addNode`](https://reference.langchain.com/javascript/classes/_langchain_langgraph.index.StateGraph.html#addNode):
+Pass `retryPolicy` to [`addNode`](https://reference.langchain.com/javascript/langchain-langgraph/index/StateGraph/addNode):
 
 ```typescript
 import { StateGraph } from "@langchain/langgraph";
@@ -176,7 +176,7 @@ const graph = new StateGraph(State)
 Requires `@langchain/langgraph>=1.4.0`.
 </Note>
 
-The `timeout` parameter on [`addNode`](https://reference.langchain.com/javascript/classes/_langchain_langgraph.index.StateGraph.html#addNode) caps how long a single node attempt may run. Pass a number (milliseconds) or a [`TimeoutPolicy`](https://reference.langchain.com/javascript/langchain-langgraph/index/TimeoutPolicy) for separate run and idle limits:
+The `timeout` parameter on [`addNode`](https://reference.langchain.com/javascript/langchain-langgraph/index/StateGraph/addNode) caps how long a single node attempt may run. Pass a number (milliseconds) or a [`TimeoutPolicy`](https://reference.langchain.com/javascript/langchain-langgraph/index/TimeoutPolicy) for separate run and idle limits:
 
 ```typescript
 import { StateGraph, type TimeoutPolicy } from "@langchain/langgraph";
@@ -349,7 +349,7 @@ const fanOut = (state: typeof State.State) =>
 
 
 
-If the timeout is omitted on the `Send`, the target node's timeout (set at [`addNode`](https://reference.langchain.com/javascript/classes/_langchain_langgraph.index.StateGraph.html#addNode) time) applies. This lets you set a default timeout on the node and tighten it for individual calls.
+If the timeout is omitted on the `Send`, the target node's timeout (set at [`addNode`](https://reference.langchain.com/javascript/langchain-langgraph/index/StateGraph/addNode) time) applies. This lets you set a default timeout on the node and tighten it for individual calls.
 
 
 ## Error handling
@@ -365,7 +365,7 @@ An error handler runs after a node fails and all retries are exhausted. It recei
 
 
 
-Pass `errorHandler` to [`addNode`](https://reference.langchain.com/javascript/classes/_langchain_langgraph.index.StateGraph.html#addNode) on [`StateGraph`](https://reference.langchain.com/javascript/langchain-langgraph/index/StateGraph) only (not the base `Graph` class):
+Pass `errorHandler` to [`addNode`](https://reference.langchain.com/javascript/langchain-langgraph/index/StateGraph/addNode) on [`StateGraph`](https://reference.langchain.com/javascript/langchain-langgraph/index/StateGraph) only (not the base `Graph` class):
 
 ```typescript
 import {

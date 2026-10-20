@@ -27,7 +27,7 @@ Replay re-executes nodes—it doesn't just read from cache. LLM calls, API reque
 
 
 
-Use [`getStateHistory`](https://reference.langchain.com/javascript/classes/_langchain_langgraph.pregel.Pregel.html#getStateHistory) to find the checkpoint you want to replay from, then call [`invoke`](https://reference.langchain.com/javascript/classes/_langchain_langgraph.index.CompiledStateGraph.html#invoke) with that checkpoint's config:
+Use [`getStateHistory`](https://reference.langchain.com/javascript/langchain-langgraph/pregel/Pregel/getStateHistory) to find the checkpoint you want to replay from, then call [`invoke`](https://reference.langchain.com/javascript/langchain-langgraph/index/CompiledStateGraph/invoke) with that checkpoint's config:
 
 ```typescript
 import { v7 as uuid7 } from "uuid";
@@ -73,7 +73,7 @@ const replayResult = await graph.invoke(null, beforeJoke.config);
 
 ## Fork
 
-Fork creates a new branch from a past checkpoint with modified state. Call [`update_state`](https://reference.langchain.com/javascript/classes/_langchain_langgraph.pregel.Pregel.html#updateState) on a prior checkpoint to create the fork, then [`invoke`](https://reference.langchain.com/javascript/classes/_langchain_langgraph.index.CompiledStateGraph.html#invoke) with `None` to continue execution.
+Fork creates a new branch from a past checkpoint with modified state. Call [`update_state`](https://reference.langchain.com/javascript/langchain-langgraph/pregel/Pregel/updateState) on a prior checkpoint to create the fork, then [`invoke`](https://reference.langchain.com/javascript/langchain-langgraph/index/CompiledStateGraph/invoke) with `None` to continue execution.
 
 ![Fork](/oss/images/checkpoints_full_story.jpg)
 
@@ -107,7 +107,7 @@ console.log(forkResult.joke); // A joke about chickens, not socks
 
 ### From a specific node
 
-When you call [`update_state`](https://reference.langchain.com/javascript/classes/_langchain_langgraph.pregel.Pregel.html#updateState), values are applied using the specified node's writers (including [reducers](/oss/javascript/langgraph/graph-api#reducers)). The checkpoint records that node as having produced the update, and execution resumes from that node's successors.
+When you call [`update_state`](https://reference.langchain.com/javascript/langchain-langgraph/pregel/Pregel/updateState), values are applied using the specified node's writers (including [reducers](/oss/javascript/langgraph/graph-api#reducers)). The checkpoint records that node as having produced the update, and execution resumes from that node's successors.
 
 By default, LangGraph infers `as_node` from the checkpoint's version history. When forking from a specific checkpoint, this inference is almost always correct.
 
@@ -250,7 +250,7 @@ const result = await graph.invoke(null, forkConfig);
 
 Set `checkpointer=True` on the subgraph to give it its own checkpoint history. This creates checkpoints at each step **within** the subgraph, allowing you to time travel from a specific point inside it — for example, between two interrupts.
 
-Use [`get_state`](https://reference.langchain.com/javascript/classes/_langchain_langgraph.pregel.Pregel.html#getState) with `subgraphs=True` to access the subgraph's own checkpoint config, then fork from it:
+Use [`get_state`](https://reference.langchain.com/javascript/langchain-langgraph/pregel/Pregel/getState) with `subgraphs=True` to access the subgraph's own checkpoint config, then fork from it:
 
 
 

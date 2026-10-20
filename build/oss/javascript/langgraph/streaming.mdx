@@ -17,7 +17,7 @@ This page covers LangGraph's stream-mode API. It exposes graph execution through
 
 
 
-LangGraph graphs expose the [`stream`](https://reference.langchain.com/javascript/classes/_langchain_langgraph.pregel.Pregel.html#stream) method to yield streamed outputs as iterators.
+LangGraph graphs expose the [`stream`](https://reference.langchain.com/javascript/langchain-langgraph/pregel/Pregel/stream) method to yield streamed outputs as iterators.
 
 ```typescript
 for await (const chunk of await graph.stream(inputs, {
@@ -38,7 +38,7 @@ Debug streaming events, inspect token-by-token LLM output, and monitor latency w
 
 
 
-Pass one or more of the following stream modes as a list to the [`stream`](https://reference.langchain.com/javascript/classes/_langchain_langgraph.index.CompiledStateGraph.html#stream) method:
+Pass one or more of the following stream modes as a list to the [`stream`](https://reference.langchain.com/javascript/langchain-langgraph/index/CompiledStateGraph/stream) method:
 
 | Mode | Description |
 | :--- | :---------- |

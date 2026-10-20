@@ -660,7 +660,7 @@ For each node, choose one routing mechanism: use normal edges for static routing
 
 
 
-If you **always** want to go from node A to node B, you can use the [`addEdge`](https://reference.langchain.com/javascript/classes/_langchain_langgraph.index.StateGraph.html#addEdge) method directly.
+If you **always** want to go from node A to node B, you can use the [`addEdge`](https://reference.langchain.com/javascript/langchain-langgraph/index/StateGraph/addEdge) method directly.
 
 ```typescript
 graph.addEdge("nodeA", "nodeB");
@@ -672,7 +672,7 @@ graph.addEdge("nodeA", "nodeB");
 
 
 
-If you want to **optionally** route to one or more edges (or optionally terminate), you can use the [`addConditionalEdges`](https://reference.langchain.com/javascript/classes/_langchain_langgraph.index.StateGraph.html#addConditionalEdges) method. This method accepts the name of a node and a "routing function" to call after that node is executed:
+If you want to **optionally** route to one or more edges (or optionally terminate), you can use the [`addConditionalEdges`](https://reference.langchain.com/javascript/langchain-langgraph/index/StateGraph/addConditionalEdges) method. This method accepts the name of a node and a "routing function" to call after that node is executed:
 
 ```typescript
 graph.addConditionalEdges("nodeA", routingFunction);
@@ -703,7 +703,7 @@ Use [`Command`](#command) instead of conditional edges if you want to combine st
 
 
 
-The entry point is the first node(s) that are run when the graph starts. You can use the [`addEdge`](https://reference.langchain.com/javascript/classes/_langchain_langgraph.index.StateGraph.html#addEdge) method from the virtual [`START`](https://reference.langchain.com/javascript/langchain-langgraph/index/START) node to the first node to execute to specify where to enter the graph.
+The entry point is the first node(s) that are run when the graph starts. You can use the [`addEdge`](https://reference.langchain.com/javascript/langchain-langgraph/index/StateGraph/addEdge) method from the virtual [`START`](https://reference.langchain.com/javascript/langchain-langgraph/index/START) node to the first node to execute to specify where to enter the graph.
 
 ```typescript
 import { START } from "@langchain/langgraph";
@@ -717,7 +717,7 @@ graph.addEdge(START, "nodeA");
 
 
 
-A conditional entry point lets you start at different nodes depending on custom logic. You can use [`addConditionalEdges`](https://reference.langchain.com/javascript/classes/_langchain_langgraph.index.StateGraph.html#addConditionalEdges) from the virtual [`START`](https://reference.langchain.com/javascript/langchain-langgraph/index/START) node to accomplish this.
+A conditional entry point lets you start at different nodes depending on custom logic. You can use [`addConditionalEdges`](https://reference.langchain.com/javascript/langchain-langgraph/index/StateGraph/addConditionalEdges) from the virtual [`START`](https://reference.langchain.com/javascript/langchain-langgraph/index/START) node to accomplish this.
 
 ```typescript
 import { START } from "@langchain/langgraph";

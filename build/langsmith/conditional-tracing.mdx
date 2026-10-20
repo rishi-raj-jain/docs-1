@@ -17,7 +17,7 @@ Use conditional tracing when you need to:
 To reduce trace volume by logging only a percentage of all runs, refer to [Set a sampling rate for traces](/langsmith/sample-traces).
 </Tip>
 
-The [`tracing_context`](https://reference.langchain.com/python/langsmith/run_helpers/tracing_context) context manager (Python) and [`tracingEnabled`](https://reference.langchain.com/javascript/classes/langsmith.run_trees.RunTree.html#tracingenabled) option (TypeScript) allow you to override global tracing settings at runtime, without restructuring your code or changing environment variables.
+The [`tracing_context`](https://reference.langchain.com/python/langsmith/run_helpers/tracing_context) context manager (Python) and [`tracingEnabled`](https://reference.langchain.com/javascript/langsmith/index/RunTree/tracingEnabled) option (TypeScript) allow you to override global tracing settings at runtime, without restructuring your code or changing environment variables.
 
 <Note>
 The following sections provide language-specific examples that you can adapt to your application logic and business requirements.
@@ -324,7 +324,7 @@ process_request("client-a", "some data")
 
 ## How tracing enabled works
 
-In TypeScript, you control tracing per-function using the [`tracingEnabled`](https://reference.langchain.com/javascript/classes/langsmith.run_trees.RunTree.html#tracingenabled) parameter when calling [`traceable()`](https://reference.langchain.com/python/langsmith/run_helpers/traceable). This allows you to selectively enable or disable tracing at the function level.
+In TypeScript, you control tracing per-function using the [`tracingEnabled`](https://reference.langchain.com/javascript/langsmith/index/RunTree/tracingEnabled) parameter when calling [`traceable()`](https://reference.langchain.com/python/langsmith/run_helpers/traceable). This allows you to selectively enable or disable tracing at the function level.
 
 A two-level system where tracing is controlled per-function:
 
@@ -412,7 +412,7 @@ await handleRequest("client-a", "some input");  // Traced or not based on client
 
 ## Work with automatic tracing
 
-The [`tracingEnabled`](https://reference.langchain.com/javascript/classes/langsmith.run_trees.RunTree.html#tracingenabled) option works seamlessly with automatic tracing. You can keep `LANGSMITH_TRACING=true` set globally and use `tracingEnabled` to override settings for specific functions.
+The [`tracingEnabled`](https://reference.langchain.com/javascript/langsmith/index/RunTree/tracingEnabled) option works seamlessly with automatic tracing. You can keep `LANGSMITH_TRACING=true` set globally and use `tracingEnabled` to override settings for specific functions.
 
 ```typescript
 import { traceable } from "langsmith/traceable";

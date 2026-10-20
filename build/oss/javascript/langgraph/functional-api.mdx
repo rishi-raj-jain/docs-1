@@ -289,7 +289,7 @@ await myWorkflow.invoke(2, config); // 3 (previous was 1 from the previous invoc
 
 
 
-[`entrypoint.final`](https://reference.langchain.com/javascript/functions/_langchain_langgraph.index.entrypoint.html#final) is a special primitive that can be returned from an entrypoint and allows **decoupling** the value that is **saved in the checkpoint** from the **return value of the entrypoint**.
+[`entrypoint.final`](https://reference.langchain.com/javascript/langchain-langgraph/index/entrypoint/final) is a special primitive that can be returned from an entrypoint and allows **decoupling** the value that is **saved in the checkpoint** from the **return value of the entrypoint**.
 
 The first value is the return value of the entrypoint, and the second value is the value that will be saved in the checkpoint.
 

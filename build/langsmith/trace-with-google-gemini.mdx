@@ -40,7 +40,7 @@ To create a Google API key, refer to [Google AI Studio](https://aistudio.google.
 
 ## Configure tracing
 
-To trace Gemini API calls, use LangSmith's [`wrap_gemini`](https://reference.langchain.com/python/langsmith/wrappers/_gemini/wrap_gemini) (Python) or [`wrapGemini`](https://reference.langchain.com/javascript/functions/langsmith.wrappers_gemini.wrapGemini.html) (JavaScript) wrapper function. This wrapper intercepts calls to the Gemini client and automatically logs them as traces in LangSmith. The wrapper preserves all of the original client's functionality while adding observability:
+To trace Gemini API calls, use LangSmith's [`wrap_gemini`](https://reference.langchain.com/python/langsmith/wrappers/_gemini/wrap_gemini) (Python) or [`wrapGemini`](https://reference.langchain.com/javascript/langsmith/wrappers) (JavaScript) wrapper function. This wrapper intercepts calls to the Gemini client and automatically logs them as traces in LangSmith. The wrapper preserves all of the original client's functionality while adding observability:
 
 <CodeGroup>
 
@@ -119,7 +119,7 @@ These settings apply consistently across all traces from the wrapped client, so 
 </Tab>
 <Tab title="JavaScript" icon="brand-javascript">
 
-You can customize tracing by passing configuration options to [`wrapGemini`](https://reference.langchain.com/javascript/functions/langsmith.wrappers_gemini.wrapGemini.html). These options apply to all subsequent requests you make with that wrapped client, which allows you to attach tags and metadata for filtering and organizing traces in the [LangSmith UI](https://smith.langchain.com?utm_source=docs&utm_medium=cta&utm_campaign=langsmith-signup&utm_content=langsmith-trace-with-google-gemini). The configuration accepts:
+You can customize tracing by passing configuration options to [`wrapGemini`](https://reference.langchain.com/javascript/langsmith/wrappers). These options apply to all subsequent requests you make with that wrapped client, which allows you to attach tags and metadata for filtering and organizing traces in the [LangSmith UI](https://smith.langchain.com?utm_source=docs&utm_medium=cta&utm_campaign=langsmith-signup&utm_content=langsmith-trace-with-google-gemini). The configuration accepts:
 
 - `tags`: An array of strings to categorize traces (for example, `["production", "gemini"]`).
 - `metadata`: An object with key-value pairs for additional context (for example, `{ team: "ml-research", integration: "google-genai" }`).

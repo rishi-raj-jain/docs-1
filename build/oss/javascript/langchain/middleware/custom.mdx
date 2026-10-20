@@ -657,7 +657,7 @@ Dynamically modify the system prompt at runtime to inject context, user-specific
 
 
 
-Use the `systemMessage` field in `ModelRequest` to read and modify the system prompt. It contains a [`SystemMessage`](https://reference.langchain.com/javascript/langchain-core/messages/SystemMessage) object (even if the agent was created with a string [`systemPrompt`](https://reference.langchain.com/javascript/types/langchain.index.CreateAgentParams.html#systemprompt)).
+Use the `systemMessage` field in `ModelRequest` to read and modify the system prompt. It contains a [`SystemMessage`](https://reference.langchain.com/javascript/langchain-core/messages/SystemMessage) object (even if the agent was created with a string [`systemPrompt`](https://reference.langchain.com/javascript/langchain/index/CreateAgentParams/systemPrompt)).
 
 <MiddlewareDynamicPromptJs />
 
@@ -786,7 +786,7 @@ class CachedContextMiddleware(AgentMiddleware):
 
 :::
 
-Modify system messages in middleware using the `systemMessage` field in `ModelRequest`. It contains a [`SystemMessage`](https://reference.langchain.com/javascript/langchain-core/messages/SystemMessage) object (even if the agent was created with a string [`systemPrompt`](https://reference.langchain.com/javascript/types/langchain.index.CreateAgentParams.html#systemprompt)).
+Modify system messages in middleware using the `systemMessage` field in `ModelRequest`. It contains a [`SystemMessage`](https://reference.langchain.com/javascript/langchain-core/messages/SystemMessage) object (even if the agent was created with a string [`systemPrompt`](https://reference.langchain.com/javascript/langchain/index/CreateAgentParams/systemPrompt)).
 
 **Example: Chaining middleware** - Different middleware can use different approaches:
 

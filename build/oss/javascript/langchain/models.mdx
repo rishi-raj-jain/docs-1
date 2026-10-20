@@ -159,7 +159,7 @@ A chat model must be invoked to generate an output. There are three primary invo
 
 ### Invoke
 
-The most straightforward way to call a model is to use [`invoke()`](https://reference.langchain.com/javascript/classes/_langchain_core.language_models_chat_models.BaseChatModel.html#invoke) with a single message or a list of messages.
+The most straightforward way to call a model is to use [`invoke()`](https://reference.langchain.com/javascript/langchain-core/language_models/chat_models/BaseChatModel/invoke) with a single message or a list of messages.
 
 
 
@@ -209,7 +209,7 @@ console.log(response);  // AIMessage("J'adore créer des applications.")
 
 Most models can stream their output content while it is being generated. By displaying output progressively, streaming significantly improves user experience, particularly for longer responses.
 
-Calling [`stream()`](https://reference.langchain.com/javascript/classes/_langchain_core.language_models_chat_models.BaseChatModel.html#stream) returns an <Tooltip tip="An object that progressively provides access to each item of a collection, in order.">iterator</Tooltip> that yields output chunks as they are produced. You can use a loop to process each chunk in real-time:
+Calling [`stream()`](https://reference.langchain.com/javascript/langchain-core/language_models/chat_models/BaseChatModel/stream) returns an <Tooltip tip="An object that progressively provides access to each item of a collection, in order.">iterator</Tooltip> that yields output chunks as they are produced. You can use a loop to process each chunk in real-time:
 
 
 <CodeGroup>
@@ -303,7 +303,7 @@ The resulting message can be treated the same as a message that was generated wi
         Full message: Hi there! How can I help today?
         ```
 
-        See the [`streamEvents()`](https://reference.langchain.com/javascript/classes/_langchain_core.language_models_chat_models.BaseChatModel.html#streamEvents) reference for event types and other details.
+        See the [`streamEvents()`](https://reference.langchain.com/javascript/langchain-core/language_models/chat_models/BaseChatModel/streamEvents) reference for event types and other details.
 
     </Accordion>
     <Accordion title='"Auto-streaming" chat models'>
@@ -313,7 +313,7 @@ The resulting message can be treated the same as a message that was generated wi
 
         #### How it works
 
-        When you `invoke()` a chat model, LangChain will automatically switch to an internal streaming mode if it detects that you are trying to stream the overall application. The result of the invocation will be the same as far as the code that was using invoke is concerned; however, while the chat model is being streamed, LangChain will take care of invoking [`on_llm_new_token`](https://reference.langchain.com/javascript/interfaces/_langchain_core.callbacks_base.BaseCallbackHandlerMethods.html#onLlmNewToken) events in LangChain's callback system.
+        When you `invoke()` a chat model, LangChain will automatically switch to an internal streaming mode if it detects that you are trying to stream the overall application. The result of the invocation will be the same as far as the code that was using invoke is concerned; however, while the chat model is being streamed, LangChain will take care of invoking [`on_llm_new_token`](https://reference.langchain.com/javascript/langchain-core/callbacks/base/BaseCallbackHandler/handleLLMNewToken) events in LangChain's callback system.
 
 
         Callback events allow LangGraph `stream()` and `streamEvents()` to surface the chat model's output in real-time.
@@ -356,7 +356,7 @@ for (const response of responses) {
     See the [`RunnableConfig`](https://reference.langchain.com/javascript/langchain-core/runnables/RunnableConfig) reference for a full list of supported attributes.
 </Tip>
 
-For more details on batching, see the [reference](https://reference.langchain.com/javascript/classes/_langchain_core.language_models_chat_models.BaseChatModel.html#batch).
+For more details on batching, see the [reference](https://reference.langchain.com/javascript/langchain-core/language_models/chat_models/BaseChatModel/batch).
 
 
 ---
@@ -402,7 +402,7 @@ sequenceDiagram
 
 
 
-To make tools that you have defined available for use by a model, you must bind them using [`bindTools`](https://reference.langchain.com/javascript/classes/_langchain_core.language_models_chat_models.BaseChatModel.html#bindTools). In subsequent invocations, the model can choose to call any of the bound tools as needed.
+To make tools that you have defined available for use by a model, you must bind them using [`bindTools`](https://reference.langchain.com/javascript/langchain-core/language_models/chat_models/BaseChatModel/bindTools). In subsequent invocations, the model can choose to call any of the bound tools as needed.
 
 
 Some model providers offer <Tooltip tip="Tools that are executed server-side, such as web search and code interpreters">built-in tools</Tooltip> that can be enabled via model or invocation parameters (e.g. [`ChatOpenAI`](/oss/javascript/integrations/chat/openai), [`ChatAnthropic`](/oss/javascript/integrations/chat/anthropic)). Check the respective [provider reference](/oss/javascript/integrations/providers/overview) for details.
@@ -697,7 +697,7 @@ Models can be requested to provide their response in a format matching a given s
     **Key considerations for structured output:**
 
     - **Method parameter**: Some providers support different methods (`'jsonSchema'`, `'functionCalling'`, `'jsonMode'`)
-    - **Include raw**: Use [`includeRaw: true`](https://reference.langchain.com/javascript/classes/_langchain_core.language_models_chat_models.BaseChatModel.html#withStructuredOutput) to get both the parsed output and the raw [`AIMessage`](https://reference.langchain.com/javascript/langchain-core/messages/AIMessage)
+    - **Include raw**: Use [`includeRaw: true`](https://reference.langchain.com/javascript/langchain-core/language_models/chat_models/BaseChatModel/withStructuredOutput) to get both the parsed output and the raw [`AIMessage`](https://reference.langchain.com/javascript/langchain-core/messages/AIMessage)
     - **Validation**: Zod and Standard Schema objects provide automatic validation, while JSON Schema requires manual validation
     - **Standard Schema**: Any schema library implementing the [Standard Schema](https://standardschema.dev/) spec is supported and validated at runtime
 
@@ -707,7 +707,7 @@ Models can be requested to provide their response in a format matching a given s
 
 <Accordion title="Example: Message output alongside parsed structure">
 
-It can be useful to return the raw [`AIMessage`](https://reference.langchain.com/javascript/langchain-core/messages/AIMessage) object alongside the parsed representation to access response metadata such as [token counts](#token-usage). To do this, set [`include_raw=True`](https://reference.langchain.com/javascript/classes/_langchain_core.language_models_chat_models.BaseChatModel.html#withStructuredOutput) when calling [`with_structured_output`](https://reference.langchain.com/javascript/classes/_langchain_core.language_models_chat_models.BaseChatModel.html#withStructuredOutput):
+It can be useful to return the raw [`AIMessage`](https://reference.langchain.com/javascript/langchain-core/messages/AIMessage) object alongside the parsed representation to access response metadata such as [token counts](#token-usage). To do this, set [`include_raw=True`](https://reference.langchain.com/javascript/langchain-core/language_models/chat_models/BaseChatModel/withStructuredOutput) when calling [`with_structured_output`](https://reference.langchain.com/javascript/langchain-core/language_models/chat_models/BaseChatModel/withStructuredOutput):
 
 
 

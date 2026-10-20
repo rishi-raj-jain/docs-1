@@ -220,7 +220,7 @@ After you have added the documents to the [`VectorStore`](https://reference.lang
 - Synchronously and asynchronously
 - By string query and by vector
 - With and without similarity scores
-- By similarity and [maximum marginal relevance](https://reference.langchain.com/javascript/classes/_langchain_core.vectorstores.VectorStore.html#maxMarginalRelevanceSearch) (to balance similarity with diversity)
+- By similarity and [maximum marginal relevance](https://reference.langchain.com/javascript/langchain-core/vectorstores/VectorStore/maxMarginalRelevanceSearch) (to balance similarity with diversity)
 
 
 
@@ -306,7 +306,7 @@ Learn more:
 
 ## Use retrievers
 
-LangChain [`VectorStore`](https://reference.langchain.com/javascript/langchain-core/vectorstores/VectorStore) objects do not subclass [`Runnable`](https://reference.langchain.com/javascript/langchain-core/runnables/Runnable). [Retrievers](https://reference.langchain.com/javascript/interfaces/_langchain_core.retrievers.BaseRetriever.html) are Runnables, so they support standard methods such as sync and async `invoke` and `batch`.
+LangChain [`VectorStore`](https://reference.langchain.com/javascript/langchain-core/vectorstores/VectorStore) objects do not subclass [`Runnable`](https://reference.langchain.com/javascript/langchain-core/runnables/Runnable). [Retrievers](https://reference.langchain.com/javascript/langchain-core/retrievers/BaseRetriever) are Runnables, so they support standard methods such as sync and async `invoke` and `batch`.
 
 You can also build retrievers from vector stores, and retrievers can also wrap non-vector sources (such as external APIs).
 

@@ -32,7 +32,7 @@ Your integration package will typically implement a subclass of at least one of 
         1. To define an "input schema" or "args schema" to pass to a chat model's tool calling feature along with a text request, such that the chat model can generate a "tool call", or parameters to call the tool with.
         2. To take a "tool call" as generated above, and take some action and return a response that can be passed back to the chat model as a ToolMessage.
 
-        The Tools class must inherit from the [`BaseTool`](https://reference.langchain.com/javascript/classes/_langchain_core.tools.StructuredTool.html) base class. This interface has 3 properties and 2 methods that should be implemented in a subclass.
+        The Tools class must inherit from the [`BaseTool`](https://reference.langchain.com/javascript/langchain-core/tools/StructuredTool) base class. This interface has 3 properties and 2 methods that should be implemented in a subclass.
 
         <Warning>
             The tools integration guide is currently WIP. In the meantime, read the [tools conceptual guide](/oss/javascript/langchain/tools) for details on how LangChain tools function.

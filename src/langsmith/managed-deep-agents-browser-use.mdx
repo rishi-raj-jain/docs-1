@@ -1,36 +1,52 @@
 ---
-title: Add browser use to Managed Deep Agents
+title: Add a browser to Managed Deep Agents
 sidebarTitle: Browser use
-description: Declare a managed browser for a Python managed deep agent, with thread or user session scope.
+description: Declare a managed browser so a managed deep agent can act on websites without browser infrastructure or a Browserbase key.
 ---
 
-[Managed Deep Agents](/langsmith/managed-deep-agents-overview) gives your agent a LangSmith browser through a project-level declaration. Your agent can browse websites and reuse browser sessions without managing browser infrastructure.
+A browser lets a managed deep agent open websites, fill out forms, and check rendered pages. Managed Deep Agents runs the browser and adds the browser tools to the agent, so you do not run browser infrastructure or supply a Browserbase API key.
 
-For browser-use concepts and tool usage, see the [Deep Agents browser-use guide](/oss/deepagents/browser-use). This page covers the managed declaration only.
+For use cases and how the browser tools work, see [Browser use](/oss/deepagents/browser-use).
 
 <Note>
-Browser declarations are an unreleased, Python-only feature in [managed-deepagents-sdk#897](https://github.com/langchain-ai/managed-deepagents-sdk/pull/897). Your LangSmith workspace must have access to the LangSmith browser beta before you can use this feature.
+Managed Deep Agents is in public [beta](/langsmith/release-stages) on [LangSmith Cloud](/langsmith/cloud). Browser declarations are not yet in a released version of the Managed Deep Agents SDK, and they require access to the LangSmith browser beta.
 </Note>
 
 :::python
 ## Declare a browser
 
-The CLI discovers a named `browser` export in `browser.py` at your [project root](/langsmith/managed-deep-agents-project-structure). Add this file to share a browser across a signed-in user's threads:
+Add `browser.py` at the [project root](/langsmith/managed-deep-agents-project-structure) and export a named `browser` created with `define_browser`:
 
 ```python browser.py
 from managed_deepagents import define_browser
 
-browser = define_browser(scope='user', idle_ttl_seconds=900)
+browser = define_browser(
+    scope="thread",
+    idle_ttl_seconds=600,
+)
 ```
 
-- **`scope`**: Defaults to `'thread'`, which gives each thread its own browser. Set `'user'` to share a browser, including logins, across the same user's threads. User scope requires a signed-in principal; see [Caller authentication](/langsmith/managed-deep-agents-identity).
-- **`idle_ttl_seconds`**: Defaults to `600`. Stops an idle browser after the specified number of seconds. Accepts values from `60` to `86400`, inclusive.
+| Option | Default | Description |
+| --- | --- | --- |
+| `scope` | `"thread"` | `"thread"` gives each thread its own browser. `"user"` shares one browser, including its logins, across a signed-in user's threads. |
+| `idle_ttl_seconds` | `600` | Seconds of inactivity before the browser stops. Accepts `60` to `86400`. |
 
-Managed Deep Agents automatically adds the Stagehand tools `run`, `snapshot`, and `screenshot`. You do not need to register them yourself or supply a Browserbase API key.
+User scope requires a signed-in principal. To set up signed-in callers, see [Identity](/langsmith/managed-deep-agents-identity).
 
-The browser is independent of the agent's [sandbox](/langsmith/managed-deep-agents-sandboxes). Browsing and capturing screenshots do not require an agent sandbox. Saving a screenshot with the `screenshot` tool's `path` parameter requires a sandbox and an absolute path.
+## How the agent uses the browser
+
+Managed Deep Agents adds the Stagehand tools `run`, `snapshot`, and `screenshot` to the agent. You do not register them yourself. For what each tool does, see [Stagehand tools](/oss/deepagents/browser-use#stagehand-tools).
+
+The browser is independent of the agent's [sandbox](/langsmith/managed-deep-agents-sandboxes). The agent can browse and take screenshots without one. To save a screenshot to a file with the `screenshot` tool's `path` argument, add a sandbox and pass an absolute path.
 :::
 
 :::js
-Managed Deep Agents has no native TypeScript browser declaration. The pending `define_browser` feature is Python-only. See the [Deep Agents browser-use guide](/oss/deepagents/browser-use) for browser integration options.
+Browser declarations are available in Python projects only. To give a TypeScript deep agent browser tools, see [Browser use](/oss/deepagents/browser-use).
 :::
+
+## See also
+
+- [Browser use](/oss/deepagents/browser-use)
+- [Project structure](/langsmith/managed-deep-agents-project-structure)
+- [Sandboxes](/langsmith/managed-deep-agents-sandboxes)
+- [Identity](/langsmith/managed-deep-agents-identity)

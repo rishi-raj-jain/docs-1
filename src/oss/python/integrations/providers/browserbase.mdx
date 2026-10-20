@@ -3,29 +3,98 @@ title: "Browserbase integrations"
 description: "Integrate with Browserbase using LangChain Python."
 ---
 
-[Browserbase](https://browserbase.com) provides cloud-hosted browser sessions for web automation. Use it to interact with rendered pages without managing a local browser.
-
-Browserbase provides [identity and CAPTCHA-solving options](https://docs.browserbase.com/platform/identity/overview), [session recordings and logs](https://docs.browserbase.com/platform/browser/observability/observability), and a [live session view](https://docs.browserbase.com/platform/browser/observability/session-live-view) for debugging.
+[Browserbase](https://www.browserbase.com) runs cloud browsers for agents, with [session recordings](https://docs.browserbase.com/platform/browser/observability/observability) and a [live view](https://docs.browserbase.com/platform/browser/observability/session-live-view) for debugging. The same API key covers [Search](https://docs.browserbase.com/platform/search/overview) and [Fetch](https://docs.browserbase.com/platform/fetch/overview), which find and read pages without starting a browser session.
 
 ## Installation and setup
 
-To use the [Browserbase Python SDK](https://github.com/browserbase/python-sdk):
+Get an API key from [Browserbase](https://www.browserbase.com) and set it as an environment variable:
 
-1. Get an API key from [Browserbase](https://browserbase.com).
-2. Set the `BROWSERBASE_API_KEY` environment variable:
+```bash
+export BROWSERBASE_API_KEY="your-browserbase-api-key"
+```
 
-   ```bash
-   export BROWSERBASE_API_KEY="your-browserbase-api-key"
-   ```
+Install the [Browserbase Python SDK](https://github.com/browserbase/sdk-python):
 
-3. Install the SDK:
+<CodeGroup>
+```bash pip
+pip install "browserbase>=1.21.0"
+```
 
-   ```bash
-   pip install browserbase
-   ```
+```bash uv
+uv add "browserbase>=1.21.0"
+```
+</CodeGroup>
 
-## Deep Agents integration
+## Deep Agents
 
-For browser automation with [Deep Agents](/oss/deepagents/overview), use the [Stagehand v4 integration](/oss/integrations/tools/stagehand). It exposes `run`, `snapshot`, and `screenshot` tools through a persistent MCP session, with local Chrome or Browserbase as the browser.
+A [deep agent](/oss/deepagents/overview) can use Browserbase in two ways: a cloud browser that it drives through Stagehand tools, and Search and Fetch tools for pages that do not need a browser. For when to give an agent a browser, see [Browser use](/oss/deepagents/browser-use).
 
-See [Browser use](/oss/deepagents/browser-use) for use cases and browser selection. Follow the Stagehand integration guide for setup instructions and runnable upstream examples.
+### Browser tools with Stagehand
+
+The [Stagehand integration](/oss/integrations/tools/stagehand) runs an MCP server that gives the agent `run`, `snapshot`, and `screenshot` tools over one persistent browser session. To run that browser on Browserbase, set `STAGEHAND_BROWSER` to `browserbase` in the server's environment:
+
+```python
+import os
+
+STAGEHAND_DIR = "/path/to/stagehand/packages/integrations/deepagents"
+
+MCP_CONFIG = {
+    "mcpServers": {
+        "browser": {
+            "command": "uv",
+            "args": ["run", "--project", STAGEHAND_DIR, "--locked", "stagehand-deepagents-mcp"],
+            "env": {
+                "STAGEHAND_BROWSER": "browserbase",
+                "BROWSERBASE_API_KEY": os.environ["BROWSERBASE_API_KEY"],
+            },
+        }
+    }
+}
+```
+
+For installation and the complete agent, see the [Stagehand integration](/oss/integrations/tools/stagehand#use-with-a-deep-agent).
+
+### Search and fetch tools
+
+Wrap Search and Fetch as tools so the agent finds and reads pages without a browser session. Fetch does not execute JavaScript.
+
+Install the agent packages and set the model-provider credential before running this example:
+
+```bash
+pip install deepagents langchain-openai
+export OPENAI_API_KEY="your-openai-api-key"
+```
+
+The example uses OpenAI's [GPT-5.5 snapshot](https://developers.openai.com/api/docs/models/gpt-5.5):
+
+```python
+import os
+
+from browserbase import Browserbase
+from deepagents import create_deep_agent
+from langchain.tools import tool
+
+bb = Browserbase(api_key=os.environ["BROWSERBASE_API_KEY"])
+
+
+@tool
+def web_search(query: str) -> str:
+    """Search the web and return result titles and URLs."""
+    response = bb.search.web(provider="parallel", query=query, num_results=5)
+    return "\n".join(f"{result.title}: {result.url}" for result in response.results)
+
+
+@tool
+def fetch_page(url: str) -> str:
+    """Fetch a page as markdown without opening a browser."""
+    return bb.fetch_api.create(url=url, format="markdown").content
+
+
+agent = create_deep_agent(
+    model="openai:gpt-5.5-2026-04-23",
+    tools=[web_search, fetch_page],
+    system_prompt="Search to find pages, then fetch the pages you need to read.",
+)
+```
+
+To let the agent open a browser for pages that need JavaScript or interaction, pass the Stagehand tools in the same list. Keep the `MCPAdapter` context open while the agent runs. For a complete example that combines Search, Fetch, and Stagehand, see Browserbase's [Deep Agents guide](https://docs.browserbase.com/integrations/langchain/deepagents).

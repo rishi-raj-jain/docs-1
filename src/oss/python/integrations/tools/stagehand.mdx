@@ -5,10 +5,12 @@ integration:
   name: Stagehand
 ---
 
-Stagehand is an open-source SDK for browser agents, backed by [Browserbase](https://browserbase.com)—the complete platform to run agents that use the web like humans. The integration ships a ready-made MCP server that exposes three tools—`run`, `snapshot`, and `screenshot`—directly to your Deep Agent, with no custom tool definitions required.
+[Stagehand v4](https://docs.stagehand.dev/v4/first-steps/introduction) is an open-source SDK for browser automation. Its [Deep Agents integration](https://docs.stagehand.dev/v4/integrations/agent-frameworks/deep-agents) exposes a persistent browser through an MCP server, with local Chrome or [Browserbase](/oss/integrations/providers/browserbase) as the browser.
+
+See [Browser use](/oss/deepagents/browser-use) for the main guide. Use the setup below to run Stagehand's existing agent examples without defining custom browser tools.
 
 <Note>
-  Stagehand ships this integration from its own repository. Clone the repo and run the examples from `packages/integrations/deepagents`.
+  This experimental integration requires Stagehand v4. Stagehand ships it from its repository, not as a standalone adapter package.
 </Note>
 
 ## Tools
@@ -23,12 +25,14 @@ Stagehand is an open-source SDK for browser agents, backed by [Browserbase](http
 
 ### Prerequisites
 
-- Python 3.11–3.13
-- [uv](https://docs.astral.sh/uv/)
-- A model-provider API key (e.g. `OPENAI_API_KEY`)
-- Local Chrome, or a [Browserbase](https://browserbase.com) API key for a managed remote browser
+- Python 3.11–3.13.
+- [uv](https://docs.astral.sh/uv/).
+- A model-provider API key for the deep agent, such as `OPENAI_API_KEY`.
+- Current Google Chrome for local mode, or a Browserbase API key for a remote browser.
 
 ### Clone and install
+
+Run these commands in the environment that runs the agent:
 
 ```bash
 git clone https://github.com/browserbase/stagehand.git
@@ -37,75 +41,57 @@ uv sync --locked
 uv sync --project examples/local --locked
 ```
 
-### Environment variables
+The server and agent use separate Python environments. The stdio transport isolates Stagehand's and the LangGraph SDK's incompatible `websockets` requirements.
+
+### Configure the agent
+
+Open [`examples/local/agent.py`](https://github.com/browserbase/stagehand/blob/main/packages/integrations/deepagents/examples/local/agent.py) and set `model` to a model available to your provider account. Edit `instruction` and the optional Pydantic `response_format` for your task. Export the matching model-provider credential, for example:
 
 ```bash
-# Model provider
-export OPENAI_API_KEY="..."
-
-# Browser: local Chrome (default) or Browserbase
-export STAGEHAND_BROWSER="browserbase"    # omit to use local Chrome
-export BROWSERBASE_API_KEY="bb_live_..."  # required for Browserbase
+export OPENAI_API_KEY="your-openai-api-key"
 ```
 
-## Use with a Deep Agent
+The agent's model credential is separate from optional credentials for Stagehand AI methods called inside `run`. See [Server configuration](#server-configuration).
 
-The integration's MCP server (`stagehand-deepagents-mcp`) is launched over stdio by @[`MCPAdapter`]. Use `list_tools()` to discover the tools and pass them to `create_deep_agent` — no manual tool definitions needed:
+### Choose the browser
 
-```python
-import asyncio
-import os
+Both modes use the same agent example and tools. Run one of these configurations from `packages/integrations/deepagents`:
 
-import dotenv
-from deepagents import create_deep_agent
-from langchain.mcp import MCPAdapter
-
-dotenv.load_dotenv()
-
-BROWSER_INSTRUCTIONS = """You control one persistent browser through exactly three tools:
-- snapshot: inspect the active page and hydrate bracketed element IDs.
-- run: provide either snapshot actions or JavaScript using the Playwright-shaped page API.
-- screenshot: inspect the rendered page visually.
-
-Use snapshot actions for simple interactions and run code for multi-step workflows.
-Snapshot IDs are valid only for the latest snapshot of the active page.
-Snapshot again after navigation or stale IDs. Do not launch another browser.
-"""
-
-CONFIG = {
-    "mcpServers": {
-        "stagehand_browser": {
-            "command": "uv",
-            "args": ["run", "--project", ".", "--locked", "stagehand-deepagents-mcp"],
-            "env": {
-                k: v for k, v in os.environ.items()
-                if k.startswith(("STAGEHAND_", "BROWSERBASE_")) and v
-            },
-        }
-    }
-}
-
-
-async def main():
-    async with MCPAdapter(CONFIG) as adapter:
-        tools = await adapter.list_tools()
-        agent = create_deep_agent(
-            model="openai:gpt-4o",
-            tools=tools,
-            system_prompt=BROWSER_INSTRUCTIONS,
-        )
-        result = await agent.ainvoke({
-            "messages": [{"role": "user", "content": "Go find me a summary of all main sports events today"}]
-        })
-    print(result["messages"][-1].content)
-
-
-asyncio.run(main())
+<CodeGroup>
+```bash Local Chrome
+export STAGEHAND_BROWSER="local"
+export STAGEHAND_HEADLESS="true"
+uv run --project examples/local --locked python examples/local/agent.py
 ```
+
+```bash Browserbase
+export STAGEHAND_BROWSER="browserbase"
+export BROWSERBASE_API_KEY="your-browserbase-api-key"
+uv run --project examples/local --locked python examples/local/agent.py
+```
+</CodeGroup>
+
+Local mode launches visible Chrome by default. The local example above explicitly enables headless mode for environments without a display, such as sandboxes. Chrome must be installed in that environment.
+
+<Note>
+  A local browser runs alongside the MCP server. In a sandbox, `localhost` refers to that sandbox, not your laptop. A Browserbase browser runs remotely and cannot reach a sandbox's `localhost`; use a URL reachable from the remote browser instead. `STAGEHAND_HEADLESS` applies only to local Chrome.
+</Note>
+
+## Use with a deep agent
+
+The upstream example uses `create_deep_agent` with tools loaded through `langchain-mcp-adapters`. Its [`_client.py`](https://github.com/browserbase/stagehand/blob/main/packages/integrations/deepagents/examples/local/_client.py) starts `stagehand-deepagents-mcp` over stdio and forwards only `STAGEHAND_*` and `BROWSERBASE_*` environment variables to the server.
 
 <Warning>
-  Keep the @[`MCPAdapter`] context manager open for the duration of the agent run. The browser session and snapshot IDs are tied to the underlying stdio process — closing the adapter ends the session.
+  Keep the example's persistent `client.session(...)` context open for the entire agent run. Stateless tool loading starts a new stdio process for each call and loses the browser and snapshot IDs. Take a new snapshot after navigation or when IDs become stale.
 </Warning>
+
+For a structured-output form-filling example with mock data, use [`agents2.py`](https://github.com/browserbase/stagehand/blob/main/packages/integrations/deepagents/examples/local/agents2.py). Set its `model` to a model available to your account before running it. Its instructions ask the agent to fill the form without submitting it:
+
+```bash
+uv run --project examples/local --locked python examples/local/agents2.py
+```
+
+The `run` tool executes model-authored JavaScript in the browser. Use Browserbase for untrusted tasks and review Stagehand's [integration security boundary](https://docs.stagehand.dev/v4/integrations/agent-frameworks/overview#security-boundary).
 
 ## Server configuration
 
@@ -114,22 +100,15 @@ asyncio.run(main())
 | `STAGEHAND_BROWSER` | `local` | Select `local` or `browserbase` |
 | `STAGEHAND_HEADLESS` | `false` | Run local Chrome headlessly |
 | `STAGEHAND_START_URL` | Unset | URL to open when the server starts |
-| `STAGEHAND_MODEL` | Unset | Optional — model for Stagehand AI methods called inside `run`; inference is provided by default if unset |
-| `STAGEHAND_MODEL_API_KEY` | Unset | Optional — API key for `STAGEHAND_MODEL`; not required when using default inference |
+| `STAGEHAND_MODEL` | Unset | Optional model for Stagehand AI methods called inside `run` |
+| `STAGEHAND_MODEL_API_KEY` | Unset | Required with `STAGEHAND_MODEL`; the server does not receive the agent's model-provider credential |
+| `STAGEHAND_API_URL` | Unset | Optional Stagehand Model Gateway URL |
 | `STAGEHAND_RUN_TIMEOUT_MS` | `60000` | Timeout for JavaScript and snapshot-action batches |
 | `BROWSERBASE_API_KEY` | Unset | Required for Browserbase |
 
-<Note>
-  The MCP server and the agent run in separate Python environments. Stagehand requires `websockets>=16.1.1` while the current LangGraph SDK requires `websockets<16` — the stdio transport isolates these dependency sets.
-</Note>
-
 ## Related resources
 
-<CardGroup cols={2}>
-  <Card title="Integration source + examples" icon="brand-github" href="https://github.com/browserbase/stagehand/tree/main/packages/integrations/deepagents">
-    MCP server, managed tools, and runnable agent examples.
-  </Card>
-  <Card title="Browserbase provider page" icon="browser" href="/oss/integrations/providers/browserbase">
-    Full Browserbase provider overview and setup.
-  </Card>
-</CardGroup>
+- [Browser use guide](/oss/deepagents/browser-use).
+- [Stagehand v4 Deep Agents documentation](https://docs.stagehand.dev/v4/integrations/agent-frameworks/deep-agents), including the Managed Deep Agents deployment example.
+- [Integration source and runnable examples](https://github.com/browserbase/stagehand/tree/main/packages/integrations/deepagents).
+- [Browserbase provider overview](/oss/integrations/providers/browserbase).

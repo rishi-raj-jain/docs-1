@@ -1,0 +1,136 @@
+---
+title: Browser use
+description: Give a deep agent a browser and tools to perform actions on the web and test applications.
+---
+
+Browser use lets an agent perform actions on the web, not only retrieve information. Give a deep agent a browser to complete workflows through a website or test an application end to end.
+
+For managed browser provisioning, see [Browser use in Managed Deep Agents](/langsmith/managed-deep-agents-browser-use). This page explains when to use a browser, how to choose the components, and how to connect them.
+
+## Choose when to use a browser
+
+Use browser access for tasks that require a rendered page or interaction:
+
+- Complete workflows without a public API, such as navigating a checkout
+- Research across websites by following links, traversing pages, and interacting with content
+- Test an application's user experience, including navigation, forms, and checkout flows
+
+Browser-based QA closes the loop for a software factory: a coding agent can change an application, exercise it through the UI, and inspect the result. Use test accounts and test payment methods for these workflows.
+
+Prefer a direct API when one supports the task. For read-only research, search or page retrieval can be sufficient. A browser adds session state and infrastructure that those tasks might not need.
+
+## Choose the components
+
+Browser use requires two separate components:
+
+1. **A browser**: Run Chrome or Chromium locally, for example inside a [sandbox](/oss/deepagents/sandboxes), or use a remote browser provider such as [Browserbase](https://www.browserbase.com/).
+2. **An interaction layer**: Give the agent tools or a CLI to navigate, inspect pages, click, type, and capture screenshots.
+
+Choosing a browser provider does not choose the interaction layer. For example, Stagehand can control local Chrome or a Browserbase browser.
+
+### Choose where the browser runs
+
+| Browser | Use when | Considerations |
+|---|---|---|
+| Local Chrome in a sandbox | The agent tests an app running in the same sandbox | Install the browser and its system dependencies in the sandbox; manage its lifecycle |
+| Remote browser, such as Browserbase | You want hosted browser infrastructure separate from the agent's execution environment | Supply provider credentials and make the target application reachable from the remote browser |
+
+`localhost` refers to the environment where the browser runs. A remote browser cannot reach an app through your sandbox's `localhost`. Provide a reachable test URL instead. Avoid exposing private development servers without authentication.
+
+### Choose how the agent interacts
+
+Stagehand v4 is the recommended starting point. Its [Deep Agents integration](https://docs.stagehand.dev/v4/integrations/agent-frameworks/deep-agents) exposes three tools for a persistent browser:
+
+| Tool | Purpose |
+|---|---|
+| `snapshot` | Inspect the page and obtain element IDs for interactions |
+| `run` | Execute JavaScript or actions against the browser page |
+| `screenshot` | Inspect the rendered page visually |
+
+Take a new snapshot after navigation or when element IDs become stale. Keep the browser session open across tool calls so the agent can complete multi-step tasks.
+
+Other interaction layers include:
+
+- **[Playwright MCP](https://github.com/microsoft/playwright-mcp)**: Expose browser interactions through an MCP server and connect it using [MCP tools](/oss/deepagents/mcp).
+- **[agent-browser](https://github.com/vercel-labs/agent-browser)**: Install a browser CLI in the execution environment and let the agent invoke it through a [sandbox's `execute` tool](/oss/deepagents/sandboxes).
+
+These are alternatives to Stagehand, not additional requirements.
+
+:::python
+## Use Stagehand v4 with Browserbase
+
+This example uses the upstream Stagehand agent and MCP server with a hosted Browserbase browser. For the full tool contract and configuration, see the [Stagehand integration](/oss/integrations/tools/stagehand).
+
+<Note>
+The Stagehand v4 Deep Agents integration is experimental and ships from the Stagehand repository. It requires Python 3.11–3.13, uv, a model-provider API key, and a Browserbase API key.
+</Note>
+
+To run the example:
+
+1. Install the server and agent in their separate environments:
+
+```bash
+git clone https://github.com/browserbase/stagehand.git
+cd stagehand/packages/integrations/deepagents
+uv sync --locked
+uv sync --project examples/local --locked
+```
+
+2. Open [`examples/local/agent.py`](https://github.com/browserbase/stagehand/blob/main/packages/integrations/deepagents/examples/local/agent.py). Set `model` to a model available to your account and set `instruction` to your browser task. Adjust its optional `response_format` to match the result you need.
+3. Export the matching model-provider credential and select Browserbase:
+
+```bash
+export OPENAI_API_KEY="your-openai-api-key"
+export STAGEHAND_BROWSER="browserbase"
+export BROWSERBASE_API_KEY="your-browserbase-api-key"
+uv run --project examples/local --locked python examples/local/agent.py
+```
+
+Despite the `examples/local` directory name, this configuration runs the browser on Browserbase. The agent and MCP server run in your execution environment. The example loads the MCP tools and passes them to `create_deep_agent`.
+
+For a form-filling task, use the upstream [`agents2.py` example](https://github.com/browserbase/stagehand/blob/main/packages/integrations/deepagents/examples/local/agents2.py). Its instructions use mock data and stop before submitting the form.
+
+## Use local Chrome in a sandbox
+
+This example uses the same Stagehand tools with Chrome running alongside the MCP server inside a sandbox. Use this arrangement to test an application served from that sandbox.
+
+To switch the previous example to local Chrome:
+
+1. Install Chrome and its system dependencies in your sandbox image, along with Python and uv.
+2. Run the Stagehand installation commands above inside the sandbox. Configure the example's model and export its provider credential there.
+3. Select local Chrome and enable headless mode:
+
+```bash
+export STAGEHAND_BROWSER="local"
+export STAGEHAND_HEADLESS="true"
+uv run --project examples/local --locked python examples/local/agent.py
+```
+
+Set the example's instruction to test your application's URL. When the app and browser run in the same sandbox, the browser can use the app's `localhost` address. Local mode does not require a Browserbase API key.
+
+Keep the example's persistent MCP session open for the full agent run. Starting a new server process for each tool call loses browser state. For sandbox-provider setup, see [Sandbox integrations](/oss/integrations/sandboxes).
+:::
+
+:::js
+## Connect browser tools
+
+Connect a browser MCP server through the [Deep Agents MCP integration](/oss/deepagents/mcp), or install a browser CLI in a [sandbox](/oss/deepagents/sandboxes).
+
+The Stagehand v4 walkthroughs on this page use its upstream Python Deep Agents integration. Refer to [Stagehand's framework integrations](https://docs.stagehand.dev/v4/integrations/agent-frameworks/overview) for the available adapters rather than assuming a TypeScript equivalent of that Python package.
+:::
+
+## Limit browser permissions
+
+Browser actions can change external state. Use dedicated browser sessions and test accounts, and require [human approval](/oss/deepagents/human-in-the-loop) before purchases or other sensitive actions. For Stagehand, review the proposed `run` call before allowing an action that commits a transaction.
+
+Treat website content as untrusted input. Do not give a browser task access to credentials or data it does not need. Review the interaction layer's security boundary before running model-authored code. See [Stagehand's security guidance](https://docs.stagehand.dev/v4/integrations/agent-frameworks/overview#security-boundary).
+
+## See also
+
+:::python
+- [Stagehand and Browserbase integration](/oss/integrations/tools/stagehand)
+- [Browserbase provider integration](/oss/integrations/providers/browserbase)
+:::
+- [Managed Deep Agents browser use](/langsmith/managed-deep-agents-browser-use)
+- [Sandbox execution environments](/oss/deepagents/sandboxes)
+- [Connect MCP tools](/oss/deepagents/mcp)

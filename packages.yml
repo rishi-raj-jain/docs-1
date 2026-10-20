@@ -2008,6 +2008,11 @@ packages:
 - name: precleared
   repo: gabrielaoimevbore-beep/precleared-python
   js: precleared
+- name: ppl-memory
+  name_title: PplStore
+  repo: ppl-crm/ppl-memory
+  js: "n/a"
+
 - name: langchain-instant-expert
   name_title: InstantExpertToolkit
   repo: Instant-Expert/integrations

@@ -10,6 +10,19 @@ rss: true
 
 [Self-hosted LangSmith](/langsmith/self-hosted) is an add-on to the Enterprise plan designed for our largest, most security-conscious customers. For more details, refer to [Pricing](https://www.langchain.com/pricing). [Contact our sales team](https://www.langchain.com/contact-sales) if you want a license key to trial LangSmith in your environment.
 
+<Update label="2026-10-20" tags={["Stable"]} rss={{ title: "2026-10-20 - self-hosted" }}>
+## langsmith-0.17.19
+
+**LangSmith version:** `0.17.46`
+
+- Queue workers run `GO_INGESTION_CONCURRENCY_PER_CPU` tasks per CPU of the pod CPU limit instead of the node CPU count, keeping task counts consistent across node sizes (2 tasks per ingest-queue pod with the default chart). To run more tasks, set `GO_INGESTION_CONCURRENCY_PER_CPU` in `ingestQueue.deployment.extraEnv`.
+- API requests return HTTP 429 instead of HTTP 503 when the query service reports exhausted resources, allowing clients to handle throttling correctly.
+- Bedrock model configurations support automatic routing or explicit selection of the Bedrock Runtime or Bedrock Mantle endpoint. This supports models available through both endpoints when AWS permissions allow access to only one.
+
+**Download the Helm chart:** [`langsmith-0.17.19.tgz`](https://github.com/langchain-ai/helm/releases/download/langsmith-0.17.19/langsmith-0.17.19.tgz)
+{/* langsmith-release-image: 0.17.19 0.17.46 */}
+</Update>
+
 <Update label="2026-10-19" tags={["Preview"]} rss={{ title: "2026-10-19 - self-hosted" }}>
 ## langsmith-0.18.0-rc.38
 

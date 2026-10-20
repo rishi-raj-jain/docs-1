@@ -108,7 +108,7 @@ Maximum size, in bytes, of a single [thread history](/langsmith/agent-server-api
 
 If the next state would push the response over this limit, the server returns the states it has so far, which can be fewer than `limit`. The most recent state is always included, even if it alone is larger than the limit. To read older states, page with `before`.
 
-The limit applies to the JSON-encoded response. The server stops reading checkpoints once it reaches the limit, so this also limits how much memory a history request uses. A negative value prevents the server from starting. Added in `langgraph-api==0.18.0`.
+The limit applies to the JSON-encoded response. The server stops reading checkpoints once it reaches the limit, so this also limits how much memory a history request uses. A negative value prevents the server from starting. Available in `langgraph-api>=0.17.0`.
 
 Defaults to `0`, which means no limit.
 

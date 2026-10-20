@@ -3,6 +3,8 @@ title: Trace DeepSeek applications
 sidebarTitle: DeepSeek
 ---
 
+import AgentTracingEnvNote from '/snippets/langsmith/agent-tracing-env-note.mdx';
+
 [DeepSeek](https://deepseek.com/) provides high-performance, OpenAI-compatible language models including `deepseek-chat` (for general conversations) and `deepseek-reasoner` (for advanced reasoning tasks). Using LangSmith allows you to debug, monitor, and evaluate your LLM applications by capturing structured traces of inputs, outputs, and metadata.
 
 This guide shows you how to integrate DeepSeek with LangSmith in both Python and TypeScript, using LangSmith's @[`@traceable`][traceable] (Python) and @[`traceable(...)`][langsmith-js] (TypeScript) utilities to log LLM calls automatically.
@@ -44,6 +46,8 @@ export DEEPSEEK_API_KEY="your-deepseek-api-key"
 - Set `LANGSMITH_TRACING=true` and provide your LangSmith API key (`LANGSMITH_API_KEY`) activates automatic logging of traces.
 - Specify a [`LANGSMITH_PROJECT`](/langsmith/log-traces-to-project) name to organize traces by project; if not set, traces go to the default project (named "default").
 - The `LANGSMITH_TRACING` flag must be true for any traces to be recorded.
+
+<AgentTracingEnvNote />
 
 ## Configure tracing
 

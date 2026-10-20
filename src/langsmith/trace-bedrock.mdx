@@ -3,6 +3,8 @@ title: Trace Amazon Bedrock applications
 sidebarTitle: Bedrock
 ---
 
+import AgentTracingEnvNote from '/snippets/langsmith/agent-tracing-env-note.mdx';
+
 This guide shows you how to trace [Amazon Bedrock](https://aws.amazon.com/bedrock) model calls with LangSmith using the native AWS SDKs. LangSmith also works seamlessly with [LangChain's Bedrock integrations](/oss/integrations/providers/aws). Either approach provides insights into:
 
 - Request and response payloads
@@ -40,6 +42,8 @@ export LANGSMITH_TRACING=true
 ```
 
 You can obtain your LangSmith API key from [smith.langchain.com](https://smith.langchain.com) by navigating to **Settings** > **API Keys**. The `LANGSMITH_PROJECT` variable allows you to organize traces into different projects.
+
+<AgentTracingEnvNote />
 
 ### AWS credentials
 

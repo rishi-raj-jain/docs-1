@@ -2,6 +2,8 @@
 title: LangSmith Observability
 ---
 
+import AgentTracingEnvNote from '/snippets/langsmith/agent-tracing-env-note.mdx';
+
 Traces are a series of steps that your application takes to go from input to output. Each of these individual steps is represented by a run. You can use [LangSmith](https://smith.langchain.com) to visualize these execution steps. To use it, [enable tracing for your application](/langsmith/trace-with-langgraph). This enables you to do the following:
 
 * [Debug a locally running application](/langsmith/observability-studio#debug-langsmith-traces).
@@ -76,6 +78,8 @@ You can set a custom project name for your entire application by setting the `LA
 ```bash
 export LANGSMITH_PROJECT=my-agent-project
 ```
+
+<AgentTracingEnvNote />
 </Accordion>
 
 <Accordion title="Dynamically">

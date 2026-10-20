@@ -23,7 +23,11 @@ func main() {
 	seedAgent(ctx, client, agent)
 	// :remove-end:
 
-	project, err := client.Sessions.Resolve(ctx, langsmith.NewSessionResolveParams(agent))
+	params, err := langsmith.NewSessionResolveParams(agent)
+	if err != nil {
+		panic(err.Error())
+	}
+	project, err := client.Sessions.Resolve(ctx, params)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -66,8 +70,12 @@ func seedAgent(ctx context.Context, client *langsmith.Client, agent langsmith.Ag
 	client.Close()
 
 	deadline := time.Now().Add(120 * time.Second)
+	params, err := langsmith.NewSessionResolveParams(agent)
+	if err != nil {
+		panic(err.Error())
+	}
 	for {
-		_, err := client.Sessions.Resolve(ctx, langsmith.NewSessionResolveParams(agent))
+		_, err := client.Sessions.Resolve(ctx, params)
 		if err == nil {
 			return
 		}

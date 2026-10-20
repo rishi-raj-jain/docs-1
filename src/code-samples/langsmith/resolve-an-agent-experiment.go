@@ -37,7 +37,11 @@ func main() {
 		panic(err.Error())
 	}
 
-	project, err := client.Sessions.Resolve(ctx, langsmith.NewSessionResolveParams(experiment))
+	params, err := langsmith.NewSessionResolveParams(experiment)
+	if err != nil {
+		panic(err.Error())
+	}
+	project, err := client.Sessions.Resolve(ctx, params)
 	if err != nil {
 		panic(err.Error())
 	}

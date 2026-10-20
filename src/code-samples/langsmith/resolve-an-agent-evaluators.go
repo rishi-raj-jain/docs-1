@@ -23,7 +23,11 @@ func main() {
 	}
 	// :remove-end:
 
-	project, err := client.Sessions.Resolve(ctx, langsmith.NewSessionResolveParams(evaluators))
+	params, err := langsmith.NewSessionResolveParams(evaluators)
+	if err != nil {
+		panic(err.Error())
+	}
+	project, err := client.Sessions.Resolve(ctx, params)
 	if err != nil {
 		panic(err.Error())
 	}

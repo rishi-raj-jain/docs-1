@@ -70,6 +70,7 @@ my_workflow.invoke({"value": 1, "another_value": 2})
   be persisted in the checkpointer.
 
   ```python
+  from langchain_core.utils.uuid import uuid7
   from langchain.chat_models import init_chat_model
   from langgraph.func import entrypoint, task
   from langgraph.checkpoint.memory import InMemorySaver
@@ -125,6 +126,7 @@ def graph(numbers: list[int]) -> list[str]:
   This example demonstrates how to run multiple LLM calls in parallel using `@task`. Each call generates a paragraph on a different topic, and results are joined into a single text output.
 
   ```python
+  from langchain_core.utils.uuid import uuid7
   from langchain.chat_models import init_chat_model
   from langgraph.func import entrypoint, task
   from langgraph.checkpoint.memory import InMemorySaver
@@ -192,6 +194,7 @@ def some_workflow(some_input: dict) -> int:
 
 <Accordion title="Extended example: calling a simple graph from the functional API">
   ```python
+  from langchain_core.utils.uuid import uuid7
   from typing import TypedDict
   from langgraph.func import entrypoint
   from langgraph.checkpoint.memory import InMemorySaver
@@ -248,6 +251,7 @@ def my_workflow(inputs: dict) -> int:
 
 <Accordion title="Extended example: calling another entrypoint">
   ```python
+  from langchain_core.utils.uuid import uuid7
   from langgraph.func import entrypoint
   from langgraph.checkpoint.memory import InMemorySaver
 

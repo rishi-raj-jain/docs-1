@@ -2026,6 +2026,10 @@ packages:
   name_title: WebCrawlerAPILoader
   repo: WebCrawlerAPI/webcrawlerapi-langchain
   js: "n/a"
+- name: langchain-financial-evidence
+  name_title: FinancialEvidenceToolkit
+  repo: beepboop2025/langchain-financial-evidence
+  js: "n/a"
 - name: langchain-tanvo
   name_title: TanvoToolkit
   repo: tanvoai/langchain-tanvo

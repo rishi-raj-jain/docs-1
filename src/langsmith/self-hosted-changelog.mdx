@@ -17,7 +17,7 @@ rss: true
 
 - Queue workers run `GO_INGESTION_CONCURRENCY_PER_CPU` tasks per CPU of the pod CPU limit instead of the node CPU count, keeping task counts consistent across node sizes (2 tasks per ingest-queue pod with the default chart). To run more tasks, set `GO_INGESTION_CONCURRENCY_PER_CPU` in `ingestQueue.deployment.extraEnv`.
 - API requests return HTTP 429 instead of HTTP 503 when the query service reports exhausted resources, allowing clients to handle throttling correctly.
-- Bedrock model configurations support automatic routing or explicit selection of the Bedrock Runtime or Bedrock Mantle endpoint. This supports models available through both endpoints when AWS permissions allow access to only one.
+- Bedrock model configurations support automatic routing or explicit selection of the Bedrock Runtime or Bedrock Mantle endpoint. Explicit selection lets you use a model available through both endpoints when your AWS permissions allow access to only one.
 
 **Download the Helm chart:** [`langsmith-0.17.19.tgz`](https://github.com/langchain-ai/helm/releases/download/langsmith-0.17.19/langsmith-0.17.19.tgz)
 {/* langsmith-release-image: 0.17.19 0.17.46 */}
@@ -39,8 +39,7 @@ rss: true
 
 **LangSmith version:** `0.18.14rc1`
 
-- Organization-owned tracing API keys submit traces and create tracing projects in selected workspaces without granting access to stored traces or administrative operations. These keys use service-key expiry limits and can be deleted by authorized key managers.
-- You can create and manage tracing-only API keys in organization settings, scoped to one or more workspaces with fixed permissions and the service-key expiration policy. A dedicated Tracing tab provides search, pagination, and CSV export.
+- You can create tracing-only API keys in organization settings, scoped to one or more workspaces. These organization-owned keys submit traces and create tracing projects without granting access to stored traces or administrative operations. They follow the service-key expiration policy, and authorized key managers can delete them. A dedicated Tracing tab provides search, pagination, and CSV export.
 - The trace input view displays OpenAI Responses and Chat Completions inputs as message cards instead of a raw data tree when SDK calls include request options. The JSON view preserves the complete original input, including request options and metadata.
 - Documentation links in Engine settings and red teaming open the correct setup, prerequisite, and notification pages following the documentation restructure.
 - Organization-scoped Playground model configurations are accessible without an `X-Tenant-Id` workspace header. Reads require `organization:read` permission, and changes require `organization:manage-model-configs` permission.
@@ -52,49 +51,44 @@ rss: true
 - The Playground rejects unsupported `seed` and `input_schema` settings for OpenAI and Azure OpenAI Responses API models with a 422 error that identifies the fields without exposing their values. Playground invocations respect shorter caller timeouts and cancellation, with a 290-second cap that returns an actionable 504 error before the ingress timeout.
 - The Playground hides unsupported seed settings when using the OpenAI Responses API and keeps reasoning settings consistent with the selected API mode.
 - The model pricing API supports case-insensitive filtering by one or more providers and sorting by start date in ascending or descending order. A new endpoint lists providers with counts of their model pricing entries.
-- In annotation queues, “View item” opens the full conversation on the Trajectory tab when a run belongs to a thread, rather than showing only that run. Runs without a thread continue to open in the run pane.
-- Filter queries hide errors for a trailing AND or OR while you type after the operator. The error returns when you leave the filter bar or move the cursor before the operator.
+- In annotation queues, "View item" opens the full conversation on the Trajectory tab when a run belongs to a thread, rather than showing only that run. Runs without a thread continue to open in the run pane.
+- Filter queries hide errors for a trailing `AND` or `OR` operator while you type after the operator. The error returns when you leave the filter bar or move the cursor before the operator.
 - Studio no longer shows a misleading tracing upgrade warning when connected to a JavaScript Agent Server.
 - Feedback filter suggestions distinguish numeric scores from text values and category labels. Select a typed feedback field to build trace and thread filters.
 - Online evaluator rule errors contain only the exception message instead of the full response payload, preventing oversized error records from causing database errors that block rule processing.
-- In annotation queues, the View item pane’s Details tab displays long inputs and outputs without clipping content or overlapping the Attributes section.
-- Settings → Model pricing shows model types, input types, and consolidated pricing in a table. Select a model to view its matching rules and full price breakdown, or edit, clone, or delete its pricing configuration.
-- In Settings → Model pricing, you can filter by provider and sort by start date when the backend supports these options. Filters and sorting are preserved in the URL.
-- The Fleet usage UI’s user and agent cost reports are available through `GET /v1/fleet/usage/users` and `GET /v1/fleet/usage/agents`. Each report supports a time window, sorting, and cursor pagination with up to 100 results per page.
+- In annotation queues, the View item pane's Details tab displays long inputs and outputs without clipping content or overlapping the Attributes section.
+- **Settings** > **Model pricing** shows model types, input types, and consolidated pricing in a table, with filtering by provider and sorting by start date preserved in the URL. Select a model to view its matching rules and full price breakdown, or edit, clone, or delete its pricing configuration.
+- The Fleet usage UI's user and agent cost reports are available through `GET /v1/fleet/usage/users` and `GET /v1/fleet/usage/agents`. Each report supports a time window, sorting, and cursor pagination with up to 100 results per page.
 - Clicking an agent breadcrumb opens the agent overview. A separate arrow button opens the agent switcher, and the close control is separate.
 - Automation rule batches fail without retrying when PostgreSQL rejects an oversized batch or a model context limit is exceeded, avoiding repeated retries of an unrecoverable error.
 - The sidebar clears the selected agent when you navigate to pages that show all agents, such as the list of all annotation queues.
 - Engine separates organization configuration access from spend and pause controls using dedicated permissions. Existing Organization Admin and Operator access is preserved.
 - Prompt tag creation and update webhooks use the same author attribution as prompt commits, including identity-provider display names and fallback names. Email addresses serve as a fallback only for private prompts in non-anonymous organizations.
-- Tracing-only API keys can ingest traces without HTTP 403 errors from quota checks that incorrectly require workspace read permissions.
-- `POST /feedback-configs/by-session/query` retrieves the feedback configuration IDs associated with each experiment’s scores, grouped by feedback key. Results also indicate whether any scores lack a configuration ID.
-- Manual feedback forms and annotation queue rubric editors use the feedback key’s enforced configuration and show validation errors for out-of-range scores before submission.
+- `POST /feedback-configs/by-session/query` retrieves the feedback configuration IDs associated with each experiment's scores, grouped by feedback key. Results also indicate whether any scores lack a configuration ID.
+- Manual feedback forms and annotation queue rubric editors use the feedback key's enforced configuration and show validation errors for out-of-range scores before submission.
 - Individual trace views use the same trajectory processing as thread views to display messages, tool results, and subagent previews.
 - Managed evaluation consent and organization evaluator spending controls check dedicated permissions. Existing Organization Admin and Operator access is preserved.
 - Workspace deletions and MCP tool cache updates and cleanup succeed on PostgreSQL databases with a `FOR ALL TABLES` replication publication.
 - Complete answers ending in CJK or full-width punctuation, closing brackets, ellipses, or typographic closing quotes are no longer incorrectly flagged as truncated.
 - You can select `jev-1.14.0` when configuring a TypeSafe gateway and find it in gateway Model Access suggestions. `jev-latest` remains the default.
-- Dashboard ratio KPI charts offer a “Display as percentage” option, so a value such as 0.16 can appear as 16%. Decimal display remains the default, and the display choice is preserved when saving and editing a chart.
+- Dashboard ratio KPI charts offer a "Display as percentage" option, so a value such as 0.16 can appear as 16%. Decimal display remains the default, and the display choice is preserved when saving and editing a chart.
 - Opening a deleted, missing, or inaccessible prompt shows a not-found page with a link back to the list instead of loading indefinitely. Other prompt-loading failures show an error message.
 - Polly caches system prompts when using Claude through a Vertex AI model configuration, reducing input token costs on repeated model calls.
 - Code evaluator attachments distinguish between trace, thread, and trajectory scopes, preventing thread and trajectory evaluators from being attached interchangeably. Evaluators sourced from datasets continue to use trace scope.
-- Issue recurrence and metric charts mark a fix’s pull request merge with a dashed line labeled with the PR number, making it easier to see whether recurrences stop after the fix. Markers also appear for previously merged fixes when their merge time falls within the chart’s date range.
-- Single-run and pairwise annotation queues no longer display the previous item’s reference outputs when the next item has no reference example or is still loading. Add to Dataset also no longer prefills another run’s reference outputs for runs without a reference example.
-- AWS deployments support custom AMIs with IPv6 disabled through `eks.addons.podIdentityAgentIpFamily: ipv4` and support granting KMS access for AMIs with encrypted snapshots. Changing additional node subnet CIDRs no longer causes database access rule updates to fail.
-- Code evaluators load reliably before execution, preventing incorrect “Evaluator prompt missing or deleted” errors and missing feedback in automation rules and Playground evaluations. If evaluator code is missing, automation rules report the error and still run other actions, such as webhooks and dataset updates.
+- Issue recurrence and metric charts mark a fix's pull request merge with a dashed line labeled with the PR number, making it easier to see whether recurrences stop after the fix. Markers also appear for previously merged fixes when their merge time falls within the chart's date range.
+- Single-run and pairwise annotation queues no longer display the previous item's reference outputs when the next item has no reference example or is still loading. Add to Dataset also no longer prefills another run's reference outputs for runs without a reference example.
+- Code evaluators load reliably before execution, preventing incorrect "Evaluator prompt missing or deleted" errors and missing feedback in automation rules and Playground evaluations. If evaluator code is missing, automation rules report the error and still run other actions, such as webhooks and dataset updates.
 - Slack notifications for new issues and traces use a new chart image format. If the chart image URL is inaccessible, Slack can reject the entire notification instead of silently omitting the chart.
-- Email invitation links open correctly for organizations with UUIDv7 IDs instead of showing “Page not found,” allowing users to accept pending invitations.
-- Self-hosted deployment resource specs support CPU scaling targets, per-component CPU scaling switches, containers without CPU limits, and Kubernetes HPA scale-up and scale-down behavior for the api-server and queue, with all-or-nothing validation listing missing fields when any override omits required settings for either component (CPU targets apply only with CPU scaling enabled, both scaling directions must be complete, targets use CPU requests when limits are absent, and leaving all overrides unset preserves operator defaults). Enable overrides on the control plane with `ENABLE_LGP_SCALING_OVERRIDES`, reported by `/info` as the `lgp_scaling_overrides_enabled` instance flag.
+- Email invitation links open correctly for organizations with UUIDv7 IDs instead of showing "Page not found," allowing users to accept pending invitations.
 - The State view in decision run details follows the Markdown/Plain input setting for strings and nested JSON values. JSON and YAML modes keep their existing display behavior.
 - Engine issues default to Copy as prompt, with coding-agent actions available from the same control. Select your preferred coding agent again because previously saved preferences reset.
-- Issue recurrence and metric charts mark when the pull request that introduced an issue merges, if the PR is identified in the issue description and its merge falls within the chart’s supported time range. Existing issues with older descriptions do not receive this marker.
-- With `ENABLE_LGP_SCALING_OVERRIDES` enabled on the control plane, the self-hosted container resources form offers a Customize autoscaling switch that exposes required CPU targets, scale-on-CPU and no-CPU-limit toggles, and complete Kubernetes HPA scale-up and scale-down rules for both the api-server and queue, with operator defaults shown as examples. Turning the switch off applies operator defaults, while disabling the control-plane setting hides the controls, preserves existing revisions’ scaling settings, and applies operator defaults to each deployment’s next new revision.
+- Issue recurrence and metric charts mark when the pull request that introduced an issue merges, if the PR is identified in the issue description and its merge falls within the chart's supported time range. Existing issues with older descriptions do not receive this marker.
 - Fix verification no longer remains stuck in `verifying` when baseline validation results are delayed or missing. Verification retries for a limited period, then marks the attempt `inconclusive` if baseline results remain unavailable.
 - Insights shows an actionable message to retry later or use standard processing when OpenAI Flex capacity is unavailable, instead of a generic internal error. Affected jobs are not automatically retried.
 - Evaluator save errors automatically scroll into view without obscuring the build-status banner or evaluator reuse notice. Unrelated updates no longer interrupt scrolling.
 - You can copy complete evaluator sample variable values, other sample inputs, and test results from their previews. Strings copy verbatim, while structured values copy as formatted JSON.
 - The Model Configuration tab for saved prompt commits displays saved extra header names for OpenAI, DeepSeek, and Azure configurations, with values masked to protect credentials.
-- “See Logs” shows the correct deployment logs for traces whose trace ID differs from the LangGraph run ID, including copied traces and retried runs.
+- "See Logs" shows the correct deployment logs for traces whose trace ID differs from the LangGraph run ID, including copied traces and retried runs.
 - Focused red-team runs target at least 85% of their call budget rather than stopping after an initial clean pass. Unspent calls shift to other focus guides or deeper tests, and early stopping requires a reason for each guide.
 - Rule logs correctly report evaluator trace-upload failures and alert delivery failures, including rejected PagerDuty requests, even when later operations succeed. Remaining alerts are still attempted, and successful feedback results are preserved.
 - Sandbox snapshots support an `include` option to preserve mounts, proxy configuration, environment variables, resources, lifecycle settings, and labels, which new sandboxes inherit unless explicitly overridden. To include literal secrets, set `confirm_allow_snapshot_secret_values: true`, since users who can create sandboxes from the snapshot can use those credentials.
@@ -152,7 +146,7 @@ rss: true
 
 **LangSmith version:** `0.17.43`
 
-- You can retrieve the Fleet usage UI’s user and agent cost reports through `GET /v1/fleet/usage/users` and `GET /v1/fleet/usage/agents`. Each report supports a time window, sorting, and cursor pagination with up to 100 results per page.
+- You can retrieve the Fleet usage UI's user and agent cost reports through `GET /v1/fleet/usage/users` and `GET /v1/fleet/usage/agents`. Each report supports a time window, sorting, and cursor pagination with up to 100 results per page.
 
 **Download the Helm chart:** [`langsmith-0.17.16.tgz`](https://github.com/langchain-ai/helm/releases/download/langsmith-0.17.16/langsmith-0.17.16.tgz)
 {/* langsmith-release-image: 0.17.16 0.17.43 */}
@@ -190,20 +184,20 @@ rss: true
 - Tracing quickstart examples use updated small models from OpenAI, Anthropic, and Google, and the evaluation quickstart uses an updated OpenAI target model. The LangGraph example omits an unsupported temperature setting to avoid request failures with its selected model.
 - Tracing quickstart snippets for Microsoft Agent Framework and LiveKit correctly quote OpenTelemetry headers and encode project names, preventing trace export failures and traces from being sent to the default project.
 - Role permission previews stay within the API key creation dialog without clipping, keeping headings, search, and scrollable permission lists accessible on smaller screens.
-- You can choose from all evaluators in your workspace when attaching an evaluator to a dataset. Adding a dataset to an evaluator also associates the dataset with the evaluator’s agent.
+- You can choose from all evaluators in your workspace when attaching an evaluator to a dataset. Adding a dataset to an evaluator also associates the dataset with the evaluator's agent.
 - When adding runs or threads to a dataset, you can choose from all datasets in the workspace. The selected dataset is then tagged to the agent in scope.
 - You can save ScaleDown Chat Completions and Decisions endpoints as model configurations served through the LLM Gateway.
 - The evaluator spend endpoint supports an `agent_id` filter to report spend only for a specific agent. Listing evaluators with this filter also scopes their run rules, spend, runs, and resources to that agent.
 - API keys minted for new deployments use the Deployment Runtime role—Workspace Editor permissions plus LLM Gateway access, sandbox exec, and Agent Auth credential use—instead of Workspace Admin. Existing deployment keys remain unchanged.
 - Deployment logs remain available when application log timestamps are missing, invalid, or lack a timezone. These log lines use Kubernetes timestamps as a fallback, preserving chronological ordering across pods.
 - Run-rule webhooks respect `WEBHOOK_REQUEST_TIMEOUT_SEC` (10 seconds by default) instead of timing out after 5 seconds. Requests that time out continue to be retried.
-- LangSmith recognizes the current GenAI semantic convention attributes for cache reads, cache writes, and reasoning tokens and applies the model’s cache prices instead of charging those tokens at the ordinary input rate. Older attribute names remain supported.
+- LangSmith recognizes the current GenAI semantic convention attributes for cache reads, cache writes, and reasoning tokens and applies the model's cache prices instead of charging those tokens at the ordinary input rate. Older attribute names remain supported.
 - You can configure retention directly in tracing settings. The tracing details form no longer includes name and description fields.
 - Client headers prefixed with `typesafe-` pass through to model providers regardless of capitalization, enabling options such as long-context requests.
 - Tool results that Anthropic returns inside a user message render as tool messages paired with the tool call that produced them, instead of as user turns. Parallel tool calls each show their own result.
 - Opening annotation queue items no longer causes recursion errors or excessively long requests when many underlying traces have expired. Each request removes up to 200 stale items and returns a 503 response if it reaches that cleanup limit without finding an available run.
 - You can create Context Hub webhooks without a per-workspace cap. The existing limit on Prompt Hub webhooks remains unchanged.
-- Red-team assessments retry transient Claude refusals and time out stalled Claude requests instead of waiting indefinitely. Report generation with Claude no longer fails with “The compiled grammar is too large.”
+- Red-team assessments retry transient Claude refusals and time out stalled Claude requests instead of waiting indefinitely. Report generation with Claude no longer fails with "The compiled grammar is too large."
 - Sandbox execution requests containing NUL bytes in the command, shell, working directory, or environment return an `InvalidRequest` error identifying the invalid field instead of a generic process-start failure. Existing sandboxes receive this validation when they use an updated sandbox image.
 - Filter validation errors highlight the full invalid word or span instead of just its first character. Errors at the end of a query remain visible, and highlighting stays aligned when the query contains emoji.
 

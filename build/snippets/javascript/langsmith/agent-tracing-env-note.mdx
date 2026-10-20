@@ -1,0 +1,12 @@
+<Note>
+**Agent-based workspaces.** `LANGSMITH_PROJECT` also works in an [agent-based workspace](/langsmith/agents). The first trace to a new project name creates an agent, with that project as its Production environment.
+
+To name the agent and the environment yourself, set `LANGSMITH_AGENT_ID` and `LANGSMITH_AGENT_ENVIRONMENT` instead of `LANGSMITH_PROJECT`. Do not set both: when the environment names an agent and a project, the SDK does not send traces that name no destination in code.
+
+Sending traces to an agent needs:
+
+- **Python**: `langsmith>=0.14.9`, plus `langchain-core>=1.6.11` if you trace through LangChain or LangGraph
+- **TypeScript**: `langsmith@>=0.10.9`, plus `@langchain/core@>=1.2.18` if you trace through LangChain or LangGraph
+
+For more information, see [Log traces to an agent](/langsmith/log-traces-to-agent).
+</Note>

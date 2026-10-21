@@ -70,6 +70,38 @@ curl https://<data_plane_host>/gateway/v1/chat/completions \
 
 The gateway applies the fallback chain configured for `anthropic/claude-opus-5` in the API key's workspace. If no chain matches, the gateway returns the primary model's response without attempting a fallback.
 
+## Test a chain in the Simulator
+
+The Simulator sends a real request through a fallback chain while simulating how each model in the chain behaves, so you can check the chain's routing and added latency before a provider fails in production.
+
+To test a chain:
+
+1. Go to **LLM Gateway** and select the **Model Fallbacks** tab.
+1. On the chain's row, click **Open in Simulator**. The **Simulator** tab opens with the chain's primary model selected. The link appears only on enabled chains whose primary is a provider model, not a model configuration.
+1. Under **Simulate provider behaviour**, choose a behavior for each model in the chain:
+    - **Healthy**: the model responds normally.
+    - **Timeout**: the model times out after 5 seconds, or sooner if the chain's own timeout is shorter.
+    - **Rate limit**: the model returns `429`.
+    - **Outage**: the model returns `503`.
+1. Click **Run request**.
+
+The results list each attempt with its outcome and duration, followed by the number of **Fallback hops**, the **Latency added** by failed attempts, and the **Tokens** used. The response shows which model served the request.
+
+Keep the following in mind when testing:
+
+- **Healthy attempts are real requests.** The provider bills them like any other call, and spend policies count them.
+- **Simulated failures cost no tokens.** To approximate network latency, the gateway calls a provider endpoint that does not generate tokens.
+- **Errors outside the simulation still surface.** If a model in the chain has no provider key in the workspace, its attempt returns `424`, as it would in production.
+- **Only some requests are simulated.** Simulation covers non-streaming requests on LangSmith Cloud. System One, Decisions, and ScaleDown requests have no fallback chain to simulate.
+
+{/* VERIFY W9: walk all four behaviors; confirm Outage returns 503 and Rate limit 429 in the attempt labels, and the "Fallback hops", "Latency added", "Tokens" labels (GatewaySimulationResults.tsx). Cloud-only and non-streaming come from the PM audit (F1), not re-read here. */}
+
+### Fall back when a provider key is missing
+
+A missing provider key returns `424`, which is not one of the default trigger statuses. To let a chain skip a provider that has no key in the workspace, edit the chain, add `424` under **Configure fallback triggers (advanced)**, and save it.
+
+{/* VERIFY W9: confirm the default trigger list in the chain editor (the recording adds 424 from "the different HTTP statuses that we will support fallbacks for"). */}
+
 ## Set fallbacks for a prompt
 
 To give a prompt its own fallback chain, route it through a saved model configuration. The prompt references the configuration by name, while the gateway manages its fallback chain.

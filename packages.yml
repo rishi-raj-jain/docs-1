@@ -2094,6 +2094,11 @@ packages:
   name_title: AI Stupid Level
   repo: StudioPlatforms/aistupidlevel-sdk
   js: "n/a"
+- name: langchain-wayza
+  name_title: WayzaToolkit
+  repo: wayza-protocol/wayza-js
+  path: packages/langchain-wayza
+  js: "n/a"
 - name: langchain-webextract
   name_title: WebExtract
   repo: nyx464664816-stack/webextract

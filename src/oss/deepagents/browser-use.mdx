@@ -6,7 +6,7 @@ description: Give a deep agent a browser so it can take actions on websites and 
 Browser use gives a deep agent a browser that it controls through tools. The agent opens pages, reads what renders, clicks, types, and takes screenshots. Use it for work that happens on the web:
 
 - **Actions with no public API**: Complete a checkout, fill out a form, or research a topic by following links across sites.
-- **End-to-end testing**: QA a web app through its UI. In a software factory, a coding agent changes the app, opens it in a browser, and checks that the change works.
+- **End-to-end testing**: QA a web app through its UI. After a coding agent changes an app, another agent can open the UI and check that the change works.
 
 To add a browser to a managed agent, see [Browser use in Managed Deep Agents](/langsmith/managed-deep-agents-browser-use).
 
@@ -16,11 +16,9 @@ An agent needs two components to use the web:
 
 | Component | Options |
 | --- | --- |
-| A browser | Local Chrome or Chromium, on your machine or in a [sandbox](/oss/deepagents/sandboxes). A remote browser from a provider such as [Browserbase](https://www.browserbase.com). |
+| A browser | <ul><li><strong>Local</strong>: Chrome or Chromium on your machine or in a <a href="/oss/deepagents/sandboxes">sandbox</a>. Reaches apps on its own <code>localhost</code> and needs no provider account. You install and update Chrome yourself.</li><li><strong>Remote</strong>: A cloud browser from a provider such as <a href="https://www.browserbase.com">Browserbase</a>. Isolated from your machine, needs an API key, and cannot reach <code>localhost</code> on your machine or in your sandbox.</li></ul> |
 | Browser tools | [Stagehand v4](https://docs.stagehand.dev/v4/integrations/agent-frameworks/deep-agents) (recommended), [Playwright MCP](https://github.com/microsoft/playwright-mcp), or the [agent-browser](https://github.com/vercel-labs/agent-browser) CLI. |
 
-- **Local browser**: Reaches apps on its own `localhost` and needs no provider account. You install and update Chrome yourself.
-- **Remote browser**: Runs in the provider's cloud, isolated from your machine, and needs an API key. It cannot reach `localhost` on your machine or in your sandbox.
 
 ### Stagehand tools
 
@@ -33,6 +31,8 @@ Stagehand's Deep Agents integration runs an MCP server that keeps one browser op
 | `screenshot` | Captures the rendered page as a PNG or JPEG. |
 
 An element ID is valid only for the latest snapshot of the active page, so the agent takes a new snapshot after it navigates.
+
+The MCP server runs in Python, but Python and JavaScript agents can both use its tools. The examples below connect to the same server through their language's MCP adapter.
 
 :::python
 For the full configuration reference, see the [Stagehand integration](/oss/integrations/tools/stagehand).
@@ -116,15 +116,19 @@ from langchain.mcp import MCPAdapter
 
 STAGEHAND_DIR = "/path/to/stagehand/packages/integrations/deepagents"
 
+server_env = {
+    name: value
+    for name, value in os.environ.items()
+    if name.startswith(("STAGEHAND_", "BROWSERBASE_")) and value
+}
+server_env["STAGEHAND_BROWSER"] = "browserbase"
+
 MCP_CONFIG = {
     "mcpServers": {
         "browser": {
             "command": "uv",
             "args": ["run", "--project", STAGEHAND_DIR, "--locked", "stagehand-deepagents-mcp"],
-            "env": {
-                "STAGEHAND_BROWSER": "browserbase",
-                "BROWSERBASE_API_KEY": os.environ["BROWSERBASE_API_KEY"],
-            },
+            "env": server_env,
         }
     }
 }
@@ -170,6 +174,14 @@ import { createDeepAgent } from "deepagents";
 
 const STAGEHAND_DIR = "/path/to/stagehand/packages/integrations/deepagents";
 
+const serverEnv = Object.fromEntries(
+  Object.entries(process.env).filter(
+    ([name, value]) =>
+      value && (name.startsWith("STAGEHAND_") || name.startsWith("BROWSERBASE_")),
+  ),
+) as Record<string, string>;
+serverEnv.STAGEHAND_BROWSER = "browserbase";
+
 const SYSTEM_PROMPT = `You control one persistent browser through three tools:
 - browser_snapshot: read the active page and get bracketed element IDs.
 - browser_run: send snapshot actions, or JavaScript that uses the Playwright-shaped page API.
@@ -184,10 +196,7 @@ const adapter = new MCPAdapter({
       mode: "legacy",
       command: "uv",
       args: ["run", "--project", STAGEHAND_DIR, "--locked", "stagehand-deepagents-mcp"],
-      env: {
-        STAGEHAND_BROWSER: "browserbase",
-        BROWSERBASE_API_KEY: process.env.BROWSERBASE_API_KEY ?? "",
-      },
+      env: serverEnv,
     },
   },
 });
@@ -213,13 +222,13 @@ try {
 }
 ```
 
-The adapter prefixes each tool name with the server name, so the agent sees `browser_run`, `browser_snapshot`, and `browser_screenshot`.
+By default, the adapter prefixes each tool name with the server name, so the agent sees `browser_run`, `browser_snapshot`, and `browser_screenshot`. Set `prefixToolNameWithServerName: false` if you want the unprefixed names `run`, `snapshot`, and `screenshot` instead. Update the system prompt and `interruptOn` keys to match your tool names.
 :::
 
 </Step>
 </Steps>
 
-The server receives only the variables in its `env` block, plus the MCP client's safe defaults such as `PATH` and `HOME`. Your model API key stays in the agent process.
+The server receives the forwarded `STAGEHAND_*` and `BROWSERBASE_*` variables, plus the MCP client's safe defaults such as `PATH` and `HOME`. Your model API key stays in the agent process.
 
 <Warning>
 Keep the adapter open for the whole agent run. The browser lives in the server process. The open adapter holds one connection to that process, so every tool call in the run uses the same browser.
@@ -278,7 +287,7 @@ This example uses agent-browser through `execute`, rather than MCP. Each CLI cal
 A [snapshot](/langsmith/sandbox-snapshots) contains the filesystem and dependencies for new sandboxes. Create one containing your app, its dependencies, Node.js, and curl. During snapshot setup, install agent-browser and Chrome for Testing:
 
 ```bash
-npm install -g agent-browser@0.39.1
+npm install -g agent-browser@latest
 agent-browser install --with-deps
 ```
 
@@ -416,6 +425,8 @@ try {
   await backend.close();
 }
 ```
+
+`backend.close()` deletes the wrapped JavaScript sandbox, so no additional `client.deleteSandbox()` call is needed.
 :::
 
 The examples disable Chrome's internal sandbox with `--no-sandbox` for root-run sandbox images. The disposable LangSmith sandbox supplies the outer isolation boundary. For images that support Chrome's internal sandbox, omit that flag.
@@ -426,7 +437,8 @@ The screenshot is an artifact downloaded to your machine, not an image automatic
 
 Code that runs in the browser can use any account the session is signed in to and any site the browser can reach. Before you give an agent a browser:
 
-- Use Browserbase as the isolation boundary for untrusted tasks. `run` executes model-authored JavaScript inside the browser. See Stagehand's [security boundary](https://docs.stagehand.dev/v4/integrations/agent-frameworks/overview#security-boundary).
+- For Stagehand, use Browserbase as the isolation boundary for untrusted tasks. `run` executes model-authored JavaScript inside the browser. See Stagehand's [security boundary](https://docs.stagehand.dev/v4/integrations/agent-frameworks/overview#security-boundary).
+- For the [sandbox QA path](#test-an-app-with-chrome-in-a-langsmith-sandbox), the LangSmith sandbox is the isolation boundary. The disposable sandbox isolates Chrome and the app from your machine.
 - Use test accounts and test payment methods for checkout and form flows, and [require approval](#require-approval-before-actions) before any action that commits a purchase.
 - Treat page content as untrusted input. A page can contain text written to redirect the agent.
 - Pass the browser server only the credentials it needs.

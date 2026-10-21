@@ -39,7 +39,7 @@ Use an ID from the latest `snapshot` response instead of the illustrative `1-42`
 
 ### Prerequisites
 
-- Python 3.11 or later.
+- Python 3.11 through 3.13 for this walkthrough.
 - [uv](https://docs.astral.sh/uv/) to install and run the MCP server.
 - An API key for the agent's model provider, such as `OPENAI_API_KEY`.
 - Google Chrome or Chromium for a local browser, or a [Browserbase](https://www.browserbase.com) API key for a remote browser.
@@ -83,6 +83,8 @@ Export the agent's model-provider credential:
 ```bash
 export OPENAI_API_KEY="your-openai-api-key"
 ```
+
+The server defaults to local Chrome. For Browserbase or headless local Chrome, export the variables in [Choose the browser](#choose-the-browser) before you run the agent.
 
 This example uses OpenAI's [GPT-5.5 snapshot](https://developers.openai.com/api/docs/models/gpt-5.5). The agent starts the Stagehand server, loads its tools, and passes them to @[`create_deep_agent`]. Set `STAGEHAND_DIR` to the absolute path of `packages/integrations/deepagents`:
 
@@ -164,12 +166,17 @@ export BROWSERBASE_API_KEY="your-browserbase-api-key"
 
 ```bash Local Chrome
 export STAGEHAND_BROWSER="local"
-export STAGEHAND_HEADLESS="true"
 ```
 </CodeGroup>
 
 - **Browserbase**: The server starts a Browserbase session with a 1280 × 720 viewport. The browser runs remotely, so it cannot reach `localhost` on your machine or in a sandbox.
-- **Local Chrome**: The server discovers installed Google Chrome or Chromium. It opens a visible window unless `STAGEHAND_HEADLESS` is `true`, which environments without a display, such as containers, require. The browser shares the server's `localhost`.
+- **Local Chrome**: The server discovers installed Google Chrome or Chromium and opens a visible window by default. Set `STAGEHAND_HEADLESS=true` in environments without a display, such as containers. The browser shares the server's `localhost`.
+
+(Optional) To run local Chrome without a visible window, export this variable before you run the agent:
+
+```bash
+export STAGEHAND_HEADLESS="true"
+```
 
 To run Chrome next to your app with a LangSmith sandbox backend, see [Test an app with Chrome in a LangSmith sandbox](/oss/deepagents/browser-use#test-an-app-with-chrome-in-a-langsmith-sandbox).
 

@@ -590,7 +590,8 @@
                           "oss/python/integrations/providers/microsoft",
                           "oss/python/integrations/providers/ollama",
                           "oss/python/integrations/providers/groq",
-                          "oss/python/integrations/providers/fireworks"
+                          "oss/python/integrations/providers/fireworks",
+                          "oss/python/integrations/providers/browserbase"
                         ]
                       },
                       {
@@ -2952,10 +2953,6 @@
     {
       "source": "/langsmith/managed-deep-agents-quickstart",
       "destination": "/langsmith/python/managed-deep-agents-quickstart"
-    },
-    {
-      "source": "/langsmith/managed-deep-agents-browser-use",
-      "destination": "/langsmith/python/managed-deep-agents-browser-use"
     },
     {
       "source": "/langsmith/managed-deep-agents-sandboxes",

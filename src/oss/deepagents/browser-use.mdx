@@ -5,8 +5,8 @@ description: Give a deep agent a browser so it can take actions on websites and 
 
 Browser use gives a deep agent a browser that it controls through tools. The agent opens pages, reads what renders, clicks, types, and takes screenshots. Use it for work that happens on the web:
 
-- **Actions with no public API**: Complete a checkout, fill out a form, or research a topic by following links across sites.
-- **End-to-end testing**: QA a web app through its UI. After a coding agent changes an app, another agent can open the UI and check that the change works.
+- **Actions with no public API**: Book a restaurant reservation, complete a checkout, or research a topic by following links across sites.
+- **End-to-end testing**: QA a web app through its UI. [Open SWE](https://github.com/langchain-ai/open-swe), LangChain's open-source coding agent, gets a browser in each thread so it can open the app it changed and check the change in the UI.
 
 To add a browser to a managed agent, see [Browser use in Managed Deep Agents](/langsmith/managed-deep-agents-browser-use).
 
@@ -155,7 +155,10 @@ async def main():
                 "messages": [
                     {
                         "role": "user",
-                        "content": "Open news.ycombinator.com, read the top three stories, and summarize each one.",
+                        "content": (
+                            "On opentable.com, find a table for two in San Francisco this Friday "
+                            "at 7 PM. Stop before confirming, and report the restaurant, time, and booking link."
+                        ),
                     }
                 ]
             }
@@ -212,7 +215,9 @@ try {
     messages: [
       {
         role: "user",
-        content: "Open news.ycombinator.com, read the top three stories, and summarize each one.",
+        content:
+          "On opentable.com, find a table for two in San Francisco this Friday " +
+          "at 7 PM. Stop before confirming, and report the restaurant, time, and booking link.",
       },
     ],
   });
@@ -240,7 +245,7 @@ Snapshots can be long. To keep them out of the main agent's context, give the br
 
 ### Require approval before actions
 
-`snapshot` and `screenshot` only read the page. `run` navigates, clicks, types, and submits forms. To review each `run` call before it executes, add the tool to `interrupt_on` and give the agent a checkpointer:
+`snapshot` and `screenshot` only read the page. `run` navigates, clicks, types, and submits forms, including the final step of a booking. To review each `run` call before it executes, add the tool to `interrupt_on` and give the agent a checkpointer:
 
 :::python
 ```python
@@ -277,6 +282,8 @@ Use the prefixed name, `browser_run`, as the key. The agent pauses before each `
 Invoke the agent with a `thread_id` and resume it on the same thread. For the full loop, see [Handle interrupts](/oss/deepagents/human-in-the-loop#handle-interrupts).
 
 ## Test an app with Chrome in a LangSmith sandbox
+
+This example covers end-to-end testing: after a coding agent changes an app, an agent opens the app in a browser and checks the change. Open SWE gets its browser from [Managed Deep Agents](/langsmith/managed-deep-agents-browser-use). The steps below build the same check with a LangSmith sandbox.
 
 A [LangSmith sandbox](/langsmith/sandboxes) runs your app and Chrome together, so the browser can open the app at `localhost`. The agent runs on your machine and uses the `LangSmithSandbox` backend for filesystem access and an `execute` tool.
 

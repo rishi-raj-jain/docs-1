@@ -292,11 +292,11 @@ async function github() {
 ```
 :::
 
-Handlers run before GitHub receives the webhook response, so keep their GitHub calls short. Hooks run in the background.
+Handlers usually run before GitHub receives the webhook response, so keep their GitHub calls short. Hooks run in the background.
 
 ### Answer only mentions
 
-GitHub sends no event for a mention. Instead, `event.mentions` lists the handles an event's text mentions: the comment's or review's body, or the title and body of an issue or pull request. Handles are lowercase, and any text tag counts, such as `@my-agent`, even one that is not a GitHub account. Mentions inside code don't count.
+GitHub sends no event for a mention. Instead, `event.mentions` lists the handles an event's text mentions: the body of a new or edited comment or review, or the title and body of an opened or edited issue or pull request. Other events, such as `labeled` or `synchronize`, list none. Handles are lowercase and include the `@`, such as `@my-agent`. Any text tag counts, even one that is not a GitHub account, and so do team handles such as `@acme/reviewers`. Mentions inside code, quotes, or HTML comments don't count.
 
 :::python
 ```python
@@ -317,15 +317,15 @@ export const channel = channels.github({
   onEvent: {
     "issue_comment.created": (event) => {
       if (!event.mentions.includes("@my-agent")) return;
-      const { full_name } = event.repository;
-      return `Answer the comment on #${event.payload.issue.number} in ${full_name}.`;
+      const { fullName } = event.repository;
+      return `Answer the comment on #${event.payload.issue.number} in ${fullName}.`;
     },
   },
 });
 ```
 :::
 
-`issue_comment` events cover pull request comments too. To answer only on issues, skip events whose `payload.issue.pull_request` is set. An `edited` event says what changed in `payload.changes`, so you can skip edits that leave the text as it was.
+`issue_comment` events cover pull request comments too. To answer only on issues, skip events whose `payload.issue.pull_request` is set. For an `edited` event, `event.mentions` lists only the handles the edit added, so editing a comment that already mentioned the agent doesn't mention it again. GitHub's `payload.changes` says what else changed.
 
 ### Let only maintainers start runs
 
@@ -442,15 +442,21 @@ A failing `onReceived` is logged and doesn't stop the run.
 
 ### Tell people a run waits for input
 
-A run can stop on a decision, such as a tool call that requires approval. The App then comments on the issue or pull request with a link to the thread in LangSmith Studio, where someone with access to the workspace makes the decision. You don't need code for this.
+A run can stop on a decision, such as a tool call that requires approval. The App then comments on the issue or pull request with a link to the thread in LangSmith Studio, where someone with access to the workspace makes the decision. You don't need code for this, as long as your handler answers the check described next.
 
-While the thread waits, new events start no run. The handler still runs, with `thread.interrupted` set, to decide whether the event gets the same link. Return a run input to send it, or nothing to stay quiet, so the handler's filters, such as a mention check, decide who gets it. No run starts either way.
+While the thread waits, new events start no run. Each time the thread waits on a decision, whether the event's own run stopped or a new event arrived, the channel calls the event's handler again with `thread.interrupted` set, to decide whether the event gets a comment with the link. Return a run input to post it, or nothing to stay quiet, so the handler's filters, such as a mention check, decide who gets it. No run starts either way, so skip side effects, such as a GitHub call, while `thread.interrupted` is set. Events that aren't about one issue or pull request, such as `push`, get no comment.
 
 To do more, such as labeling the issue, use `onFinish`, as in the next section.
 
 ### Report how a run ended
 
-`onFinish` (`on_finish` in Python) runs once each handled event is done, with the run it started and the decisions its thread waits on. The run's `status` uses LangGraph's names: `success`, `error`, `timeout`, or `interrupted`. An event that started no run, such as one the handler skipped, has no `run`.
+`onFinish` (`on_finish` in Python) runs once each handled event is done, with the event, its thread, and how the event finished. Check the finish's `type`:
+
+- `run`: The event started a run, and `run` says how it ended. Its `status` uses LangGraph's names: `success`, `error`, `timeout`, or `interrupted`, which means the run was cancelled, such as by a newer event.
+- `skipped`: The event started no run, and `reason` says why, such as `ignored` when the handler skipped it or `waiting` when its thread waits on a decision.
+- `failed`: Managed Deep Agents couldn't start the run or lost track of it, and `reason` says which.
+
+Each finish also lists the decisions its thread waits on in `interrupts`. Check `interrupts`, not the run's status, to tell whether the thread waits on a decision.
 
 The following hook comments when a run fails, and labels the issue or pull request when its thread waits on a decision:
 
@@ -461,15 +467,13 @@ async def on_finish(event, thread, finished):
     if subject is None:
         return
     path = f"/repos/{event.repository.full_name}/issues/{subject['number']}"
-    run = finished.get("run")
-    if run is not None and run["status"] in {"error", "timeout"}:
+    if finished["type"] == "run" and finished["run"]["status"] in {"error", "timeout"}:
         await github("POST", f"{path}/comments", json={"body": "Something went wrong. Try again later."})
     if finished["interrupts"]:
         await github("POST", f"{path}/labels", json={"labels": ["needs-input"]})
 
 
 channel = channels.github(
-    app={"permissions": {"issues": "write"}},
     on_event={"issue_comment.created": on_comment},
     on_finish=on_finish,
 )
@@ -479,18 +483,18 @@ channel = channels.github(
 :::js
 ```ts
 export const channel = channels.github({
-  app: { permissions: { issues: "write" } },
   onEvent: { "issue_comment.created": onComment },
-  onFinish: async (event, thread, { run, interrupts }) => {
+  onFinish: async (event, thread, finished) => {
     const payload = event.payload as { issue?: { number: number }; pull_request?: { number: number } };
     const number = payload.issue?.number ?? payload.pull_request?.number;
     if (number === undefined) return;
     const target = { owner: event.repository.owner, repo: event.repository.name, issue_number: number };
     const octokit = await github();
-    if (run?.status === "error" || run?.status === "timeout") {
+    const status = finished.type === "run" ? finished.run.status : undefined;
+    if (status === "error" || status === "timeout") {
       await octokit.rest.issues.createComment({ ...target, body: "Something went wrong. Try again later." });
     }
-    if (interrupts.length > 0) {
+    if (finished.interrupts.length > 0) {
       await octokit.rest.issues.addLabels({ ...target, labels: ["needs-input"] });
     }
   },
@@ -498,7 +502,9 @@ export const channel = channels.github({
 ```
 :::
 
-`onFinish` runs in the deployment process that took the event, so a restart while a run is in progress loses it. To learn reliably when each run ends, use a [completion webhook](#let-your-service-decide-what-starts).
+Issue comment events already give the App write access to issues, so the hook needs no extra permission.
+
+`onFinish` runs in the deployment process that took the event, so a restart while a run is in progress loses it. A run that resumes after a decision in Studio doesn't reach `onFinish` either. To learn reliably when each run ends, use a [completion webhook](#let-your-service-decide-what-starts).
 
 ### Let your service decide what starts
 
@@ -535,12 +541,19 @@ export const channel = channels.github({
 ```
 :::
 
-The channel calls the service exactly when it would call a handler function. It POSTs JSON with the event (`key`, `deliveryId`, and GitHub's `payload`) and its thread (`id`, `channel.name`, and `interrupted` while the thread waits). The service answers in one of two ways:
+The URL must use `https`, or `http` to `localhost`, and can't contain credentials. The channel calls the service at the same points it would call a handler function, but after GitHub has its webhook response. It POSTs `{"event": ..., "thread": ...}` as JSON:
+
+- `event` has the event's `key` and `deliveryId`, GitHub's `payload`, and the `action`, `repository`, `sender`, and `mentions` a handler gets.
+- `thread` has the thread's `id`, `channel.name`, and `interrupted: true` when the channel asks whether the event gets a [comment with a Studio link](#tell-people-a-run-waits-for-input).
+
+The service answers in one of two ways:
 
 - With `{"input": ..., "context": ..., "metadata": ..., "webhook": ...}` to start that run. Only `input` is required.
-- With `null` or HTTP 204 to start nothing.
+- With JSON `null` or HTTP 204 to start nothing.
 
-The SDK exports the request and answer types, such as `GitHubEndpointRequest` and `EndpointAnswer`, for the service to use. An error status, a redirect, or no answer within 60 seconds fails the event, as a handler that throws does.
+The SDK exports the request and answer types, such as `GitHubEndpointRequest` and `EndpointAnswer`, for the service to use. A network error, HTTP 429, or a 5xx status is retried, for up to three attempts. Any other error status, a redirect, an answer that isn't one of the two above, or no answer within 60 seconds starts no run, as a handler that throws does.
+
+If the deployment sets `MDA_SERVICE_SECRET`, each request is signed with [Standard Webhooks](https://www.standardwebhooks.com/) headers (`webhook-id`, `webhook-timestamp`, and `webhook-signature`), so the service can verify it came from your deployment. Retries keep the same `webhook-id`.
 
 Set `webhook` to have the Agent Server POST the finished run, with its status, metadata, and values, to your service. Unlike `onFinish`, the webhook survives deployment restarts.
 

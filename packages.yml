@@ -2085,6 +2085,11 @@ packages:
   name_title: ACGSMiddleware
   repo: acgs-ai/langchain-acgs
   js: "n/a"
+- name: langchain-submilli
+  name_title: SubmilliMiddleware
+  repo: submilli/submilli-python
+  path: packages/langchain-submilli
+  js: "n/a"
 - name: langchain-aistupidlevel
   name_title: AI Stupid Level
   repo: StudioPlatforms/aistupidlevel-sdk

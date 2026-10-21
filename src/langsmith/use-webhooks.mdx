@@ -148,7 +148,7 @@ The full webhook payload contains the following fields:
 | `run_id` | `string` (UUID) | Unique identifier for the run. |
 | `thread_id` | `string` (UUID) | Identifier for the thread the run belongs to. |
 | `assistant_id` | `string` | Identifier for the assistant that executed the run. |
-| `status` | `string` | Final status of the run (e.g., `"success"`, `"error"`). |
+| `status` | `string` | Final status of the run: `"success"`, `"error"`, or `"interrupted"`. See [Status values](#status-values) below. |
 | `created_at` | `string` (datetime) | Timestamp when the run was created. |
 | `updated_at` | `string` (datetime) | Timestamp when the run was last updated. |
 | `run_started_at` | `string` (datetime) | Timestamp when the run began executing. |
@@ -200,6 +200,18 @@ When a run fails, the `error` field contains details about the failure:
   }
 }
 ```
+
+## Status values
+
+The `status` field takes one of three values:
+
+| Value | When it is sent |
+|-------|----------------|
+| `"success"` | The run completed normally. Also sent when a run pauses at an [`interrupt()`](https://langchain-ai.github.io/langgraph/reference/types/#langgraph.types.interrupt) call waiting for human input — the pending interrupt is not visible in the payload. Read the thread state to detect it. |
+| `"error"` | The run raised an unhandled exception. The `error` field in the payload contains the error type and message. |
+| `"interrupted"` | The run was cancelled before completing — either by a `multitask_strategy: "interrupt"` policy that preempted it for a newer run, or by an explicit `runs.cancel` call. |
+
+A single thread can receive more than one webhook call. For example, if a new run preempts an in-flight run, the server sends an `"interrupted"` webhook for the preempted run and a separate webhook for the new run when it finishes.
 
 ## Secure webhooks
 
@@ -289,8 +301,12 @@ Available options:
 | `allowed_domains` | Hostname allowlist. Supports wildcards for subdomains (e.g., `*.mycompany.com`). |
 | `require_https` | Reject `http://` URLs when `true`. |
 | `allowed_ports` | Explicit port allowlist. Defaults to 443 (https) and 80 (http). |
-| `disable_loopback` | Disallow relative URLs (internal loopback calls) when `true`. |
+| `disable_loopback` | Disallow loopback addresses and relative URLs when `true`. Defaults to `true` as of `langgraph-api` 0.16.0. |
 | `max_url_length` | Maximum permitted URL length in characters. |
+
+<Note>
+Independent of these settings, the server applies an SSRF policy that blocks requests to cloud-metadata endpoints (such as `169.254.169.254`) and cluster-internal hosts by default. The `disable_loopback` option provides additional control over loopback and relative URLs on top of this baseline protection.
+</Note>
 
 ## Disable webhooks
 

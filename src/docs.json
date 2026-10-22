@@ -2992,7 +2992,7 @@
     },
     {
       "source": "/langsmith/prebuilt-evaluators",
-      "destination": "/langsmith/evaluators"
+      "destination": "/langsmith/evaluators#prebuilt-evaluator-templates"
     },
     {
       "source": "/langsmith/deploy-hybrid",

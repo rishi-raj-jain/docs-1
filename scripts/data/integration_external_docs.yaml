@@ -510,6 +510,9 @@ python:
   - name: PexafyToolkit
     pypi: langchain-pexafy
     docs_url: https://docs.pexafy.com/langchain
+  - name: Pidgeon Toolkit
+    pypi: langchain-pidgeon
+    docs_url: https://pidgeon.ai/docs/langchain
   - name: Pushary
     pypi: pushary-langgraph
     docs_url: https://pushary.com/docs/agents/build/langgraph?utm_source=langchain&utm_medium=integration-directory&utm_campaign=pushary-langgraph-py
@@ -1899,6 +1902,12 @@ python:
   - name: CyborgVectorStore
     pypi: langchain-cyborgdb
     docs_url: https://docs.cyborg.co/versions/latest/integrations/langchain/introduction
+    delete_by_id: true
+    filtering: true
+    search_by_vector: true
+    search_with_score: true
+    async_api: true
+    multi_tenancy: true
   - name: IBM db2 vector store and vector search
     pypi: langchain-db2
     docs_url: https://github.com/langchain-ai/langchain-ibm/tree/main/libs/langchain-db2
@@ -2158,6 +2167,9 @@ python:
   - name: CapslaneLoader
     pypi: capslane
     docs_url: https://capslane.com/integrations/langchain
+  - name: CommentScraperLoader
+    pypi: langchain-comment-scraper
+    docs_url: https://comment-scraper.com/langchain
   - name: PyMuPDF4LLMLoader
     pypi: langchain-pymupdf4llm
     docs_url: https://github.com/pymupdf/langchain-pymupdf4llm
@@ -2399,6 +2411,9 @@ python:
     pypi: langchain-yantrikdb
     docs_url: https://github.com/yantrikos/langchain-yantrikdb
   callbacks:
+  - name: Agent Pulse
+    pypi: techbridge-agentpulse
+    docs_url: https://www.agentspulse.ai/docs/langchain
   - name: eucompliance.tools
     pypi: eucompliance-ai-act
     docs_url: https://github.com/PatrickPi1312/eucompliance-ai-act-ts#readme

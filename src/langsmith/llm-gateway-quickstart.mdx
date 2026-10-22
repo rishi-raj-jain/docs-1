@@ -103,10 +103,10 @@ In the Simulator, click **View trace** next to the response. Requests from your 
 
 | Symptom | Cause | Fix |
 | --- | --- | --- |
-| `424` with `Required workspace secret "ANTHROPIC_API_KEY" is missing.` | The workspace your key belongs to has no key for this provider. A gateway key created in the Simulator belongs to your earliest-created workspace, which may not be the one you have open. | Add the provider key in the Simulator. If you belong to more than one workspace, create a key in **Settings** > **API Keys** with the right default workspace, then select **Use existing key** in the Simulator. |
+| `424` with `Required workspace secret "ANTHROPIC_API_KEY" is missing.` | The workspace your key belongs to has no key for this provider. | Add the provider key in the Simulator. If you belong to more than one workspace, create a key in **Settings** > **API Keys** with the right default workspace, then select **Use existing key** in the Simulator. |
 | Error shows a masked `sk-...` key | The provider key stored in LangSmith is invalid or revoked. | Ask a workspace admin to replace it in workspace secrets. |
 | Error shows a masked `lsv2_...` key | Your LangSmith API key went straight to the provider, so the client is not using the gateway base URL. | Set the base URL. |
-| `401` | Your LangSmith API key is invalid or expired. Keys created in the Simulator expire after 30 days by default. | Create a new key. |
+| `401` | Your LangSmith API key is invalid or expired. | Create a new key. |
 | `403`, or no **Run request** button in the Simulator | You lack the `gateway:invoke` permission. | Ask a workspace admin to grant it. |
 | The Simulator asks you to contact an admin | You lack permission to add provider keys. | Ask a workspace admin to add the provider key. |
 

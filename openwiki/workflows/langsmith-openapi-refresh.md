@@ -3,9 +3,6 @@ type: generated API publication workflow
 title: LangSmith OpenAPI Refresh
 description: Documents the scheduled, reviewed refresh that turns the LangSmith service OpenAPI document into the committed input for Mintlify's LangSmith REST API reference. Covers transformation policy, constrained remote ingestion, standing-PR lifecycle, validation limits, and ownership boundaries.
 tags: [langsmith, openapi, automation, github-actions, mintlify, security]
-verified:
-  - by: openwiki/0.4.3
-    at: 2026-10-19T08:25:25.748Z
 sources:
   - id: openwiki-source-5153f86e64d6ee0b305f72b3
     resource: repo://.github/workflows/refresh-langsmith-openapi.yml
@@ -23,7 +20,10 @@ sources:
     resource: repo://src/docs.json
   - id: openwiki-source-38d325b9c51f3c8dfd528917
     resource: repo://tests/unit_tests/test_filter_mint_broken_links.py
-generated: { by: "openwiki/0.4.3", at: "2026-10-19T08:25:25.748Z" }
+generated: { by: "openwiki/0.4.3", at: "2026-10-21T08:20:13.723Z" }
+verified:
+  - by: openwiki/0.4.3
+    at: 2026-10-21T08:20:13.723Z
 ---
 
 # LangSmith OpenAPI Refresh
@@ -106,7 +106,7 @@ This maintains at most one outstanding refresh PR instead of creating a daily qu
 
 A disallowed fetch hostname raises `ValueError`; a network, TLS, timeout, or JSON-decoding failure prevents a candidate from being produced. The workflow shell uses `set -euo pipefail`, so checkout, push, or PR failures stop the step. A no-diff result is a successful no-op, not a failed refresh.
 
-There is no repository command that proves Mintlify rendered every LangSmith REST endpoint page. `make check-openapi` currently validates only the Agent Server specification. The normal link checks pass Mint output through `scripts/filter_mint_broken_links.py`, which explicitly removes reports containing `/langsmith/smith-api` because that route family is generated at deployment rather than present in the local build. Inspect a Mintlify preview or deployed site for the rendered REST endpoint surface; use the processor command to verify transformation and the refresh PR to verify the candidate change.
+There is no repository command that proves Mintlify rendered every LangSmith REST endpoint page. `make check-openapi` currently validates only the Agent Server specification, not the committed LangSmith REST input. The normal link checks pass Mint output through `scripts/filter_mint_broken_links.py`, which explicitly removes reports containing `/langsmith/smith-api` because that route family is generated at deployment rather than present in the local build. Inspect a Mintlify preview or deployed site for the rendered REST endpoint surface; use the processor command to verify transformation and the refresh PR to verify the candidate change.
 
 ### Focused test boundary
 
@@ -129,6 +129,7 @@ It does not exercise remote fetches, the processor transformation policy, GitHub
 
 ## Related pages
 
+- [GitHub Actions and CI Automation](/openwiki/integrations/github-actions.md)
 - [Mintlify Integration](/openwiki/integrations/mintlify.md)
 - [Reference Documentation Boundaries](/openwiki/integrations/reference-docs.md)
 - [Adding and Maintaining Documentation Pages](/openwiki/operations/adding-pages.md)

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:ceebe79469d9be70ddfde633ec2a0990e65a5c4ccdd69e9dd1882100c9f6a81a",
+  "pageVersion": "sha256:000f43a018f08ceaac1f885c6cc673168542f7e1df800cbbe657d6a686aa4a66",
   "claims": [
     {
       "id": "claim_6644bd73a0cc460685ec7b13f96b2b44",
@@ -12,7 +12,7 @@
         },
         {
           "resource": "repo://pyproject.toml",
-          "version": "repo-file-v1:sha256:ac2470cb1c7ff8a45d8898e9e0a9bfa815b02167a30bb7877145fa0528b57fbb"
+          "version": "repo-file-v1:sha256:d2eadd3f5b402b3c0264e266252ff6ac3417d51b4724255baaa7d1eb783cc0fd"
         }
       ]
     },
@@ -246,7 +246,7 @@
         },
         {
           "resource": "repo://README.md",
-          "version": "repo-file-v1:sha256:0ddf184983025c95a0aee42000053831a4f84274e6cea7ce0acb55633c2bd3ec"
+          "version": "repo-file-v1:sha256:02b34b9fd64f698ba44b6a844887e1d94f0f5441c6f7ef04c22c826330a9d342"
         },
         {
           "resource": "repo://pipeline/commands/dev.py",
@@ -284,7 +284,7 @@
         },
         {
           "resource": "repo://scripts/filter_mint_broken_links.py",
-          "version": "repo-file-v1:sha256:8005ef95f95e725b93070c1172f38e026a0a7b7a95546aba820ece9f2e402417"
+          "version": "repo-file-v1:sha256:262207bdb52866597825484c4af28ff77c19c9fca9cca0927f1e2ab34d3a11b2"
         }
       ]
     },
@@ -301,10 +301,66 @@
           "version": "repo-file-v1:sha256:c332e359609aebe6393c72d78d7dc23902c88cd8da8c0841dac28ca82a0c5b62"
         }
       ]
+    },
+    {
+      "id": "claim_2e647b0c6223495981357869cac70e6b",
+      "statement": "`.mise.toml` defines the local Node 22, Python 3.13, uv 0.9.26, Vale 3.17.1, prek, and Mint CLI tool baseline; its postinstall hook installs prek's pre-commit and pre-push hooks.",
+      "evidence": [
+        {
+          "resource": "repo://.mise.toml",
+          "version": "repo-file-v1:sha256:a75fb7658f77de57812ff9a6365b2ea930ac2e574afeebd714ef3696758306d5"
+        }
+      ]
+    },
+    {
+      "id": "claim_a8f4e74c75cf4425b07053a20af68930",
+      "statement": "`make lint_prose` derives its Vale version from `.mise.toml`, installs or reuses that matching binary at `.bin/vale`, and runs it against `FILES` or `src/` while excluding code samples and node modules; the installer rejects non-semantic versions and can fall back to `go install` when the release download fails.",
+      "evidence": [
+        {
+          "resource": "repo://Makefile",
+          "version": "repo-file-v1:sha256:c4ab6e13cf856c6d7548a69a1b43bca77ffca5dd7210a4a1da8e7502bb74e7a7"
+        },
+        {
+          "resource": "repo://scripts/install-vale.sh",
+          "version": "repo-file-v1:sha256:adadcbe9b4224f4f4bdd25bcb3d01537fe7ab33a50aca1e59cd7d3400eed30db"
+        }
+      ]
+    },
+    {
+      "id": "claim_a06c86e18a5947ad8ed14fe4ef9baeec",
+      "statement": "`.vale.ini` maps MDX to Markdown, skips frontmatter and fenced code blocks, uses the LangChain, proselint, Vale, and write-good style sets at error severity, and defines a narrowly scoped provider-catalog exception while disabling Vale spelling.",
+      "evidence": [
+        {
+          "resource": "repo://.vale.ini",
+          "version": "repo-file-v1:sha256:968570c7429e017b031de418be027085b2e45681f2a5ada747c719a2aae91f81"
+        }
+      ]
+    },
+    {
+      "id": "claim_b95c2f953727483aa231b13b27ec01d3",
+      "statement": "Code-sample dependencies are shared by language: Python samples use the root uv project, TypeScript samples use `src/code-samples/package.json` and run through `tsx`, and Go samples resolve `src/code-samples/go.mod`; the Make target installs the code-samples Node dependencies before execution.",
+      "evidence": [
+        {
+          "resource": "repo://Makefile",
+          "version": "repo-file-v1:sha256:c4ab6e13cf856c6d7548a69a1b43bca77ffca5dd7210a4a1da8e7502bb74e7a7"
+        },
+        {
+          "resource": "repo://scripts/test_code_samples.py",
+          "version": "repo-file-v1:sha256:6b90ef0009b1dfba3fdb7fba56ab64001b02b34b5df604f4e552b8fe856573e8"
+        },
+        {
+          "resource": "repo://src/code-samples/go.mod",
+          "version": "repo-file-v1:sha256:8f6e0170eda56ee55fd12c5391b632d979700c89562bd74c4f8f252aa3b351f9"
+        },
+        {
+          "resource": "repo://src/code-samples/package.json",
+          "version": "repo-file-v1:sha256:265e234a5a5d82a81928addbc48eb55b72b447bfe99312cbdf885c91b315b7cf"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.4.3",
-    "at": "2026-10-19T08:25:25.748Z"
+    "at": "2026-10-21T08:20:13.723Z"
   }
 }

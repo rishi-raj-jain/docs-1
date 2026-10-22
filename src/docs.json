@@ -1866,6 +1866,7 @@
                       "langsmith/self-hosted-platform-features",
                       "langsmith/self-hosted-agent-server-metrics",
                       "langsmith/agent-server-scale",
+                      "langsmith/self-host-restricted-network-build",
                       "langsmith/diagnostics-self-hosted"
                     ]
                   },
@@ -1905,7 +1906,7 @@
                         "group": "Connect to models",
                         "pages": [
                           "langsmith/custom-openai-compliant-model",
-                          "langsmith/typesafe-compatible-model",
+                          "langsmith/compatible-decision-model-provider",
                           "langsmith/custom-endpoint"
                         ]
                       }
@@ -2714,6 +2715,10 @@
     }
   },
   "redirects": [
+    {
+      "source": "/langsmith/typesafe-compatible-model",
+      "destination": "/langsmith/compatible-decision-model-provider"
+    },
     {
       "source": "/langsmith/self-host-sandbox-observability",
       "destination": "/langsmith/self-host-observability-dashboards"

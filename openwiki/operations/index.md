@@ -1,6 +1,6 @@
 # Files
 
-- [Adding and Maintaining Documentation Pages](adding-pages.md) - Safely add, move, retire, or regenerate documentation pages by selecting the source owner, maintaining navigation and redirects, and validating emitted routes.
-- [Agent Authoring Skills](agent-skills.md) - Use the repository's canonical task-specific skill library, keep global rules in AGENTS.md, and validate or distribute skills safely across supported agent environments.
-- [CLI Tools and Make Targets](cli-tools.md) - Operational reference for the documentation pipeline CLI, the separately installed Mintlify CLI, Make targets, validation, runnable examples, snippet generation, and trace-link refreshes.
-- [Cross-References and Links](cross-references.md) - Safely author, move, redirect, and validate documentation links. Covers scoped API autolinks, route-aware link moves, and the separate source and rendered-site validation gates.
+- [Adding and Moving Documentation Pages](adding-pages.md) - Safely add, move, rename, or retire authored documentation pages by selecting their source owner, updating navigation and redirects, and validating emitted routes.
+- [Agent Skills and Authoring Guardrails](agent-skills.md) - Use the canonical repository skill tree safely, select task-specific procedures, validate skill changes, and understand the boundaries on privileged integration automation.
+- [Local Tooling and Commands](cli-tools.md) - Install and operate the local Python pipeline, Make targets, Mintlify checks, Vale prose linting, and executable documentation samples. Use this guide to select safe source, generated-site, and focused validation commands.
+- [Cross-References and API Links](cross-references.md) - Author, resolve, validate, and safely maintain scoped API documentation links using the @[...] cross-reference mechanism. Distinguishes source-level semantic-reference validation from rendered-site link checking.

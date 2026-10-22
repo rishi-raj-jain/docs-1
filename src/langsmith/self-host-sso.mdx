@@ -459,14 +459,16 @@ If the groups claim is correct but LangSmith does not assign roles, check the to
 We recommend running with a [`Client Secret`](#provider-setup). However, if your IdP does not support this, you can use the `Authorization Code with PKCE` flow.
 
 <Warning>
-The PKCE workflow is **deprecated as of v16** and will be removed in a future release. [Migrate to the client secret flow](#migrate-from-pkce-to-client-secret) as soon as possible.
+The PKCE workflow is **deprecated as of v16** and is scheduled for removal in a future release. [Migrate to the client secret flow](#migrate-from-pkce-to-client-secret) as soon as possible.
 </Warning>
 
 ### Migrate from PKCE to client secret
 
-Users keep their accounts, organization and workspace memberships, and API keys, as long as they sign in with the same email address.
+You can switch an installation that uses PKCE to OAuth with client secret on its current chart version. Users keep their accounts, organization and workspace memberships, and API keys, as long as they sign in with the same email address.
 
-1. Upgrade to Helm chart `0.17.23` (LangSmith `0.17.51`) or later. Earlier versions can lock out users whose IdP `sub` claim is their email address.
+To migrate:
+
+1. Upgrade to Helm chart version 0.17.23 (LangSmith 0.17.51) or later. Earlier versions can lock out users whose IdP `sub` claim is their email address.
 1. In your IdP, configure your existing application as a confidential (web) client:
     - Create a client secret.
     - Add `https://<host>/api/v1/oauth/custom-oidc/callback` as a redirect URI. The client secret flow requires `https`.
@@ -487,7 +489,7 @@ Users keep their accounts, organization and workspace memberships, and API keys,
 1. Confirm users can sign in, then upgrade LangSmith as a separate `helm upgrade`.
 
 <Note>
-Switch to client secret and upgrade the chart version in separate `helm upgrade` runs. Upgrade jobs run before the new configuration is applied, so a combined run can fail.
+Switch to client secret and upgrade the chart version in separate `helm upgrade` runs. Helm runs the upgrade jobs before it applies the new configuration, so a combined run can fail.
 </Note>
 
 ### Requirements

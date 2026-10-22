@@ -70,7 +70,7 @@ These keys describe one provider call and appear on attempt runs only.
 | `gateway.attempt.upstream_error_source` | string | How a failed attempt failed. Refer to [Upstream error values](#upstream-error-values). |
 | `gateway.attempt.upstream_status_code` | integer | HTTP status code the provider returned, when it returned an error status. |
 | `gateway.attempt.duration_ms` | integer | Duration of the attempt's run, in milliseconds. |
-| `gateway.attempt.ttft_ms` | integer | Time to the first streamed token, in milliseconds. Set for streaming OpenAI, Anthropic, and Gemini responses only. |
+| `gateway.attempt.ttft_ms` | integer | Time to the first token, in milliseconds. For a streaming OpenAI, Anthropic, or Gemini response, the time to the first streamed content. For a successful non-streaming response, equal to `gateway.attempt.duration_ms`. Not set for failed attempts. |
 | `gateway.attempt.overhead_ms` | integer | Gateway time before this attempt's provider call, such as authentication, policy checks, and data policy scans. |
 | `gateway.attempt.priced` | boolean | `true` when the attempt's model and token usage matched a price. Refer to [Find unpriced models](#find-unpriced-models). |
 

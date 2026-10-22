@@ -3,8 +3,6 @@ title: Trace LiteLLM applications
 sidebarTitle: LiteLLM
 ---
 
-import AgentTracingEnvNote from '/snippets/langsmith/agent-tracing-env-note.mdx';
-
 [LiteLLM](https://www.litellm.ai/) provides a unified interface for calling LLM providers using a consistent OpenAI-compatible API. It can be used either as a [Python SDK](https://docs.litellm.ai/docs/#litellm-python-sdk) embedded directly in your application, or as a [proxy server](https://docs.litellm.ai/docs/simple_proxy) that exposes an OpenAI-compatible endpoint for client applications.
 
 This guide shows you how to trace LiteLLM calls with LangSmith using:
@@ -54,8 +52,6 @@ You can use `LANGSMITH_TRACING=true` together with `@traceable` for predictable 
     export LANGSMITH_TRACING="true"
     ```
     Create LangSmith [API keys](/langsmith/create-account-api-key) in the [LangSmith UI](https://smith.langchain.com).
-
-    <AgentTracingEnvNote />
 
     Depending on what provider you're using, you'll also need to set API keys:
 

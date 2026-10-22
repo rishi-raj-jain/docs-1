@@ -3,8 +3,6 @@ title: Trace Deep Agents applications
 sidebarTitle: Deep Agents
 ---
 
-import AgentTracingEnvNote from '/snippets/langsmith/agent-tracing-env-note.mdx';
-
 [`deepagents`](/oss/deepagents/overview) is an open-source agent framework built on top of LangGraph, designed for complex, multi-step tasks that require planning, tool usage, and sub-agent delegation. Deep Agents supports native LangSmith tracing.
 
 This guide shows you how to enable LangSmith tracing for Deep Agents, view traces in the LangSmith UI, and (optionally) customize trace configuration for more advanced use cases.
@@ -47,8 +45,6 @@ export LANGSMITH_API_KEY=<your-langsmith-api-key>
 export LANGSMITH_TRACING=true
 export LANGSMITH_PROJECT=<your-project-name>
 ```
-
-<AgentTracingEnvNote />
 
 ## Create a trace
 

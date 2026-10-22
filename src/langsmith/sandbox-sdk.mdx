@@ -5,7 +5,6 @@ description: Create and manage sandboxes programmatically with the Python or Typ
 ---
 
 import LangsmithEndpointValues from '/snippets/langsmith/langsmith-endpoint-values.mdx';
-import AgentTracingEnvNote from '/snippets/langsmith/agent-tracing-env-note.mdx';
 
 The [LangSmith SDK](/langsmith/reference) provides a programmatic interface to create and interact with sandboxes.
 
@@ -733,8 +732,6 @@ try {
 </CodeGroup>
 
 Inside the sandbox, any LangSmith-instrumented code (`@traceable`, LangChain, LangGraph) automatically picks up the tracing configuration from the injected environment variables.
-
-<AgentTracingEnvNote />
 
 <Warning>
 Always call `flush()` before the sandbox process exits—`langsmith.Client().flush()` in Python or `await new Client().flush()` in TypeScript. Without it, traces may be lost because the container is destroyed when the command finishes.

@@ -299,6 +299,64 @@ uv run mda deploy
 
 Put the signing key and any reply credentials in the project `.env` so `mda deploy` forwards them as deployment secrets. Then register `https://<deployment-url>/channels/<name>/events` with the external service as its webhook target.
 
+## Share a channel adapter as a package
+
+A reusable channel adapter is a package that creates an HTTP channel. Publish the provider-specific code separately so other projects can install it without copying callbacks or changing the Managed Deep Agents SDK.
+
+The package owns request verification, event parsing, and optional reply delivery. Managed Deep Agents still owns the agent run and trusted handoff.
+
+### Package the adapter
+
+To package the orders adapter from this guide, move `verify`, `parse`, `post`, and their helpers into the package. Keep secrets in environment variables, not in the published source. Export a factory that returns the HTTP channel declaration:
+
+Declare a normal Python dependency on `managed-deepagents` in `pyproject.toml`. Put the callbacks in `mda_orders/orders.py` and export the factory:
+
+```python mda_orders/__init__.py
+from managed_deepagents import HttpChannel, channels
+
+from .orders import parse, post, verify
+
+
+def orders_channel() -> HttpChannel:
+    return channels.http(
+        provider="orders",
+        verify=verify,
+        parse=parse,
+        post=post,
+    )
+```
+
+
+
+
+Declare the supported `managed-deepagents` versions in your package metadata. Test against those versions before publishing.
+
+### Use the package in a project
+
+`mda-orders` is an example package name, not a published integration. To install it as an application dependency and declare a channel under `channels/`:
+
+```python channels/orders.py
+from mda_orders import orders_channel
+
+channel = orders_channel()
+```
+
+
+
+
+The channel file name, `channels/orders.py`, determines the endpoint: `/channels/orders/events`.
+
+
+
+
+Keep the `provider` value, `"orders"`, stable across releases because it namespaces caller identities.
+
+### Before you publish
+
+Test valid and invalid signatures, ignored events, conversation-to-thread mapping, and reply delivery. Document required environment variables, supported event types, and any provider limitations. Publishing an adapter does not add managed provider provisioning. Document how to create the provider app, configure credentials, and register the webhook.
+
+For deployment secrets and webhook registration, see [Deploy the agent](#deploy-the-agent).
+
 ## See also
 
 - [Channels overview](/langsmith/python/managed-deep-agents-channels): understand how channels connect messaging services to an agent.

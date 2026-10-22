@@ -33,13 +33,55 @@ browser = define_browser(
 | `scope` | `"thread"` | `"thread"` gives each thread its own browser. `"user"` shares one browser, including its logins, across a signed-in user's threads. |
 | `idle_ttl_seconds` | `600` | Seconds of inactivity before the browser stops. Accepts `60` to `86400`. |
 
-User scope requires a signed-in principal. To set up signed-in callers, see [Identity](/langsmith/managed-deep-agents-identity).
+## Choose a browser scope
+
+Scope determines which conversations reuse a browser. It does not create a new browser for every agent run.
+
+| Scope | Choose it when | Example |
+| --- | --- | --- |
+| `"thread"` | Each conversation needs independent browser state | Test an app change or complete a reservation in one conversation |
+| `"user"` | A signed-in person needs the same website accounts across conversations | Reuse a restaurant-booking login for later requests |
+
+### Keep conversations separate with thread scope
+
+`scope="thread"` is the default. Each thread gets its own browser, with no cookies or logins inherited from another thread. Later runs in the same thread reuse that browser instead of starting a fresh session on every turn.
+
+For example, an agent can find a restaurant reservation, ask for approval, and continue the booking in the same thread. A separate reservation conversation gets a different browser. For coding-agent QA, thread scope keeps each conversation's browser separate from other tests.
+
+Thread scope follows the conversation, not the caller. Callers authorized to use the same thread share its browser state. Use [caller authentication and thread ownership](/langsmith/managed-deep-agents-identity) to control access to the conversation.
+
+### Reuse website logins with user scope
+
+Set `scope="user"` when an authenticated person should reuse website logins across conversations in the deployment:
+
+```python browser.py
+from managed_deepagents import define_browser
+
+browser = define_browser(
+    scope="user",
+    idle_ttl_seconds=600,
+)
+```
+
+Each of the person's threads gets its own window in the shared browser. Navigation in one conversation does not replace the page in another window, but cookies, logins, and other browser state are shared. Signing in to a restaurant-booking site in one thread lets a later thread reuse that login instead of signing in again.
+
+User scope uses the [authenticated caller's identity](/langsmith/managed-deep-agents-identity), not a username supplied in a prompt or the website account itself. Different signed-in people get different browsers. Calls without a principal cannot use user scope; non-person principals fall back to thread scope.
+
+<Note>
+Separate windows do not isolate website accounts. Logging out or switching accounts can affect other threads that share the browser. Concurrent workflows can also change the same account's state, so coordinate tasks such as bookings and purchases rather than treating user scope as a workflow lock.
+</Note>
+
+### Understand browser lifetime
+
+Browser scope and idle lifetime are separate settings. Finishing an agent run releases the browser client, not the browser or its website login. This lets later runs reuse the browser selected by the scope.
+
+`idle_ttl_seconds` controls when an inactive browser stops. It is not a logout or permanent-deletion setting. Website sessions can expire or end when a user logs out, and browser replacement or deletion can remove browser state. Do not rely on a login or an open page remaining available indefinitely.
 
 ## How the agent uses the browser
 
-Managed Deep Agents adds the Stagehand tools `run`, `snapshot`, and `screenshot` to the agent. You do not register them yourself. For what each tool does, see [Stagehand tools](/oss/deepagents/browser-use#stagehand-tools).
+Managed Deep Agents adds the Stagehand tools `browser_run`, `browser_snapshot`, and `browser_screenshot` to the agent. You do not register them yourself. For what each tool does, see [Stagehand tools](/oss/deepagents/browser-use#stagehand-tools).
 
-The browser is independent of the agent's [sandbox](/langsmith/managed-deep-agents-sandboxes). The agent can browse and take screenshots without one. To save a screenshot to a file with the `screenshot` tool's `path` argument, add a sandbox and pass an absolute path.
+The browser is independent of the agent's [sandbox](/langsmith/managed-deep-agents-sandboxes). The agent can browse and take screenshots without one. To save a screenshot to a file with the `browser_screenshot` tool's `path` argument, add a sandbox and pass an absolute path.
 :::
 
 :::js

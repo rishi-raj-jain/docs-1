@@ -19,7 +19,7 @@ A request produces one or more runs:
 - **Attempt runs**: one run for each provider call. A request that falls back to another model has one attempt run per model it called.
 - **Refusal runs**: one run named `gateway.blocked`, `gateway.rejected`, or `gateway.fallback_exhausted` when the request did not get a provider response. These runs carry metadata only, with no inputs or outputs.
 
-Exactly one run per request has `gateway.request.final` set to `true`. For a served request, it is the attempt that returned the response. For a blocked, rejected, or exhausted request, it is the refusal run. Count requests, and compute request-level latency, from runs where `gateway.request.final` is `true`. Token and cost sums are correct across all runs, because each attempt reports only its own usage.
+Exactly one run per request has `gateway.request.final` set to `true`. When a provider returned the response the caller received, including an error response, it is that attempt. For a blocked, rejected, or `fallback_exhausted` request, it is the refusal run. Count requests, and compute request-level latency, from runs where `gateway.request.final` is `true`. Token and cost sums are correct across all runs, because each attempt reports only its own usage.
 
 The gateway does not retry a model and does not wait between [fallback](/langsmith/llm-gateway-fallbacks) candidates. When a candidate fails with a trigger status, the gateway calls the next candidate immediately. A candidate that recently returned `429` is in cooldown and is skipped without a call.
 
@@ -164,10 +164,10 @@ A chain with more than about 15 attempts can exceed the gateway's response metad
 | `gateway.request.outcome` | Meaning |
 | --- | --- |
 | `success` | A provider returned a successful response. |
-| `upstream_error` | The provider returned an error, and no fallback served the request. |
+| `upstream_error` | The provider returned an error, and no fallback served the request. When every candidate in a chain fails, this is the outcome if the last candidate returned an HTTP error status. |
 | `blocked` | A policy, limit, or data policy prevented the request from reaching a provider. |
 | `rejected` | The gateway could not route the request, for example because the model or path is not supported. |
-| `fallback_exhausted` | Every candidate in the fallback chain or route failed or was skipped. |
+| `fallback_exhausted` | A fallback chain or route ran, and its last candidate returned no HTTP response, for example because of a timeout or connection error. |
 
 ### Reason values
 

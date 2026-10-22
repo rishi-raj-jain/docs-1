@@ -177,17 +177,15 @@ Select the source project by your LangSmith SaaS region, not the Vertex AI model
 
 ### Egress IP inventory
 
-The [egress IP inventory](/langsmith/egress-ip-addresses.json) provides these addresses and the LangSmith Deployment addresses as JSON. The tables on both pages are generated from this inventory.
+Fetch the [egress IP inventory](/langsmith/egress-ip-addresses.json) as JSON to automate allowlist updates.
 
-Filter `addresses` by your `service`, `cloud`, and `region`:
+Filter `addresses` by:
 
-- **Service**: `langsmith` for LangSmith services, or `langsmith-deployment` for deployed agents.
-- **Cloud**: `gcp` or `aws`.
-- **Region**: `us`, `eu`, or `apac`, matching the data region in the tables.
+- `service`: `langsmith` or `langsmith-deployment` (deployed agents).
+- `cloud`: `gcp` or `aws`.
+- `region`: `us`, `eu`, or `apac`.
 
-Allowlist every `cidr` in the matching scope, including both `active` and `reserved` addresses. Each CIDR represents one IPv4 address (`/32`). `active` addresses serve traffic; `reserved` addresses are published for future use. Reserved addresses are marked in the tables when present.
-
-Poll the inventory periodically and compare `version` to detect updates. `version` is a content hash; `schema_version` identifies the JSON format. Review additions and removals before updating your firewall rules.
+Allowlist every matching `cidr`, including `reserved` addresses published ahead of future use. Poll periodically and compare `version` to detect changes. Review additions and removals before updating firewall rules.
 
 ### Ingress into LangChain SaaS
 The LangChain endpoints map to the following static IP addresses for traffic that terminates on our **GCP load balancers** (US/EU/APAC) or, for **AWS US**, on the **Network Load Balancer** in `us-east-2` (API and gateway hostnames):

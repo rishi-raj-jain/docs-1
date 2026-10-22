@@ -77,6 +77,31 @@ Browser scope and idle lifetime are separate settings. Finishing an agent run re
 
 `idle_ttl_seconds` controls when an inactive browser stops. It is not a logout or permanent-deletion setting. Website sessions can expire or end when a user logs out, and browser replacement or deletion can remove browser state. Do not rely on a login or an open page remaining available indefinitely.
 
+## Select a browser in a graph factory
+
+A [graph factory](/langsmith/managed-deep-agents-agent-definition#select-configuration-per-run) can select the browser configuration for each run. Pass the result of `define_browser()` to the `browser` argument of `define_deep_agent()`:
+
+```python agent.py
+from managed_deepagents import ManagedServerRuntime, define_browser, define_deep_agent
+
+
+def agent(runtime: ManagedServerRuntime):
+    return define_deep_agent(
+        name="browsing",
+        browser=define_browser(scope="user", idle_ttl_seconds=900),
+    )
+```
+
+Keep a root `browser.py` declaration, such as the thread-scoped declaration above. It enables browser support and installs the browser dependencies in the deployment. A factory cannot add a browser without that file.
+
+| Factory argument | Effect for the run |
+| --- | --- |
+| Omit `browser` | Use the configuration from root `browser.py` |
+| `browser=define_browser(...)` | Replace the root configuration with the supplied scope and idle timeout |
+| `browser=None` | Disable browser tools for the run |
+
+The argument takes a browser definition, not a middleware instance. Managed Deep Agents adds the middleware and tools automatically. Static agent definitions cannot set `browser` directly; use root `browser.py` instead.
+
 ## How the agent uses the browser
 
 Managed Deep Agents adds the Stagehand tools `browser_run`, `browser_snapshot`, and `browser_screenshot` to the agent. You do not register them yourself. For what each tool does, see [Stagehand tools](/oss/deepagents/browser-use#stagehand-tools).

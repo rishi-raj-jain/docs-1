@@ -31,7 +31,7 @@ Each attempt is traced and counted against [spend policies](/langsmith/llm-gatew
 ## Create a fallback chain
 
 <Warning>
-Creating and managing fallback chains requires `organization:manage` permission. For the full permissions breakdown, see [Access control](/langsmith/llm-gateway-access).
+Creating and managing fallback chains requires `organization:gateway:manage` permission. For the full permissions breakdown, see [Access control](/langsmith/llm-gateway-access).
 </Warning>
 
 To create a fallback chain:
@@ -106,7 +106,7 @@ A missing provider key returns `424`, which is not one of the default trigger st
 
 To give a prompt its own fallback chain, route it through a saved model configuration. The prompt references the configuration by name, while the gateway manages its fallback chain.
 
-Creating the configuration requires workspace admin permissions. Creating the fallback chain requires `organization:manage` permission.
+Creating the configuration requires workspace admin permissions. Creating the fallback chain requires `organization:gateway:manage` permission.
 
 To configure fallbacks for a prompt:
 

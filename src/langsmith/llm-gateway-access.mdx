@@ -59,9 +59,11 @@ The gateway logs two categories of events:
 | Action | Permission needed | Who has it by default |
 | --- | --- | --- |
 | Make calls through the gateway | `gateway:invoke` + `workspaces:read` | `WORKSPACE_ADMIN` only |
-| Create, edit, or delete policies | `organization:manage` | Org admins |
+| Create, edit, or delete policies | `organization:gateway:manage` | Org admins, Org operators |
 | View gateway traces | `projects:read` + `runs:read` | `WORKSPACE_ADMIN`, `WORKSPACE_USER`, `WORKSPACE_VIEWER` |
-| View audit logs | `organization:manage` | Org admins |
+| View audit logs | `organization:audit-logs:read` | Org admins |
+
+On self-hosted LangSmith earlier than application version 0.18.9, managing policies requires `organization:manage`.
 
 The built-in `WORKSPACE_USER` and `WORKSPACE_VIEWER` roles do **not** include `gateway:invoke` and cannot be edited. To grant gateway access without full workspace-admin privileges, create a custom workspace role with `gateway:invoke` and `workspaces:read` (requires an RBAC-enabled plan). For instructions, refer to [Admin setup](/langsmith/llm-gateway-admin-setup).
 

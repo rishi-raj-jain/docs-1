@@ -1,47 +1,27 @@
 ---
 type: CI automation and trust boundaries
 title: GitHub Actions and CI Automation
-description: Describes repository CI, event trust boundaries, and review-gated GitHub Actions writers. Covers maintainer-gated integration submissions, weekly changelog proposals, credentials, concurrency, and human review.
+description: Describes repository CI, event trust boundaries, review-gated GitHub Actions writers, and scheduled metadata maintenance. Covers integration-repository liveness scanning, generated evidence, standing PRs, and relationships among metadata generators.
 tags: [github-actions, ci, automation, security, testing]
 verified:
   - by: openwiki/0.4.3
-    at: 2026-10-20T08:20:37.912Z
+    at: 2026-10-22T08:20:38.024Z
 sources:
-  - id: openwiki-source-1e075575622e1a77a3dc46e6
-    resource: repo://.github/pull_request_template.md
-  - id: openwiki-source-5c124605ed6e394bffee862c
-    resource: repo://.github/workflows/_check-links.yml
-  - id: openwiki-source-f35e7c44cc1805709393a581
-    resource: repo://.github/workflows/_lint.yml
-  - id: openwiki-source-4d9cccca7700db7220ec055e
-    resource: repo://.github/workflows/_test.yml
   - id: openwiki-source-5e9ca8e4c3cab7d91998bc9e
     resource: repo://.github/workflows/changelog-weekly.yml
-  - id: openwiki-source-75c7744a0e664440f0552945
-    resource: repo://.github/workflows/check-onboarding-models.yml
   - id: openwiki-source-164e2da859b5277df81c7d94
     resource: repo://.github/workflows/ci.yml
-  - id: openwiki-source-7346220ed051a41471043c07
-    resource: repo://.github/workflows/create-preview-branch.yml
-  - id: openwiki-source-1ca506cf29eca9b87a087220
-    resource: repo://.github/workflows/external-integration-pr-comment.yml
-  - id: openwiki-source-1db901655f02af312133801d
-    resource: repo://.github/workflows/integration-submission.yml
-  - id: openwiki-source-6d4b4e707b8d60b6ccfa3425
-    resource: repo://.github/workflows/openwiki-update.yml
+  - id: openwiki-source-192dd6007b37a6bb76dc7586
+    resource: repo://.github/workflows/sync-linear-issue-from-pr.yml
   - id: openwiki-source-97746d8f3662d803e625550e
     resource: repo://.github/workflows/test-code-samples.yml
-  - id: openwiki-source-4de47c60d7e3210385c34d35
-    resource: repo://.github/workflows/update-package-downloads.yml
   - id: openwiki-source-d282f31d82e34c26a1df41a1
     resource: repo://docs-release-watch/instructions.md
   - id: openwiki-source-12c8fb32a02de9dce773720f
     resource: repo://docs-release-watch/README.md
-  - id: openwiki-source-819e9af046c9d9b8116a3da7
-    resource: repo://scripts/check_onboarding_models.py
-  - id: openwiki-source-2b15ecffacad911ef9db112f
-    resource: repo://scripts/test_code_samples.py
-generated: { by: "openwiki/0.4.3", at: "2026-10-20T08:20:37.912Z" }
+  - id: openwiki-source-eab62bc712c4650a5ee3e7d3
+    resource: repo://scripts/sync_linear_issue_from_pr.py
+generated: { by: "openwiki/0.4.3", at: "2026-10-22T08:20:38.024Z" }
 ---
 
 ## Trust boundaries
@@ -87,6 +67,36 @@ The reusable test and lint workflows make shallow checkouts, synchronize the `te
 - **Links or OpenAPI:** run `make broken-links-with-anchors` and `make check-openapi`.
 - **Cross references or external listing URLs:** run `make check-cross-refs` or `uv run python scripts/refresh_integration_downloads.py --check-docs-urls`.
 - **Generated overview:** rerun `uv run python pipeline/tools/partner_pkg_table.py`, inspect the diff, and commit it when metadata changed. Do not use the bypass label to conceal ordinary drift.
+
+## Same-repository PR to Linear synchronization
+
+`sync-linear-issue-from-pr.yml` is a narrowly scoped lifecycle bridge, not general PR automation. It runs on `pull_request` when a PR is opened, reopened, made draft, marked ready for review, or closed. The workflow has only `contents: read` and `pull-requests: read` GitHub permissions, a five-minute limit, and an explicit same-repository gate. Fork PRs do not enter the job and therefore do not receive `LINEAR_API_KEY`; unlike a `pull_request_target` writer, it runs under the ordinary PR event trust model.
+
+The action checks out the repository, sets up Python 3.13 and uv, and passes the PR title, body, state, draft flag, and merged flag through environment variables to `scripts/sync_linear_issue_from_pr.py`. Keeping title and body out of command-line arguments avoids quoting and length problems. The workflow first treats an absent `LINEAR_API_KEY` as a successful skip, then writes the script's JSON result to the job summary. Thus it cannot update Linear without the repository secret, and it does not change GitHub branches, PR metadata, or unlinked PRs.
+
+Only an explicit `Closes DOC-N` convention activates the integration. The parser accepts `Closes [DOC-N](https://linear.app/.../issue/DOC-N/...)` and plain `Closes DOC-N`; it also admits additional DOC identifiers from Linear issue URLs in text that contains a recognized closing line. A bare Linear URL, an unrelated issue key, or a PR without the closing convention is a successful no-op. This convention is emitted under `## Linear` by `docs-release-watch` draft PRs, but the workflow may synchronize any same-repository PR that follows it.
+
+```mermaid
+flowchart TD
+  Event["Same-repository pull request lifecycle event"] --> Gate{"Head repository matches current repository"}
+  Gate -->|"no"| ForkSkip["Skip fork PR without secret"]
+  Gate -->|"yes"| Secret{"LINEAR_API_KEY available"}
+  Secret -->|"no"| SecretSkip["Successful secret-gated skip"]
+  Secret -->|"yes"| Link{"Recognized Closes DOC-N convention"}
+  Link -->|"no"| LinkSkip["Successful unlinked-PR no-op"]
+  Link -->|"yes"| Resolve["Fetch issue and team workflow states"]
+  Resolve --> Target{"Target state resolved"}
+  Target -->|"no"| Fail["Fail intended sync"]
+  Target -->|"yes"| Current{"Already in target state"}
+  Current -->|"yes"| StateSkip["Report no-op"]
+  Current -->|"no"| Update["Linear GraphQL issueUpdate"]
+```
+
+*The workflow crosses into Linear only after the same-repository, secret, and PR-body gates; unlinked or fork PRs remain untouched.*
+
+The script normalizes GitHub state before resolving a target: an open draft maps to **In Progress** (fallback state type `started`), an open ready PR to **In Review** (`started`), a merged PR to **Done** (`completed`), and a closed unmerged PR to **Canceled** (`canceled`). For each linked DOC issue it fetches the issue and its own team's states, prefers the named state case-insensitively, then falls back to the state type. It skips a state already reached. If no suitable state exists, it records that result and exits nonzero after processing, so a team workflow misconfiguration fails an intended synchronization rather than silently claiming success. Linear HTTP, transport, GraphQL, malformed-response, missing-issue, and unsuccessful mutation errors also fail the job.
+
+Operate this as a credentialed external writer: preserve the same-repository conditional, the read-only GitHub permissions, the empty-secret skip, and the closing-keyword parser. When changing a team's workflow state names, retain a compatible preferred name or the mapped Linear state type. To diagnose a run, inspect the `Linear sync` JSON summary: it identifies each issue, normalized event, current and target state, whether it updated, and why a no-op occurred. The command supports `--dry-run` for resolving targets without `issueUpdate` and `--json` for machine-readable output; it still requires `LINEAR_API_KEY` once a PR is linked.
 
 ## Previews and metadata automation
 
@@ -153,6 +163,34 @@ The workflow keeps its private pipeline report out of public repository surfaces
 
 Hosted-documentation candidate detection creates Linear issues only when both the required issue-service credential and team configuration are available; otherwise it deliberately detects candidates in dry-run mode. It uses the default 50,000 monthly-download threshold and does not create a duplicate while a matching Linear issue remains open.
 
+### Weekly integration-repository liveness scan
+
+`check-integration-repos.yml` runs Mondays at 09:15 UTC or by manual dispatch. It is a trusted scheduled writer with a 45-minute limit and only `contents: write` and `pull-requests: write` permissions. It checks out shallow history, installs Python 3.13 through the repository uv action, then runs `scripts/check_integration_repos.py --write --evidence "$RUNNER_TEMP/evidence.md"` with the workflow token. The token is used at the external-network boundary for authenticated GitHub API repository checks; the checker also makes outbound requests to GitHub, PyPI, npm, GitLab, and partner documentation URLs. Its inputs are external metadata and remote HTTP results, so a successful scan is a proposed maintenance change, not an authorization to remove a listing from the published catalogue.
+
+The checker skips `langchain-ai/*` package homes. For a dead third-party GitHub `repo`, it can normalize a live malformed slug or adopt a different live **third-party** GitHub home evidenced by PyPI project URLs, the npm repository field, or existing external `docs_url` metadata. It also updates external documentation URLs only for permanent HTTP `301` or `308` redirects. A live GitLab project, live partner documentation/homepage, invalid or missing repository metadata, request failure, or first-party replacement is reported as attention rather than delisted. Only when no live GitHub, GitLab, or partner-docs alternative is found does it propose a full delist.
+
+A write-mode delist removes the package from `packages.yml`, matching external-listing rows, generated download-table rows, and an `all_providers.mdx` card only if no remaining package shares its normalized provider key. Repository and permanent-redirect fixes are also propagated to matching listing links. The script always renders a Markdown evidence report: applied renames, URL redirects, proposed full delists, unchanged attention cases, and errors. The workflow appends that report to the job summary and uses it as the PR body, so reviewers have the observed basis and exceptions beside the proposed diff.
+
+```mermaid
+flowchart TD
+  Trigger["Monday schedule or manual dispatch"] --> Scan["Scan packages and external metadata"]
+  Scan --> Check["Check repository and docs homes"]
+  Check --> Decision{"Disposition"}
+  Decision -->|"live or attention"| Evidence["Record evidence without mutation"]
+  Decision -->|"fix or delist"| Write["Apply scoped metadata and listing changes"]
+  Evidence --> Changed{"Working tree changed"}
+  Write --> Changed
+  Changed -->|"no"| Stop["Exit without a PR"]
+  Changed -->|"yes"| Branch["Restore changes on standing branch"]
+  Branch --> Draft["Create or append draft review PR"]
+```
+
+*The liveness scan records evidence for every actionable decision, but only a changed working tree reaches the single standing draft PR.*
+
+The workflow first snapshots changed files, restores a clean tree, then either checks out the open `chore/dead-integration-repos` branch or creates it from the initial checkout. It reapplies the snapshot, exits if no diff remains, and commits all resulting files. An existing open PR receives an appended commit and refreshed evidence body; otherwise the workflow force-pushes the unreferenced standing branch and creates a draft PR against `main`. It does **not** enable auto-merge. Maintainers must review evidence and every removal, especially delists, before marking the PR ready and merging. Use a dry run without `--write` to inspect the report when changing classification policy, and review focused generator validation for any touched metadata surface.
+
+This scan complements rather than replaces `update-package-downloads.yml`. The download workflow refreshes counts and regenerates derived tables on its artifact-mediated path; the liveness workflow repairs or removes stale package/listing metadata and may edit generated table rows only as part of a delist. After either workflow changes shared integration metadata, review the affected provider overview and snippets and retain CI's generated-overview check. See [Integration Listing Automation](/openwiki/workflows/integration-listing-automation.md) for source ownership and generator behavior, and [LangSmith OpenAPI Refresh](/openwiki/workflows/langsmith-openapi-refresh.md) for the analogous single-standing-PR pattern for a different generated artifact.
+
 `openwiki-update.yml` runs daily at 08:00 UTC and can be dispatched manually. It performs a full-history checkout so `openwiki code --update` can compare the current revision with the revision it last documented. Repository-scoped provider, source-connector, and optional tracing credentials are supplied only to the generator; the PR creation step is restricted to `openwiki`, `AGENTS.md`, and its own workflow file on the fixed `openwiki/update` branch. Review the resulting `docs: update OpenWiki` PR like any other generated change.
 
 `docs-release-watch` is separate from GitHub Actions: it is a Managed Deep Agent project. It considers releases published 7–30 days earlier and creates one Linear DOC ticket and one draft documentation PR per needed feature. Its OpenWiki coverage is `src/oss/openwiki/`, not this repository's generated `/openwiki` tree, so the systems have different inputs, outputs, credentials, and review queues.
@@ -181,13 +219,18 @@ The workflow writes the report to its summary. On status `1`, it creates or upda
 4. Preserve the integration workflow's maintainer authorization, per-issue serialization, local-edit-only agent boundary, and human review of its output.
 5. Preserve changelog input validation, branch-ownership check, dry-run behavior, and its review gate; package-download auto-merge is an explicit exception.
 6. Preserve the code-sample fork gate and do not expose provider credentials to general PR validation.
-7. Treat onboarding-model status `2` as an operational read failure, not as drift resolution.
-8. Keep `/openwiki` update scope separate from product-documentation release watch scope; neither writer should silently broaden the other's paths or publication behavior.
+7. Preserve Linear sync's same-repository gate, empty-secret no-op, `Closes DOC-N` gate, team-state fallback, and failure on an intended update with no resolvable target.
+8. Treat onboarding-model status `2` as an operational read failure, not as drift resolution.
+9. Keep `/openwiki` update scope separate from product-documentation release watch scope; neither writer should silently broaden the other's paths or publication behavior.
 
 ## Related pages
 
+- [Source Map](/openwiki/architecture/source-map.md)
+- [Quickstart](/openwiki/quickstart.md)
+- [Changelog Publication](/openwiki/workflows/changelog-publication.md)
+- [Code Sample Lifecycle](/openwiki/workflows/code-sample-lifecycle.md)
+- [LangSmith OpenAPI Refresh](/openwiki/workflows/langsmith-openapi-refresh.md)
+- [Release Watch](/openwiki/workflows/release-watch.md)
 - [Agent Skills](/openwiki/operations/agent-skills.md)
 - [Testing Overview](/openwiki/testing/test-overview.md)
-- [Changelog Publication](/openwiki/workflows/changelog-publication.md)
 - [Integration Listing Automation](/openwiki/workflows/integration-listing-automation.md)
-- [LangSmith OpenAPI Refresh](/openwiki/workflows/langsmith-openapi-refresh.md)

@@ -124,7 +124,7 @@ Refusal runs for blocked requests also carry the details of the limit that block
 
 | Key | Description |
 | --- | --- |
-| `gateway.request.blocking_policy_ids`, `gateway.request.blocking_policy_names` | Policies that blocked the request. |
+| `gateway.request.blocking_policy_ids`, `gateway.request.blocking_policy_names` | Policies you created that blocked the request. The built-in rate limit for LangChain-hosted models is not listed. To count denials by policy name, including the built-in limit, group by `gateway.policy.violated_names`. |
 | `gateway.request.scopes` | Scopes of the blocking policies: `organization`, `workspace`, `user`, `api_key`, or `custom_header`. |
 | `gateway.request.limit_source` | `gateway_policy` for a policy limit, or `prepaid_credit_balance` for a [Gateway Credits](/langsmith/llm-gateway-credits) balance. |
 | `gateway.request.limit_dimensions` | Dimensions of the limit that was reached. |

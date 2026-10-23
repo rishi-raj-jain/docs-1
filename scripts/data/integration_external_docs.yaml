@@ -483,6 +483,9 @@ python:
   - name: Taiga
     pypi: langchain-taiga
     docs_url: https://github.com/Shikenso-Analytics/langchain-taiga
+  - name: TableJourneyToolkit
+    pypi: langchain-tablejourney
+    docs_url: https://tablejourney.com/agents/#langchain
   - name: Ampersend
     pypi: langchain-ampersend
     docs_url: https://docs.ampersend.ai

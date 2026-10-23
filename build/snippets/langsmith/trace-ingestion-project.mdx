@@ -1,0 +1,13 @@
+Before running the application, choose its tracing destination:
+
+1. In an [agent-based workspace](/langsmith/agents), open **+ Agent**, choose **Observability**, and create an agent with an **Agent name** and **Agent ID**. This requires permission to create projects. If the agent already exists, reuse it.
+2. Get the [environment project name](/langsmith/create-an-agent#use-an-environment-project) for the environment you want to trace, such as Production.
+3. Set the destination before running the application:
+
+    ```bash
+    export LANGSMITH_PROJECT="<environment-project-name>"
+    ```
+
+This setup uses project addressing so the same destination works across the integrations in this guide. Register the agent once, not for every trace. For automated setup, see [Create an agent programmatically](/langsmith/create-an-agent#create-an-agent-programmatically).
+
+In a project-based workspace, including self-hosted LangSmith, set `LANGSMITH_PROJECT` to your tracing project name instead.

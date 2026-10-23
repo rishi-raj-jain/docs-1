@@ -1,0 +1,12 @@
+```python
+from langsmith import Client
+
+client = Client()
+agent = client.agents.create(
+    id="support-agent",
+    name="Support agent",
+    source_type="EXTERNAL",
+)
+production = next(env for env in agent.environments if env.environment == "PRODUCTION")
+print(production.tracer_session_name)
+```

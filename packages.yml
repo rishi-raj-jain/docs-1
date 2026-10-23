@@ -2130,3 +2130,10 @@ packages:
   name_title: Geekflare
   repo: geekflare/langchain-geekflare
   js: "n/a"
+- name: langchain-tablejourney
+  name_title: TableJourneyToolkit
+  repo: lewismvaughan/tablejourney-mcp
+  path: langchain
+  js: "n/a"
+  downloads: 84
+  downloads_updated_at: '2026-10-22T00:00:00+00:00'

@@ -939,424 +939,6 @@
         "x-public": true
       }
     },
-    "/api/v1/sessions/{session_id}/views": {
-      "get": {
-        "tags": [
-          "tracer-sessions"
-        ],
-        "summary": "Read filter views",
-        "description": "Get all filter views for a session.",
-        "operationId": "read_filter_views_api_v1_sessions__session_id__views_get",
-        "security": [
-          {
-            "API Key": []
-          },
-          {
-            "Tenant ID": []
-          },
-          {
-            "Bearer Auth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "session_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "title": "Session Id"
-            }
-          },
-          {
-            "name": "type",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "$ref": "#/components/schemas/FilterViewType"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Type"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/FilterView"
-                  },
-                  "title": "Response Read Filter Views Api V1 Sessions  Session Id  Views Get"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        },
-        "x-public": true
-      },
-      "post": {
-        "tags": [
-          "tracer-sessions"
-        ],
-        "summary": "Create filter view",
-        "description": "Create a new filter view.",
-        "operationId": "create_filter_view_api_v1_sessions__session_id__views_post",
-        "security": [
-          {
-            "API Key": []
-          },
-          {
-            "Tenant ID": []
-          },
-          {
-            "Bearer Auth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "session_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "title": "Session Id"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/FilterViewCreate"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FilterView"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        },
-        "x-public": true
-      }
-    },
-    "/api/v1/sessions/{session_id}/views/{view_id}": {
-      "get": {
-        "tags": [
-          "tracer-sessions"
-        ],
-        "summary": "Read filter view",
-        "description": "Get a specific filter view.",
-        "operationId": "read_filter_view_api_v1_sessions__session_id__views__view_id__get",
-        "security": [
-          {
-            "API Key": []
-          },
-          {
-            "Tenant ID": []
-          },
-          {
-            "Bearer Auth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "session_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "title": "Session Id"
-            }
-          },
-          {
-            "name": "view_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "title": "View Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FilterView"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        },
-        "x-public": true
-      },
-      "patch": {
-        "tags": [
-          "tracer-sessions"
-        ],
-        "summary": "Update filter view",
-        "description": "Update a filter view.",
-        "operationId": "update_filter_view_api_v1_sessions__session_id__views__view_id__patch",
-        "security": [
-          {
-            "API Key": []
-          },
-          {
-            "Tenant ID": []
-          },
-          {
-            "Bearer Auth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "session_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "title": "Session Id"
-            }
-          },
-          {
-            "name": "view_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "title": "View Id"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/FilterViewUpdate"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FilterView"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        },
-        "x-public": true
-      },
-      "delete": {
-        "tags": [
-          "tracer-sessions"
-        ],
-        "summary": "Delete filter view",
-        "description": "Delete a specific filter view.",
-        "operationId": "delete_filter_view_api_v1_sessions__session_id__views__view_id__delete",
-        "security": [
-          {
-            "API Key": []
-          },
-          {
-            "Tenant ID": []
-          },
-          {
-            "Bearer Auth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "session_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "title": "Session Id"
-            }
-          },
-          {
-            "name": "view_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "title": "View Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        },
-        "x-public": true
-      }
-    },
-    "/api/v1/sessions/{session_id}/views/{view_id}/rename": {
-      "patch": {
-        "tags": [
-          "tracer-sessions"
-        ],
-        "summary": "Rename filter view",
-        "description": "Rename a filter view (display_name and description only).",
-        "operationId": "rename_filter_view_api_v1_sessions__session_id__views__view_id__rename_patch",
-        "security": [
-          {
-            "API Key": []
-          },
-          {
-            "Tenant ID": []
-          },
-          {
-            "Bearer Auth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "session_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "title": "Session Id"
-            }
-          },
-          {
-            "name": "view_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "title": "View Id"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/FilterViewRename"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FilterView"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        },
-        "x-public": true
-      }
-    },
     "/api/v1/sessions/{session_id}/insights": {
       "get": {
         "tags": [
@@ -4548,6 +4130,683 @@
         "x-public": true
       }
     },
+    "/api/v1/sessions/{session_id}/views": {
+      "get": {
+        "description": "Get all filter views for a session.",
+        "tags": [
+          "tracer-sessions"
+        ],
+        "summary": "Read filter views",
+        "operationId": "read_filter_views_api_v1_sessions__session_id__views_get",
+        "parameters": [
+          {
+            "description": "Project ID",
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "description": "View type",
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "title": "Type",
+              "anyOf": [
+                {
+                  "enum": [
+                    "runs",
+                    "threads",
+                    "single_run"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FilterView"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shared.ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permission to read the project",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shared.ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/filterviews.ValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shared.ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "API Key": []
+          },
+          {
+            "Tenant ID": []
+          },
+          {
+            "Bearer Auth": []
+          }
+        ],
+        "x-public": true
+      },
+      "post": {
+        "description": "Create a new filter view.",
+        "tags": [
+          "tracer-sessions"
+        ],
+        "summary": "Create filter view",
+        "operationId": "create_filter_view_api_v1_sessions__session_id__views_post",
+        "parameters": [
+          {
+            "description": "Project ID",
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilterView"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid display name or filter expression",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/filterviews.ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shared.ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permission to update the project",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shared.ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project or saved view not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shared.ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/filterviews.ValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shared.ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "API Key": []
+          },
+          {
+            "Tenant ID": []
+          },
+          {
+            "Bearer Auth": []
+          }
+        ],
+        "x-public": true,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FilterViewCreate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{session_id}/views/{view_id}": {
+      "get": {
+        "description": "Get a specific filter view.",
+        "tags": [
+          "tracer-sessions"
+        ],
+        "summary": "Read filter view",
+        "operationId": "read_filter_view_api_v1_sessions__session_id__views__view_id__get",
+        "parameters": [
+          {
+            "description": "Project ID",
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Saved view ID",
+            "name": "view_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilterView"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shared.ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permission to read the project",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shared.ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project or saved view not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shared.ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/filterviews.ValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shared.ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "API Key": []
+          },
+          {
+            "Tenant ID": []
+          },
+          {
+            "Bearer Auth": []
+          }
+        ],
+        "x-public": true
+      },
+      "patch": {
+        "description": "Update a filter view.",
+        "tags": [
+          "tracer-sessions"
+        ],
+        "summary": "Update filter view",
+        "operationId": "update_filter_view_api_v1_sessions__session_id__views__view_id__patch",
+        "parameters": [
+          {
+            "description": "Project ID",
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Saved view ID",
+            "name": "view_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilterView"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid display name, filter expression, or syntax version change",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/filterviews.ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shared.ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permission to update the project",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shared.ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project or saved view not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shared.ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/filterviews.ValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shared.ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "API Key": []
+          },
+          {
+            "Tenant ID": []
+          },
+          {
+            "Bearer Auth": []
+          }
+        ],
+        "x-public": true,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FilterViewUpdate"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete a specific filter view.",
+        "tags": [
+          "tracer-sessions"
+        ],
+        "summary": "Delete filter view",
+        "operationId": "delete_filter_view_api_v1_sessions__session_id__views__view_id__delete",
+        "parameters": [
+          {
+            "description": "Project ID",
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Saved view ID",
+            "name": "view_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shared.ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permission to delete from the project",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shared.ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project or saved view not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shared.ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/filterviews.ValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shared.ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "API Key": []
+          },
+          {
+            "Tenant ID": []
+          },
+          {
+            "Bearer Auth": []
+          }
+        ],
+        "x-public": true
+      }
+    },
+    "/api/v1/sessions/{session_id}/views/{view_id}/rename": {
+      "patch": {
+        "description": "Rename a filter view (display_name and description only).",
+        "tags": [
+          "tracer-sessions"
+        ],
+        "summary": "Rename filter view",
+        "operationId": "rename_filter_view_api_v1_sessions__session_id__views__view_id__rename_patch",
+        "parameters": [
+          {
+            "description": "Project ID",
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Saved view ID",
+            "name": "view_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilterView"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid display name",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/filterviews.ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shared.ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permission to update the project",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shared.ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project or saved view not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shared.ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/filterviews.ValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/shared.ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "API Key": []
+          },
+          {
+            "Tenant ID": []
+          },
+          {
+            "Bearer Auth": []
+          }
+        ],
+        "x-public": true,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FilterViewRename"
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/examples/count": {
       "get": {
         "tags": [
@@ -5134,6 +5393,18 @@
               ],
               "title": "Select"
             }
+          },
+          {
+            "name": "exclude_default_fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Return only the fields in `select`, plus id. Other default fields (created_at, modified_at, inputs, name, dataset_id) are absent unless selected.",
+              "default": false,
+              "title": "Exclude Default Fields"
+            },
+            "description": "Return only the fields in `select`, plus id. Other default fields (created_at, modified_at, inputs, name, dataset_id) are absent unless selected."
           },
           {
             "name": "descending",
@@ -7020,7 +7291,7 @@
           "datasets"
         ],
         "summary": "Update dataset version",
-        "description": "Set a tag on a dataset version.",
+        "description": "Tag a dataset version.\n\nPoints the tag at the version given by as_of, creating the tag or moving it\nif the dataset already has it. Other tags are unchanged. Requires permission\nto update datasets. Returns the version's time and all of its tags. Returns\n400 if the tag is latest, and 404 if the dataset or the as_of tag does not\nexist.",
         "operationId": "update_dataset_version_api_v1_datasets__dataset_id__tags_put",
         "security": [
           {
@@ -7065,6 +7336,26 @@
                 }
               }
             }
+          },
+          "400": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "The tag is latest, which is reserved."
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "The dataset or the as_of tag does not exist."
           },
           "422": {
             "description": "Validation Error",
@@ -7476,7 +7767,7 @@
           "datasets"
         ],
         "summary": "Read dataset share state",
-        "description": "Get the state of sharing a dataset",
+        "description": "Get a dataset's share token.\n\nReturns null when the dataset is not shared.",
         "operationId": "read_dataset_share_state_api_v1_datasets__dataset_id__share_get",
         "security": [
           {
@@ -7538,7 +7829,7 @@
           "datasets"
         ],
         "summary": "Share dataset",
-        "description": "Share a dataset.",
+        "description": "Share a dataset publicly and return its share token.\n\nAnyone with the share token can view the dataset, its examples, and its\nexperiments, including their runs and feedback, without signing in. When the\ndataset is already shared, returns its existing share token. Fails with 403\nwhen the organization disables public sharing.",
         "operationId": "share_dataset_api_v1_datasets__dataset_id__share_put",
         "security": [
           {
@@ -7568,9 +7859,13 @@
             "required": false,
             "schema": {
               "type": "boolean",
+              "description": "Deprecated and has no effect. A shared dataset always shows its experiments.",
+              "deprecated": true,
               "default": false,
               "title": "Share Projects"
-            }
+            },
+            "description": "Deprecated and has no effect. A shared dataset always shows its experiments.",
+            "deprecated": true
           }
         ],
         "responses": {
@@ -7602,7 +7897,7 @@
           "datasets"
         ],
         "summary": "Unshare dataset",
-        "description": "Unshare a dataset.",
+        "description": "Stop sharing a dataset.\n\nIts share token stops working. Succeeds when the dataset is not shared.",
         "operationId": "unshare_dataset_api_v1_datasets__dataset_id__share_delete",
         "security": [
           {
@@ -7764,7 +8059,7 @@
           "datasets"
         ],
         "summary": "Clone dataset",
-        "description": "Clone a dataset.",
+        "description": "Copy examples from a source dataset into an existing target dataset.\n\nEach copied example gets a new ID and keeps the inputs, outputs, metadata,\nand source run ID of its source example. Attachments are copied when blob\nstorage is enabled. Copying the same examples twice adds them twice.\nRequires the datasets:clone permission on both datasets. Returns the ID,\ndataset ID, creation and modification times, and source run ID of each new\nexample. Without example IDs, a source or target that is not found can\nreturn an empty list instead of an error.",
         "operationId": "clone_dataset_api_v1_datasets_clone_post",
         "requestBody": {
           "content": {
@@ -7788,6 +8083,16 @@
                   },
                   "type": "array",
                   "title": "Response Clone Dataset Api V1 Datasets Clone Post"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Example IDs were given and nothing was copied, because none match or either dataset is not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -7823,6 +8128,7 @@
           "datasets"
         ],
         "summary": "Get dataset splits",
+        "description": "List the split names a dataset's examples belong to.\n\nAn example whose split was never set counts as the base split.",
         "operationId": "get_dataset_splits_api_v1_datasets__dataset_id__splits_get",
         "security": [
           {
@@ -7900,6 +8206,7 @@
           "datasets"
         ],
         "summary": "Update dataset splits",
+        "description": "Add examples to a split, or remove them from it.\n\nReturns the IDs of the given examples found in the dataset. Each of them gets\na new version, even when its splits do not change. An example's other splits\nare kept, and an example without a split counts as being in the base split.\nRemoving an example's last split leaves it in no split.",
         "operationId": "update_dataset_splits_api_v1_datasets__dataset_id__splits_put",
         "security": [
           {
@@ -9184,8 +9491,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           }
         ],
@@ -26792,8 +27099,8 @@
             "name": "page_size",
             "in": "query",
             "schema": {
-              "maximum": 100,
               "minimum": 1,
+              "maximum": 100,
               "type": "integer",
               "default": 20,
               "title": "Page Size"
@@ -27261,8 +27568,8 @@
             "name": "limit",
             "in": "query",
             "schema": {
-              "maximum": 100,
               "minimum": 1,
+              "maximum": 100,
               "type": "integer",
               "default": 20,
               "title": "Limit"
@@ -28624,8 +28931,8 @@
             "name": "min_start_time",
             "in": "query",
             "schema": {
-              "type": "string",
               "format": "date-time",
+              "type": "string",
               "title": "Min Start Time"
             }
           },
@@ -28634,8 +28941,8 @@
             "name": "max_start_time",
             "in": "query",
             "schema": {
-              "type": "string",
               "format": "date-time",
+              "type": "string",
               "title": "Max Start Time"
             }
           },
@@ -28861,8 +29168,8 @@
             "name": "min_start_time",
             "in": "query",
             "schema": {
-              "type": "string",
               "format": "date-time",
+              "type": "string",
               "title": "Min Start Time"
             }
           },
@@ -28871,8 +29178,8 @@
             "name": "max_start_time",
             "in": "query",
             "schema": {
-              "type": "string",
               "format": "date-time",
+              "type": "string",
               "title": "Max Start Time"
             }
           }
@@ -29527,8 +29834,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           }
         ],
@@ -29646,8 +29953,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           }
         ],
@@ -29781,8 +30088,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           },
           {
@@ -29791,8 +30098,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           }
         ],
@@ -31389,8 +31696,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           }
         ],
@@ -31479,8 +31786,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           }
         ],
@@ -31562,8 +31869,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           }
         ],
@@ -32134,8 +32441,8 @@
             "name": "trace_id",
             "in": "query",
             "schema": {
-              "type": "string",
               "format": "uuid",
+              "type": "string",
               "title": "Trace Id"
             }
           },
@@ -35407,8 +35714,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           }
         ],
@@ -37299,8 +37606,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           }
         ],
@@ -37372,8 +37679,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           },
           {
@@ -37399,8 +37706,8 @@
             "name": "trace_id",
             "in": "query",
             "schema": {
-              "type": "string",
               "format": "uuid",
+              "type": "string",
               "title": "Trace Id"
             }
           }
@@ -37474,8 +37781,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           },
           {
@@ -37484,8 +37791,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           },
           {
@@ -37494,8 +37801,8 @@
             "in": "query",
             "required": true,
             "schema": {
-              "type": "string",
               "format": "date-time",
+              "type": "string",
               "title": "Start Time"
             }
           },
@@ -37592,8 +37899,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           },
           {
@@ -37686,8 +37993,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           },
           {
@@ -37810,8 +38117,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           },
           {
@@ -37820,8 +38127,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           },
           {
@@ -37922,8 +38229,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           },
           {
@@ -37932,8 +38239,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           },
           {
@@ -37942,8 +38249,8 @@
             "in": "query",
             "required": true,
             "schema": {
-              "type": "string",
               "format": "date-time",
+              "type": "string",
               "title": "Start Time"
             }
           },
@@ -38068,8 +38375,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           }
         ],
@@ -38345,8 +38652,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           },
           {
@@ -38355,8 +38662,8 @@
             "in": "query",
             "required": true,
             "schema": {
-              "type": "string",
               "format": "uuid",
+              "type": "string",
               "title": "Project Id"
             }
           },
@@ -38427,8 +38734,8 @@
             "name": "start_time",
             "in": "query",
             "schema": {
-              "type": "string",
               "format": "date-time",
+              "type": "string",
               "title": "Start Time"
             }
           }
@@ -38562,8 +38869,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           }
         ],
@@ -38677,8 +38984,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           },
           {
@@ -38790,8 +39097,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           }
         ],
@@ -41132,8 +41439,8 @@
             "name": "page_size",
             "in": "query",
             "schema": {
-              "maximum": 100,
               "minimum": 1,
+              "maximum": 100,
               "type": "integer",
               "default": 20,
               "title": "Page Size"
@@ -42162,8 +42469,8 @@
             "in": "query",
             "required": true,
             "schema": {
-              "type": "string",
               "format": "date-time",
+              "type": "string",
               "title": "Start Time"
             }
           },
@@ -42173,8 +42480,8 @@
             "in": "query",
             "required": true,
             "schema": {
-              "type": "string",
               "format": "date-time",
+              "type": "string",
               "title": "End Time"
             }
           },
@@ -42210,8 +42517,8 @@
             "name": "page_size",
             "in": "query",
             "schema": {
-              "maximum": 100,
               "minimum": 1,
+              "maximum": 100,
               "type": "integer",
               "default": 20,
               "title": "Page Size"
@@ -43617,8 +43924,8 @@
             "in": "query",
             "required": true,
             "schema": {
-              "type": "string",
               "format": "uuid",
+              "type": "string",
               "title": "Project Id"
             }
           }
@@ -43822,8 +44129,8 @@
             "in": "query",
             "required": true,
             "schema": {
-              "type": "string",
               "format": "uuid",
+              "type": "string",
               "title": "Project Id"
             }
           }
@@ -43957,8 +44264,8 @@
             "in": "query",
             "required": true,
             "schema": {
-              "type": "string",
               "format": "uuid",
+              "type": "string",
               "title": "Session Id"
             }
           }
@@ -44109,8 +44416,8 @@
             "name": "page_size",
             "in": "query",
             "schema": {
-              "maximum": 100,
               "minimum": 1,
+              "maximum": 100,
               "type": "integer",
               "default": 20,
               "title": "Page Size"
@@ -44122,8 +44429,8 @@
             "in": "query",
             "required": true,
             "schema": {
-              "type": "string",
               "format": "uuid",
+              "type": "string",
               "title": "Project Id"
             }
           },
@@ -44493,8 +44800,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           },
           {
@@ -44511,8 +44818,8 @@
             "name": "max_start_time",
             "in": "query",
             "schema": {
-              "type": "string",
               "format": "date-time",
+              "type": "string",
               "title": "Max Start Time"
             }
           },
@@ -44521,8 +44828,8 @@
             "name": "min_start_time",
             "in": "query",
             "schema": {
-              "type": "string",
               "format": "date-time",
+              "type": "string",
               "title": "Min Start Time"
             }
           },
@@ -44532,8 +44839,8 @@
             "in": "query",
             "required": true,
             "schema": {
-              "type": "string",
               "format": "uuid",
+              "type": "string",
               "title": "Project Id"
             }
           },
@@ -44819,8 +45126,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           }
         ],
@@ -44918,8 +45225,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           }
         ],
@@ -45052,8 +45359,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           },
           {
@@ -45063,8 +45370,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           }
         ],
@@ -45159,8 +45466,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           },
           {
@@ -45170,8 +45477,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           }
         ],
@@ -45259,8 +45566,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           },
           {
@@ -45270,8 +45577,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           }
         ],
@@ -46312,8 +46619,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           }
         ],
@@ -46385,8 +46692,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           }
         ],
@@ -46503,8 +46810,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           }
         ],
@@ -46613,8 +46920,8 @@
             "name": "limit",
             "in": "query",
             "schema": {
-              "maximum": 100,
               "minimum": 1,
+              "maximum": 100,
               "type": "integer",
               "default": 50,
               "title": "Limit"
@@ -47485,8 +47792,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "format": "uuid",
+              "type": "string"
             }
           }
         ],
@@ -47580,8 +47887,8 @@
             "name": "page_size",
             "in": "query",
             "schema": {
-              "maximum": 100,
               "minimum": 1,
+              "maximum": 100,
               "type": "integer",
               "default": 20,
               "title": "Page Size"
@@ -47602,8 +47909,8 @@
             "in": "query",
             "required": true,
             "schema": {
-              "type": "string",
               "format": "date-time",
+              "type": "string",
               "title": "Start Time"
             }
           },
@@ -47613,8 +47920,8 @@
             "in": "query",
             "required": true,
             "schema": {
-              "type": "string",
               "format": "date-time",
+              "type": "string",
               "title": "End Time"
             }
           },
@@ -47728,8 +48035,8 @@
             "name": "page_size",
             "in": "query",
             "schema": {
-              "maximum": 100,
               "minimum": 1,
+              "maximum": 100,
               "type": "integer",
               "default": 20,
               "title": "Page Size"
@@ -47750,8 +48057,8 @@
             "in": "query",
             "required": true,
             "schema": {
-              "type": "string",
               "format": "date-time",
+              "type": "string",
               "title": "Start Time"
             }
           },
@@ -47761,8 +48068,8 @@
             "in": "query",
             "required": true,
             "schema": {
-              "type": "string",
               "format": "date-time",
+              "type": "string",
               "title": "End Time"
             }
           },
@@ -47895,8 +48202,8 @@
             "name": "page_size",
             "in": "query",
             "schema": {
-              "maximum": 100,
               "minimum": 1,
+              "maximum": 100,
               "type": "integer",
               "default": 20,
               "title": "Page Size"
@@ -50377,6 +50684,8 @@
           "upsert_github_app_configuration",
           "update_github_app_configuration",
           "delete_github_app_configuration",
+          "upsert_gitlab_connection",
+          "delete_gitlab_connection",
           "set_tenant_handle",
           "create_tag_key",
           "update_tag_key",
@@ -51679,12 +51988,14 @@
           "target_dataset_id": {
             "type": "string",
             "format": "uuid",
-            "title": "Target Dataset Id"
+            "title": "Target Dataset Id",
+            "description": "ID of the dataset in this workspace that receives the copied examples. Its current examples are kept."
           },
           "source_dataset_id": {
             "type": "string",
             "format": "uuid",
-            "title": "Source Dataset Id"
+            "title": "Source Dataset Id",
+            "description": "ID of the dataset in this workspace to copy examples from. It is not modified."
           },
           "as_of": {
             "anyOf": [
@@ -51704,7 +52015,8 @@
                 "type": "null"
               }
             ],
-            "title": "As Of"
+            "title": "As Of",
+            "description": "Version of the source dataset to copy. A value that parses as an ISO 8601 date or timestamp copies the examples as they were at that time; latest copies the current examples; any other value is a version tag. Defaults to latest."
           },
           "examples": {
             "items": {
@@ -51713,6 +52025,7 @@
             },
             "type": "array",
             "title": "Examples",
+            "description": "IDs of source examples to copy. Defaults to every example in the source version. When IDs are given and nothing is copied, because none match or either dataset is not found, the request fails with 404.",
             "default": []
           },
           "split": {
@@ -51730,7 +52043,8 @@
                 "type": "null"
               }
             ],
-            "title": "Split"
+            "title": "Split",
+            "description": "Split name, or list of split names, assigned to every copied example in place of its source splits. Defaults to keeping the source splits."
           },
           "tag_value_ids": {
             "anyOf": [
@@ -51746,7 +52060,8 @@
                 "type": "null"
               }
             ],
-            "title": "Tag Value Ids"
+            "title": "Tag Value Ids",
+            "description": "List of resource tag value IDs to attach to the target dataset, up to 100. Requires the datasets:tag_on_create permission."
           }
         },
         "type": "object",
@@ -51881,7 +52196,8 @@
         "properties": {
           "split_name": {
             "type": "string",
-            "title": "Split Name"
+            "title": "Split Name",
+            "description": "Split to add the examples to, or remove them from."
           },
           "examples": {
             "items": {
@@ -51889,11 +52205,13 @@
               "format": "uuid"
             },
             "type": "array",
-            "title": "Examples"
+            "title": "Examples",
+            "description": "IDs of the examples to change. IDs of examples in other datasets are ignored."
           },
           "remove": {
             "type": "boolean",
             "title": "Remove",
+            "description": "Remove the examples from the split instead of adding them.",
             "default": false
           }
         },
@@ -57601,6 +57919,68 @@
         "title": "EvaluateExperimentRequest",
         "description": "Request body for evaluating an experiment."
       },
+      "EvaluatorFeedbackMapping": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "json_array_index": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Json Array Index"
+          },
+          "min_items": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Items"
+          },
+          "json_object_keys": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Json Object Keys"
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source"
+        ],
+        "title": "EvaluatorFeedbackMapping"
+      },
       "EvaluatorSpendDefaultBody": {
         "properties": {
           "limit_usd": {
@@ -60281,54 +60661,17 @@
         "title": "FetchClusteringJobRunsResult"
       },
       "FilterView": {
+        "type": "object",
+        "required": [
+          "created_at",
+          "display_name",
+          "id",
+          "updated_at"
+        ],
         "properties": {
-          "filter_string": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Filter String"
-          },
-          "trace_filter_string": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Trace Filter String"
-          },
-          "tree_filter_string": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tree Filter String"
-          },
-          "thread_filter_string": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Thread Filter String"
-          },
-          "display_name": {
+          "created_at": {
             "type": "string",
-            "title": "Display Name"
+            "format": "date-time"
           },
           "description": {
             "anyOf": [
@@ -60338,29 +60681,20 @@
               {
                 "type": "null"
               }
-            ],
-            "title": "Description"
+            ]
           },
-          "type": {
-            "$ref": "#/components/schemas/FilterViewType",
-            "default": "runs"
+          "display_name": {
+            "type": "string"
           },
-          "syntax_version": {
-            "type": "integer",
-            "title": "Syntax Version",
-            "default": 1
-          },
-          "start_time": {
+          "duration": {
             "anyOf": [
               {
-                "type": "string",
-                "format": "date-time"
+                "type": "string"
               },
               {
                 "type": "null"
               }
-            ],
-            "title": "Start Time"
+            ]
           },
           "end_time": {
             "anyOf": [
@@ -60371,10 +60705,9 @@
               {
                 "type": "null"
               }
-            ],
-            "title": "End Time"
+            ]
           },
-          "duration": {
+          "filter_string": {
             "anyOf": [
               {
                 "type": "string"
@@ -60382,13 +60715,11 @@
               {
                 "type": "null"
               }
-            ],
-            "title": "Duration"
+            ]
           },
           "id": {
             "type": "string",
-            "format": "uuid",
-            "title": "Id"
+            "format": "uuid"
           },
           "session_id": {
             "anyOf": [
@@ -60399,102 +60730,7 @@
               {
                 "type": "null"
               }
-            ],
-            "title": "Session Id"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Created At"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Updated At"
-          }
-        },
-        "type": "object",
-        "required": [
-          "display_name",
-          "id",
-          "created_at",
-          "updated_at"
-        ],
-        "title": "FilterView"
-      },
-      "FilterViewCreate": {
-        "properties": {
-          "filter_string": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Filter String"
-          },
-          "trace_filter_string": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Trace Filter String"
-          },
-          "tree_filter_string": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tree Filter String"
-          },
-          "thread_filter_string": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Thread Filter String"
-          },
-          "display_name": {
-            "type": "string",
-            "title": "Display Name"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "type": {
-            "$ref": "#/components/schemas/FilterViewType",
-            "default": "runs"
-          },
-          "syntax_version": {
-            "type": "integer",
-            "enum": [
-              1,
-              2
-            ],
-            "title": "Syntax Version",
-            "default": 1
+            ]
           },
           "start_time": {
             "anyOf": [
@@ -60505,8 +60741,85 @@
               {
                 "type": "null"
               }
-            ],
-            "title": "Start Time"
+            ]
+          },
+          "syntax_version": {
+            "type": "integer",
+            "default": 1
+          },
+          "thread_filter_string": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "trace_filter_string": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tree_filter_string": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "type": {
+            "type": "string",
+            "default": "runs",
+            "enum": [
+              "runs",
+              "threads",
+              "single_run"
+            ]
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "FilterViewCreate": {
+        "type": "object",
+        "required": [
+          "display_name"
+        ],
+        "properties": {
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "display_name": {
+            "type": "string"
+          },
+          "duration": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "end_time": {
             "anyOf": [
@@ -60517,10 +60830,9 @@
               {
                 "type": "null"
               }
-            ],
-            "title": "End Time"
+            ]
           },
-          "duration": {
+          "filter_string": {
             "anyOf": [
               {
                 "type": "string"
@@ -60528,22 +60840,74 @@
               {
                 "type": "null"
               }
-            ],
-            "title": "Duration"
+            ]
+          },
+          "start_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "syntax_version": {
+            "type": "integer",
+            "default": 1,
+            "enum": [
+              1,
+              2
+            ]
+          },
+          "thread_filter_string": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "trace_filter_string": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tree_filter_string": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "type": {
+            "type": "string",
+            "default": "runs",
+            "enum": [
+              "runs",
+              "threads",
+              "single_run"
+            ]
           }
-        },
+        }
+      },
+      "FilterViewRename": {
         "type": "object",
         "required": [
           "display_name"
         ],
-        "title": "FilterViewCreate"
-      },
-      "FilterViewRename": {
         "properties": {
-          "display_name": {
-            "type": "string",
-            "title": "Display Name"
-          },
           "description": {
             "anyOf": [
               {
@@ -60552,15 +60916,12 @@
               {
                 "type": "null"
               }
-            ],
-            "title": "Description"
+            ]
+          },
+          "display_name": {
+            "type": "string"
           }
-        },
-        "type": "object",
-        "required": [
-          "display_name"
-        ],
-        "title": "FilterViewRename"
+        }
       },
       "FilterViewType": {
         "type": "string",
@@ -60572,8 +60933,9 @@
         "title": "FilterViewType"
       },
       "FilterViewUpdate": {
+        "type": "object",
         "properties": {
-          "filter_string": {
+          "description": {
             "anyOf": [
               {
                 "type": "string"
@@ -60581,8 +60943,7 @@
               {
                 "type": "null"
               }
-            ],
-            "title": "Filter String"
+            ]
           },
           "display_name": {
             "anyOf": [
@@ -60592,10 +60953,9 @@
               {
                 "type": "null"
               }
-            ],
-            "title": "Display Name"
+            ]
           },
-          "description": {
+          "duration": {
             "anyOf": [
               {
                 "type": "string"
@@ -60603,10 +60963,20 @@
               {
                 "type": "null"
               }
-            ],
-            "title": "Description"
+            ]
           },
-          "trace_filter_string": {
+          "end_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "filter_string": {
             "anyOf": [
               {
                 "type": "string"
@@ -60614,35 +60984,13 @@
               {
                 "type": "null"
               }
-            ],
-            "title": "Trace Filter String"
+            ]
           },
-          "tree_filter_string": {
+          "start_time": {
             "anyOf": [
               {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tree Filter String"
-          },
-          "thread_filter_string": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Thread Filter String"
-          },
-          "type": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/FilterViewType"
+                "type": "string",
+                "format": "date-time"
               },
               {
                 "type": "null"
@@ -60661,34 +61009,9 @@
               {
                 "type": "null"
               }
-            ],
-            "title": "Syntax Version"
+            ]
           },
-          "start_time": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date-time"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Start Time"
-          },
-          "end_time": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date-time"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "End Time"
-          },
-          "duration": {
+          "thread_filter_string": {
             "anyOf": [
               {
                 "type": "string"
@@ -60696,12 +61019,44 @@
               {
                 "type": "null"
               }
-            ],
-            "title": "Duration"
+            ]
+          },
+          "trace_filter_string": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tree_filter_string": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "runs",
+                  "threads",
+                  "single_run"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
-        },
-        "type": "object",
-        "title": "FilterViewUpdate"
+        }
       },
       "ForkRepoRequest": {
         "properties": {
@@ -62880,6 +63235,19 @@
               }
             ],
             "title": "Provider"
+          },
+          "prompt_tokens_above": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 9007199254740991.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt Tokens Above"
           }
         },
         "type": "object",
@@ -63043,6 +63411,19 @@
               }
             ],
             "title": "Provider"
+          },
+          "prompt_tokens_above": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 9007199254740991.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt Tokens Above"
           }
         },
         "type": "object",
@@ -63169,6 +63550,19 @@
               }
             ],
             "title": "Provider"
+          },
+          "prompt_tokens_above": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 9007199254740991.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt Tokens Above"
           }
         },
         "type": "object",
@@ -68299,11 +68693,12 @@
               }
             ],
             "title": "As Of",
-            "description": "Only modifications made on or before this time are included. If None, the latest version of the dataset is used."
+            "description": "The version to tag: an ISO 8601 timestamp, or the name of an existing tag on this dataset (latest resolves to the most recent example change, and returns 404 for a dataset with no examples). A value that does not parse as a timestamp is treated as a tag name, and an unknown tag name returns 404. Timestamps are not checked against the dataset history: the tag covers every example change made on or before that time, so a future time keeps picking up new changes until it passes. Use the exact as_of of an existing version, since looking up a version by tag returns 404 when the tag's time does not match a version."
           },
           "tag": {
             "type": "string",
-            "title": "Tag"
+            "title": "Tag",
+            "description": "The tag to set. If the dataset already has this tag, it is moved to the new version. The tag latest is reserved and returns 400."
           }
         },
         "type": "object",
@@ -80712,6 +81107,17 @@
           "id": {
             "type": "string"
           },
+          "provider": {
+            "enum": [
+              "github",
+              "gitlab"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/repohost.Provider"
+              }
+            ]
+          },
           "repo_url": {
             "type": "string"
           },
@@ -80729,6 +81135,18 @@
         "properties": {
           "base_branch": {
             "type": "string"
+          },
+          "provider": {
+            "description": "Omitted means GitHub.",
+            "enum": [
+              "github",
+              "gitlab"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/repohost.Provider"
+              }
+            ]
           },
           "repo_url": {
             "type": "string"
@@ -80773,15 +81191,15 @@
             "type": "string"
           },
           "github_base_branch": {
-            "description": "Legacy: aliases the oldest entry in GithubRepos.",
+            "description": "Legacy: aliases the oldest GitHub entry in GithubRepos.",
             "type": "string"
           },
           "github_repo_subdir": {
-            "description": "Legacy: aliases the oldest entry in GithubRepos.",
+            "description": "Legacy: aliases the oldest GitHub entry in GithubRepos.",
             "type": "string"
           },
           "github_repo_url": {
-            "description": "Legacy: aliases the oldest entry in GithubRepos.",
+            "description": "Legacy: aliases the oldest GitHub entry in GithubRepos.",
             "type": "string"
           },
           "github_repos": {
@@ -82026,8 +82444,8 @@
             "type": "boolean"
           },
           "byoc_external_id": {
-            "description": "ByocExternalID is the organization's assigned AWS external ID, stored only in org config.",
             "readOnly": true,
+            "description": "ByocExternalID is the organization's assigned AWS external ID, stored only in org config.",
             "anyOf": [
               {
                 "type": "string"
@@ -82601,6 +83019,20 @@
           "snapshots:create",
           "snapshots:delete",
           "snapshots:update",
+          "workspaces:settings:manage",
+          "workspaces:retention:manage",
+          "workspaces:usage-controls:manage",
+          "workspaces:security-policy:manage",
+          "workspaces:resource-tags:manage",
+          "workspaces:integrations:manage",
+          "workspaces:sandbox-proxy-profiles:manage",
+          "workspaces:credentials:manage",
+          "workspaces:access-control:assign-restricted",
+          "workspaces:credentials:read-metadata",
+          "workspaces:integrations:read",
+          "workspaces:fleet-feedback:read-all",
+          "workspaces:delete",
+          "workspaces:credentials:use",
           "workspaces:manage-members",
           "workspaces:manage-secrets",
           "workspaces:manage",
@@ -82745,6 +83177,20 @@
           "SnapshotsCreate",
           "SnapshotsDelete",
           "SnapshotsUpdate",
+          "WorkspacesSettingsManage",
+          "WorkspacesRetentionManage",
+          "WorkspacesUsageControlsManage",
+          "WorkspacesSecurityPolicyManage",
+          "WorkspacesResourceTagsManage",
+          "WorkspacesIntegrationsManage",
+          "WorkspacesSandboxProxyProfilesManage",
+          "WorkspacesCredentialsManage",
+          "WorkspacesAccessControlAssignRestricted",
+          "WorkspacesCredentialsReadMetadata",
+          "WorkspacesIntegrationsRead",
+          "WorkspacesFleetFeedbackReadAll",
+          "WorkspacesDelete",
+          "WorkspacesCredentialsUse",
           "WorkspacesManageMembers",
           "WorkspacesManageSecrets",
           "WorkspacesManage",
@@ -84792,6 +85238,31 @@
           }
         }
       },
+      "filterviews.ErrorResponse": {
+        "type": "object",
+        "required": [
+          "detail"
+        ],
+        "properties": {
+          "detail": {
+            "type": "string"
+          }
+        }
+      },
+      "filterviews.ValidationErrorResponse": {
+        "type": "object",
+        "required": [
+          "detail"
+        ],
+        "properties": {
+          "detail": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "gateway_policies.CreateGatewayPolicyRequest": {
         "type": "object",
         "properties": {
@@ -85306,6 +85777,8 @@
           "created_at",
           "id",
           "pr_number",
+          "provider",
+          "provider_web_base_url",
           "repo_url",
           "updated_at"
         ],
@@ -85331,6 +85804,28 @@
             "anyOf": [
               {
                 "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "provider": {
+            "enum": [
+              "github",
+              "gitlab"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/repohost.Provider"
+              }
+            ]
+          },
+          "provider_web_base_url": {
+            "description": "ProviderWebBaseURL is the GitLab instance a GitLab fix lives on; null for GitHub.",
+            "anyOf": [
+              {
+                "type": "string"
               },
               {
                 "type": "null"
@@ -87895,6 +88390,17 @@
             "type": "integer"
           }
         }
+      },
+      "repohost.Provider": {
+        "type": "string",
+        "enum": [
+          "github",
+          "gitlab"
+        ],
+        "x-enum-varnames": [
+          "GitHub",
+          "GitLab"
+        ]
       },
       "runs.ErrorResponse": {
         "type": "object",

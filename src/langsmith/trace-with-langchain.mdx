@@ -3,9 +3,13 @@ title: Trace LangChain applications (Python and JS/TS)
 sidebarTitle: LangChain
 ---
 
+import AgentTracingPrerequisite from '/snippets/langsmith/agent-tracing-prerequisite.mdx';
+
 import SaasRegionUrls from '/snippets/langsmith/saas-region-urls.mdx';
 
 LangSmith integrates seamlessly with LangChain (Python and JavaScript), the popular open-source framework for building LLM applications.
+
+<AgentTracingPrerequisite />
 
 ## Installation
 
@@ -40,6 +44,7 @@ pnpm add @langchain/openai @langchain/core
 ```bash wrap
 export LANGSMITH_TRACING=true
 export LANGSMITH_API_KEY=<your-api-key>
+export LANGSMITH_PROJECT="<environment-project-name>"
 # This example uses OpenAI, but you can use any LLM provider of choice
 export OPENAI_API_KEY=<your-openai-api-key>
 # For LangSmith API keys linked to multiple workspaces, set the LANGSMITH_WORKSPACE_ID environment variable to specify which workspace to use.
@@ -159,12 +164,14 @@ await chain.invoke(
 
 ## Log to a specific project
 
+In an agent-based workspace, use an existing environment project. Replace every destination below, including overrides in code, with a project selected during setup.
+
 ### Statically
 
 As mentioned in the [tracing conceptual guide](/langsmith/observability-concepts) LangSmith uses the concept of a Project to group traces. If left unspecified, the tracer project is set to default. You can set the `LANGSMITH_PROJECT` environment variable to configure a custom project name for an entire application run. This should be done before executing your application.
 
 ```bash
-export LANGSMITH_PROJECT=my-project
+export LANGSMITH_PROJECT="<environment-project-name>"
 ```
 
 <Warning>

@@ -4,9 +4,13 @@ sidebarTitle: OpenAI Codex
 description: Capture OpenAI Codex agent turns, tool calls, model metadata, and subagent threads in LangSmith.
 ---
 
+import AgentTracingPrerequisite from '/snippets/langsmith/agent-tracing-prerequisite.mdx';
+
 import CodingAgentSecretRedaction from '/snippets/langsmith/coding-agent-secret-redaction.mdx';
 
 The [`langsmith-codex-plugins`](https://github.com/langchain-ai/langsmith-codex-plugins) marketplace ships a tracing plugin that sends [OpenAI Codex](https://developers.openai.com/codex) session data to LangSmith. Use it to inspect agent turns, model metadata, token usage, tool calls, and subagent threads from your Codex workflows.
+
+<AgentTracingPrerequisite />
 
 ## Prerequisites
 
@@ -57,7 +61,7 @@ Add the variables to your shell configuration file (`~/.zshrc`, `~/.bashrc`, or 
 ```bash
 export TRACE_TO_LANGSMITH="true"
 export LANGSMITH_CODEX_API_KEY="<your-langsmith-api-key>"
-export LANGSMITH_CODEX_PROJECT="codex"
+export LANGSMITH_CODEX_PROJECT="<environment-project-name>"
 ```
 
 ### Config file
@@ -69,7 +73,7 @@ Use `<project>/.codex/langsmith.json` for project-level settings or `~/.codex/la
   "enabled": true,
   "api_key": "<your-langsmith-api-key>",
   "api_url": "https://api.smith.langchain.com",
-  "project": "codex",
+  "project": "<environment-project-name>",
   "metadata": {
     "team": "agents",
     "environment": "dev"
@@ -165,7 +169,7 @@ To redact additional patterns, set `LANGSMITH_CODEX_REDACT_EXTRA` to a JSON arra
 ```json
 {
   "enabled": true,
-  "project": "codex",
+  "project": "<environment-project-name>",
   "redact": true,
   "redact_extra_rules": [{ "pattern": "ACME-[A-Z0-9]{16}", "replace": "[REDACTED_ACME_KEY]" }]
 }

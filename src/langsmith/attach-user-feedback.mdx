@@ -3,9 +3,13 @@ title: Log user feedback using the SDK
 sidebarTitle: Log user feedback using the SDK
 ---
 
+import AgentTracingPrerequisite from '/snippets/langsmith/agent-tracing-prerequisite.mdx';
+
 LangSmith makes it easy to attach [feedback](/langsmith/observability-concepts#feedback) to [traces](/langsmith/observability-concepts#traces). This feedback can come from users, annotators, automated evaluators, and so on, which is crucial for monitoring and evaluating applications.
 
 This page details how to log feedback using the [SDK](/langsmith/reference). For the structure of feedback objects, refer to [Feedback data format](/langsmith/feedback-data-format).
+
+<AgentTracingPrerequisite />
 
 ## Use `create_feedback()` / `createFeedback`
 
@@ -47,7 +51,7 @@ with trace(name="foobar", inputs=inputs) as root_run:
     child_runs = root_run.child_runs
 
 # Resolve the UUID of the project that owns the trace
-session_id = client.create_project(project_name=root_run.session_name, upsert=True).id
+session_id = client.read_project(project_name=root_run.session_name).id
 
 # Provide feedback for a trace (a.k.a. a root run)
 client.create_feedback(
@@ -79,7 +83,7 @@ const client = new Client();
     // This information can be the result of a user-facing feedback form
 
 // Resolve the UUID of the project that owns the trace
-const { id: sessionId } = await client.createProject({ projectName: "default", upsert: true });
+const { id: sessionId } = await client.readProject({ projectName: "<environment-project-name>" });
 
 await client.createFeedback({
     runId,

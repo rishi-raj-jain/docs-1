@@ -4,9 +4,13 @@ sidebarTitle: Pi
 description: Trace Pi coding agent invocations to LangSmith to observe turns, debug tool calls, track token usage, and inspect individual LLM invocations.
 ---
 
+import AgentTracingPrerequisite from '/snippets/langsmith/agent-tracing-prerequisite.mdx';
+
 This guide shows you how to trace [Pi coding agent](https://pi.dev) sessions to LangSmith using the `@langchain/langsmith-pi-extension` extension.
 
 Once configured, each Pi session sends traces to LangSmith. Each trace includes user messages, assistant responses, tool calls, and individual LLM invocations, which gives you full observability into your Pi coding agent runs.
+
+<AgentTracingPrerequisite />
 
 ## Prerequisites
 
@@ -65,7 +69,7 @@ Example:
 ```sh
 export TRACE_TO_LANGSMITH=true
 export LANGSMITH_PI_API_KEY="<your-langsmith-api-key>"
-export LANGSMITH_PI_PROJECT="pi-coding-agent-dev"
+export LANGSMITH_PI_PROJECT="<environment-project-name>"
 export LANGSMITH_PI_METADATA='{"team":"infra","environment":"local"}'
 ```
 

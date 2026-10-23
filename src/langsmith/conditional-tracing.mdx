@@ -3,6 +3,8 @@ title: Conditional tracing
 sidebarTitle: Conditional tracing
 ---
 
+import AgentTracingPrerequisite from '/snippets/langsmith/agent-tracing-prerequisite.mdx';
+
 When you have the environment variable `LANGSMITH_TRACING=true` set globally, traces are automatically sent to LangSmith. This guide shows you how to disable or customize tracing selectively for specific requests.
 
 Use conditional tracing when you need to:
@@ -22,6 +24,10 @@ The @[`tracing_context`][tracing_context] context manager (Python) and @[`tracin
 <Note>
 The following sections provide language-specific examples that you can adapt to your application logic and business requirements.
 </Note>
+
+<AgentTracingPrerequisite />
+
+Provision every destination before enabling routing, including each replica and tenant workspace. Replace the project names below with those existing environment projects.
 
 <Tabs>
 <Tab title="Python" icon="brand-python">

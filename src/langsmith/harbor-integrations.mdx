@@ -104,6 +104,8 @@ Or set the same inputs as plugin kwargs with `--pk` on the command line, or unde
 
 ## Deep Agents
 
+For standalone agent traces in an agent-based workspace, [register the agent](/langsmith/create-an-agent) and set `LANGSMITH_PROJECT` to its existing environment project name. Dataset-linked experiments use the evaluation flow above.
+
 The `langgraph` agent runs a LangGraph application, such as a Deep Agent, as the Harbor agent. Select it with `--agent langgraph`. Harbor stages your project into the sandbox, installs its dependencies, and runs the graph inside the container for each trial.
 
 Set your LangSmith and model credentials, then run Harbor. `harbor run` is an alias for `harbor job start`, which builds a job, spins up the environment, and runs the LangGraph agent:

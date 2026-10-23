@@ -3,6 +3,8 @@ title: Run a local server
 sidebarTitle: Local server
 ---
 
+import AgentTracingPrerequisite from '/snippets/langsmith/agent-tracing-prerequisite.mdx';
+
 
 This guide shows you how to run a LangGraph application locally.
 
@@ -111,10 +113,13 @@ npm install
 
 ## 4. Create a `.env` file
 
+<AgentTracingPrerequisite />
+
 You will find a `.env.example` in the root of your new LangGraph app. Create a `.env` file in the root of your new LangGraph app and copy the contents of the `.env.example` file into it, filling in the necessary API keys:
 
 ```bash
 LANGSMITH_API_KEY=lsv2...
+LANGSMITH_PROJECT="<environment-project-name>"
 ```
 
 ## 5. Launch Agent server

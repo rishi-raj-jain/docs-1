@@ -3,6 +3,8 @@ title: Trace Amazon Bedrock applications
 sidebarTitle: Bedrock
 ---
 
+import AgentTracingPrerequisite from '/snippets/langsmith/agent-tracing-prerequisite.mdx';
+
 This guide shows you how to trace [Amazon Bedrock](https://aws.amazon.com/bedrock) model calls with LangSmith using the native AWS SDKs. LangSmith also works seamlessly with [LangChain's Bedrock integrations](/oss/integrations/providers/aws). Either approach provides insights into:
 
 - Request and response payloads
@@ -10,6 +12,8 @@ This guide shows you how to trace [Amazon Bedrock](https://aws.amazon.com/bedroc
 - Latency and performance metrics
 - Custom tags and metadata for filtering and analysis
 - Multi-step chains and agent workflows
+
+<AgentTracingPrerequisite />
 
 ## Installation
 

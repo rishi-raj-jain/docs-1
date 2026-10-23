@@ -4,6 +4,8 @@ sidebarTitle: Trace replicas
 description: Send every trace to multiple projects or workspaces at the same time using replicas, configured by environment variable or at runtime.
 ---
 
+import AgentTracingPrerequisite from '/snippets/langsmith/agent-tracing-prerequisite.mdx';
+
 Replicas let you send every trace to multiple projects or workspaces at the same time. Where [dynamic routing](/langsmith/log-traces-to-project#set-the-destination-project-dynamically) sends each trace to one destination, replicas duplicate the trace to all configured destinations in parallel.
 
 Use replicas to:
@@ -11,6 +13,10 @@ Use replicas to:
 - Mirror production traces into a staging or personal project for debugging.
 - Write to multiple workspaces for multi-tenant isolation without changing any application code.
 - Send traces to the same server under different projects, with per-replica metadata overrides.
+
+<AgentTracingPrerequisite />
+
+Provision every destination before enabling routing, including each replica and tenant workspace. Replace the project names below with those existing environment projects.
 
 ## Configure replicas via environment variable
 
@@ -198,8 +204,8 @@ secondary_run_id = compute_run_id_for_secondary_replica(
 )
 
 # Each replica has its own project; resolve the corresponding project UUIDs
-primary_session_id = primary_client.create_project(project_name=primary_project, upsert=True).id
-secondary_session_id = secondary_client.create_project(project_name=secondary_project, upsert=True).id
+primary_session_id = primary_client.read_project(project_name=primary_project).id
+secondary_session_id = secondary_client.read_project(project_name=secondary_project).id
 
 # Submit feedback to the primary replica using the original run ID
 primary_client.create_feedback(

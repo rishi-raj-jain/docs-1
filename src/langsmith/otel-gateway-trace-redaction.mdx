@@ -4,6 +4,8 @@ sidebarTitle: Redact sensitive data with OTEL
 description: Use an OpenTelemetry collector to redact sensitive data from traces before they land in LangSmith.
 ---
 
+import AgentTracingPrerequisite from '/snippets/langsmith/agent-tracing-prerequisite.mdx';
+
 import OtlpAgentAddressing from '/snippets/langsmith/otlp-agent-addressing-note.mdx';
 
 [LangChain](/langsmith/trace-with-langchain), [LangGraph](/langsmith/trace-with-langgraph), and [Deep Agents](/langsmith/trace-deep-agents) applications support [OpenTelemetry-based tracing](/langsmith/trace-with-opentelemetry). Instead of sending traces directly to LangSmith, you can route them through an OpenTelemetry collector you control, apply redaction rules to strip sensitive fields, and forward the sanitized traces to LangSmith.
@@ -26,6 +28,8 @@ flowchart TD
     A -->|"OTLP/HTTP"| B
     D -->|"OTLP/HTTP"| E
 ```
+
+<AgentTracingPrerequisite />
 
 ## Prerequisites
 

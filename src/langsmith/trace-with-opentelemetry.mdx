@@ -4,12 +4,16 @@ description: Configure OpenTelemetry tracing in LangSmith, including LANGSMITH_O
 sidebarTitle: OpenTelemetry
 ---
 
+import AgentTracingPrerequisite from '/snippets/langsmith/agent-tracing-prerequisite.mdx';
+
 import OtlpAgentAddressing from '/snippets/langsmith/otlp-agent-addressing-note.mdx';
 
 
 LangSmith supports OpenTelemetry-based tracing, allowing you to send traces from any OpenTelemetry-compatible application. This guide covers both automatic instrumentation for LangChain applications and manual instrumentation for other frameworks.
 
 Learn how to trace your LLM applications using OpenTelemetry with LangSmith.
+
+<AgentTracingPrerequisite />
 
 ## How OTel tracing works
 
@@ -131,7 +135,7 @@ For non-LangChain applications or custom instrumentation, you can trace your app
    If you're self-hosting LangSmith, replace the base endpoint with your LangSmith api endpoint and append `/api/v1`. For example: `OTEL_EXPORTER_OTLP_ENDPOINT=https://ai-company.com/api/v1/otel`
    </Note>
 
-   Optional: Specify a custom project name other than "default":
+   Set the existing environment project name for an agent-based workspace, or the tracing project name for a project-based workspace:
 
    <CodeGroup>
 

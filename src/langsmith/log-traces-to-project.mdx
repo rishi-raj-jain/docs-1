@@ -4,11 +4,11 @@ sidebarTitle: Log traces to a specific project
 description: Route LangSmith traces to a named project instead of the default project using environment variables or the SDK.
 ---
 
-import ProjectBasedNote from '/snippets/langsmith/project-based-note.mdx';
+import AgentTracingPrerequisite from '/snippets/langsmith/agent-tracing-prerequisite.mdx';
 
 This page covers project addressing, which routes a trace by naming the tracing project it lands in. [Agent addressing](/langsmith/log-traces-to-agent) is the alternative, and a trace uses one or the other rather than both.
 
-<ProjectBasedNote />
+<AgentTracingPrerequisite />
 
 This page covers how to control where LangSmith sends your traces:
 
@@ -32,7 +32,7 @@ export LANGSMITH_PROJECT=my-custom-project
 The `LANGSMITH_PROJECT` flag is only supported in JS SDK 0.2.16 or later, use `LANGCHAIN_PROJECT` instead if you are using an older version.
 </Warning>
 
-If the project specified does not exist, LangSmith will automatically create it when the first trace is ingested.
+In project-based workspaces, LangSmith can create a missing tracing project on ingestion. In agent-based workspaces, register the agent first and use its existing environment project. This also applies to every dynamic or cross-workspace destination below.
 
 ## Set the destination project dynamically
 

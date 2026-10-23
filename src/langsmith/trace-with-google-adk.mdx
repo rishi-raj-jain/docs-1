@@ -3,6 +3,8 @@ title: Trace Google ADK applications
 sidebarTitle: Google ADK
 ---
 
+import AgentTracingPrerequisite from '/snippets/langsmith/agent-tracing-prerequisite.mdx';
+
 import InstallGoogleAdk from '/snippets/langsmith/integrations/google-adk/install.mdx';
 import SetupGoogleAdk from '/snippets/langsmith/integrations/google-adk/setup.mdx';
 import ExampleQuickstart from '/snippets/langsmith/integrations/google-adk/example-quickstart.mdx';
@@ -13,6 +15,8 @@ This guide shows you how to trace [Google Agent Development Kit (ADK)](https://g
 <Note>
 This guide covers ADK's standard execution paths (text agents, tools, and multi-agent workflows). To trace a **Gemini Live** voice agent, which uses ADK's `Runner.run_live` streaming loop, see [Trace Gemini Live applications](/langsmith/trace-gemini-live).
 </Note>
+
+<AgentTracingPrerequisite />
 
 ## Installation
 
@@ -36,7 +40,7 @@ To trace ADK agents, use `configure_google_adk()` from the LangSmith SDK. Call t
 from langsmith.integrations.google_adk import configure_google_adk
 
 configure_google_adk(
-    project_name="my-adk-project",  # Optional: defaults to LANGSMITH_PROJECT env var
+    project_name="<environment-project-name>",  # Optional: defaults to LANGSMITH_PROJECT env var
 )
 ```
 

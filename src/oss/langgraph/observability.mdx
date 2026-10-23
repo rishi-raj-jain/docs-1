@@ -2,6 +2,8 @@
 title: LangSmith Observability
 ---
 
+import AgentTracingPrerequisite from '/snippets/langsmith/agent-tracing-prerequisite.mdx';
+
 Traces are a series of steps that your application takes to go from input to output. Each of these individual steps is represented by a run. You can use [LangSmith](https://smith.langchain.com) to visualize these execution steps. To use it, [enable tracing for your application](/langsmith/trace-with-langgraph). This enables you to do the following:
 
 * [Debug a locally running application](/langsmith/observability-studio#debug-langsmith-traces).
@@ -17,14 +19,17 @@ Before you begin, ensure you have the following:
 
 ## Enable tracing
 
+<AgentTracingPrerequisite />
+
 To enable tracing for your application, set the following environment variables:
 
 ```python
+export LANGSMITH_PROJECT="<environment-project-name>"
 export LANGSMITH_TRACING=true
 export LANGSMITH_API_KEY=<your-api-key>
 ```
 
-By default, the trace will be logged to the project with the name `default`. To configure a custom project name, see [Log to a project](#log-to-a-project).
+Traces appear in the destination configured during setup.
 
 For more information, see [Trace with LangGraph](/langsmith/trace-with-langgraph).
 
@@ -68,6 +73,8 @@ await agent.invoke(
 :::
 
 ## Log to a project
+
+Use an existing [environment project](/langsmith/create-an-agent#use-an-environment-project) for each destination in an agent-based workspace. Replace the example names below before running the code.
 
 <Accordion title="Statically">
 

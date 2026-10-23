@@ -3,6 +3,8 @@ title: Trace LiteLLM applications
 sidebarTitle: LiteLLM
 ---
 
+import AgentTracingPrerequisite from '/snippets/langsmith/agent-tracing-prerequisite.mdx';
+
 [LiteLLM](https://www.litellm.ai/) provides a unified interface for calling LLM providers using a consistent OpenAI-compatible API. It can be used either as a [Python SDK](https://docs.litellm.ai/docs/#litellm-python-sdk) embedded directly in your application, or as a [proxy server](https://docs.litellm.ai/docs/simple_proxy) that exposes an OpenAI-compatible endpoint for client applications.
 
 This guide shows you how to trace LiteLLM calls with LangSmith using:
@@ -10,6 +12,8 @@ This guide shows you how to trace LiteLLM calls with LangSmith using:
 - The [LangSmith SDK](#use-langsmith_tracing-and-traceable) (`@traceable`) for application-level tracing.
 - [LiteLLM’s built-in langsmith callback](#log-litellm-call-with-the-langsmith-callback) for model-level logging.
 - The [LiteLLM Proxy](#use-the-litellm-proxy) for gateway-level tracing.
+
+<AgentTracingPrerequisite />
 
 ## Installation
 

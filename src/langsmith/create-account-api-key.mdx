@@ -75,7 +75,9 @@ Service keys can only be deleted, not deactivated. Open the **Service** tab and 
 
 Tracing keys are organization-owned credentials for submitting traces in selected workspaces. They limit an application's access to `runs:create` and `projects:create`.
 
-A tracing key can create projects and submit run updates through the tracing ingestion APIs. It cannot read stored traces, update project configuration, create saved views, run experiments, or manage keys. Project upsert requests are also denied. Use a separate credential for operations that require those permissions.
+A tracing key submits run updates through the tracing ingestion APIs. Before tracing in an agent-based workspace, [register the agent](/langsmith/create-an-agent) in the UI or with a PAT or service key that has `projects:create`. Tracing keys cannot call the agent creation API. In project-based workspaces, tracing ingestion can create projects.
+
+A tracing key cannot read stored traces, update project configuration, create saved views, run experiments, or manage keys. Project upsert requests are also denied. Use a separate credential for operations that require those permissions.
 
 ### Create a tracing key
 
@@ -148,11 +150,12 @@ Install the SDK for your language:
 
 For full details, refer to the [Python SDK](/langsmith/smith-python-sdk) or [JS/TS SDK](/langsmith/smith-js-ts-sdk) reference.
 
-Then, set your API key and enable tracing:
+Before tracing in an agent-based workspace, [register an agent](/langsmith/create-an-agent) and select its environment project. Then, set your API key and enable tracing:
 
 ```bash
 export LANGSMITH_API_KEY=<your-api-key>
 export LANGSMITH_TRACING=true
+export LANGSMITH_PROJECT="<environment-project-name>"
 ```
 
 You may also need the following additional environment variables:

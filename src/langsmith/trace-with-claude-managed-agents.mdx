@@ -4,11 +4,15 @@ sidebarTitle: Claude Managed Agents
 description: Automatically trace Claude Managed Agent sessions and events with LangSmith.
 ---
 
+import AgentTracingPrerequisite from '/snippets/langsmith/agent-tracing-prerequisite.mdx';
+
 [Claude Managed Agents](https://platform.claude.com/docs/en/managed-agents/overview) are Anthropic's hosted, cloud-based agents that run in managed environments. LangSmith supports tracing Claude Managed Agent sessions via the `wrapAnthropic` wrapper, giving you visibility into session events and message flows.
 
 <Note>
   Claude Managed Agents tracing is currently supported in **TypeScript only**.
 </Note>
+
+<AgentTracingPrerequisite />
 
 ## Installation
 
@@ -25,6 +29,7 @@ yarn add langsmith @anthropic-ai/sdk
 ```bash Shell
 export LANGSMITH_TRACING=true
 export LANGSMITH_API_KEY=<your-langsmith-api-key>
+export LANGSMITH_PROJECT="<environment-project-name>"
 export ANTHROPIC_API_KEY=<your-anthropic-api-key>
 ```
 

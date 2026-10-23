@@ -4,6 +4,8 @@ sidebarTitle: LiveKit
 tag: Beta
 ---
 
+import AgentTracingPrerequisite from '/snippets/langsmith/agent-tracing-prerequisite.mdx';
+
 <Note>
 This integration is in beta, so its API may change.
 </Note>
@@ -15,6 +17,8 @@ This setup requires `langsmith[livekit]>=0.11.2` and `livekit-agents>=1.6`. Live
 </Note>
 
 Each conversation appears as one LangSmith trace with its pipeline events, latency, and token metrics.
+
+<AgentTracingPrerequisite />
 
 ## Install
 

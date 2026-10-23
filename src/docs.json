@@ -2049,8 +2049,8 @@
                       {
                         "group": "Project & environment settings",
                         "pages": [
-                          "langsmith/log-traces-to-project",
                           "langsmith/log-traces-to-agent",
+                          "langsmith/log-traces-to-project",
                           "langsmith/trace-replicas",
                           "langsmith/trace-without-env-vars",
                           "langsmith/conditional-tracing",

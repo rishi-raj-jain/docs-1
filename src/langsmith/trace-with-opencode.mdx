@@ -4,7 +4,11 @@ sidebarTitle: OpenCode
 description: Capture OpenCode sessions, assistant turns, tool calls, and subagent activity in LangSmith.
 ---
 
+import AgentTracingPrerequisite from '/snippets/langsmith/agent-tracing-prerequisite.mdx';
+
 The `@langchain/langsmith-opencode` plugin sends [OpenCode](https://opencode.ai/) session traces to LangSmith. Use it to inspect agent turns, model metadata, token usage, tool calls, tool errors, attachments, and subagent activity from your OpenCode workflows.
+
+<AgentTracingPrerequisite />
 
 ## Prerequisites
 
@@ -30,7 +34,7 @@ Enable tracing and provide your LangSmith API key before starting OpenCode:
 ```bash
 export TRACE_TO_LANGSMITH="true"
 export LANGSMITH_API_KEY="<your-langsmith-api-key>"
-export LANGSMITH_PROJECT="opencode"
+export LANGSMITH_PROJECT="<environment-project-name>"
 ```
 
 Run OpenCode as usual. The plugin sends completed user turns to the configured LangSmith project.
@@ -57,7 +61,7 @@ For example:
 ```bash
 export TRACE_TO_LANGSMITH="true"
 export LANGSMITH_API_KEY="<your-langsmith-api-key>"
-export LANGSMITH_PROJECT="opencode"
+export LANGSMITH_PROJECT="<environment-project-name>"
 export LANGSMITH_OPENCODE_METADATA='{"team":"agents","environment":"dev"}'
 ```
 
@@ -70,7 +74,7 @@ Use `.opencode/langsmith.json` for project-level settings or `~/.config/opencode
   "enabled": true,
   "api_key": "<your-langsmith-api-key>",
   "api_url": "https://api.smith.langchain.com",
-  "project": "opencode",
+  "project": "<environment-project-name>",
   "metadata": {
     "team": "agents",
     "environment": "dev"
@@ -97,7 +101,7 @@ Set `replicas` in `langsmith.json` or `LANGSMITH_OPENCODE_RUNS_ENDPOINTS` to sen
 {
   "enabled": true,
   "api_key": "<your-langsmith-api-key>",
-  "project": "opencode",
+  "project": "<environment-project-name>",
   "replicas": [
     {
       "api_url": "https://api.smith.langchain.com",

@@ -5,7 +5,7 @@ description: Add LangSmith observability to an LLM application across prototypin
 icon: "school"
 ---
 
-import project from '/snippets/langsmith/trace-ingestion-project.mdx';
+import TraceIngestionProject from '/snippets/langsmith/trace-ingestion-project.mdx';
 
 In this tutorial, you will build a customer support chatbot using retrieval-augmented generation (RAG) and add LangSmith observability at each stage of development, from early prototyping through production.
 
@@ -56,7 +56,7 @@ export LANGSMITH_API_KEY="<your-api-key>"
 export OPENAI_API_KEY="<your-openai-api-key>"
 ```
 
-<project />
+<TraceIngestionProject />
 
 <Note>
 You may see these variables referenced as `LANGCHAIN_*` in other places. Both work, but `LANGSMITH_TRACING` and `LANGSMITH_API_KEY` are the recommended names.
@@ -310,8 +310,8 @@ if __name__ == "__main__":
     )  # [!code highlight]
     ls_client = Client()  # [!code highlight]
     # Feedback requires the UUID of the tracing project that owns the run  # [!code highlight]
-    project_name = os.environ.get("LANGSMITH_PROJECT", "default")  # [!code highlight]
-    session_id = ls_client.create_project(project_name=project_name, upsert=True).id  # [!code highlight]
+    project_name = os.environ["LANGSMITH_PROJECT"]  # [!code highlight]
+    session_id = ls_client.read_project(project_name=project_name).id  # [!code highlight]
     ls_client.create_feedback(  # [!code highlight]
         run_id, key="user-score", score=1.0, session_id=session_id  # [!code highlight]
     )  # [!code highlight]
@@ -361,9 +361,8 @@ const supportBot = traceable(async function supportBot(question: string): Promis
     await supportBot("How many users can I have on the Starter plan?"); // [!code highlight]
     const lsClient = new Client(); // [!code highlight]
     // Feedback requires the UUID of the tracing project that owns the run // [!code highlight]
-    const { id: sessionId } = await lsClient.createProject({ // [!code highlight]
+    const { id: sessionId } = await lsClient.readProject({ // [!code highlight]
         projectName: capturedProjectName, // [!code highlight]
-        upsert: true, // [!code highlight]
     }); // [!code highlight]
     await lsClient.createFeedback({ // [!code highlight]
         runId: capturedRunId, // [!code highlight]

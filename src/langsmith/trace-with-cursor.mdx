@@ -4,11 +4,15 @@ sidebarTitle: Cursor
 description: Capture Cursor agent turns, tool calls, model metadata, token usage, attachments, and subagents in LangSmith.
 ---
 
+import AgentTracingPrerequisite from '/snippets/langsmith/agent-tracing-prerequisite.mdx';
+
 import CodingAgentSecretRedaction from '/snippets/langsmith/coding-agent-secret-redaction.mdx';
 
 Trace [Cursor](https://cursor.com/) agent sessions in LangSmith using [Cursor hooks](https://cursor.com/docs/agent/hooks). Each turn becomes one trace, grouped into a thread per Cursor conversation, which captures prompts, model responses, tool calls, token usage, and subagent activity. Use the traces to debug agent behavior, audit tool calls, track token spend per turn, and compare Cursor runs.
 
 The plugin source is available at [`langchain-ai/langsmith-cursor-plugins`](https://github.com/langchain-ai/langsmith-cursor-plugins).
+
+<AgentTracingPrerequisite />
 
 ## Prerequisites
 
@@ -85,7 +89,7 @@ Add the variables to your shell configuration file (`~/.zshrc`, `~/.bashrc`, or 
 ```bash
 export TRACE_TO_LANGSMITH="true"
 export LANGSMITH_CURSOR_API_KEY="<your-langsmith-api-key>"
-export LANGSMITH_CURSOR_PROJECT="cursor"
+export LANGSMITH_CURSOR_PROJECT="<environment-project-name>"
 ```
 
 To verify hook activity, tail the log file:
@@ -103,7 +107,7 @@ Use `~/.cursor/langsmith.json` for global defaults or `./.cursor/langsmith.json`
   "enabled": true,
   "api_key": "<your-langsmith-api-key>",
   "api_url": "https://api.smith.langchain.com",
-  "project": "cursor"
+  "project": "<environment-project-name>"
 }
 ```
 
@@ -137,7 +141,7 @@ To redact additional patterns, set `LANGSMITH_CURSOR_REDACT_EXTRA` to a JSON arr
 ```json
 {
   "enabled": true,
-  "project": "cursor",
+  "project": "<environment-project-name>",
   "redact": true,
   "redact_extra_rules": [{ "pattern": "ACME-[A-Z0-9]{16}", "replace": "[REDACTED_ACME_KEY]" }]
 }

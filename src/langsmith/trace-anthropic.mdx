@@ -4,6 +4,8 @@ sidebarTitle: Anthropic
 description: Trace Anthropic applications in LangSmith from the Claude Platform, from the Claude SDKs over OpenTelemetry, or with the LangSmith SDK wrapper.
 ---
 
+import AgentTracingPrerequisite from '/snippets/langsmith/agent-tracing-prerequisite.mdx';
+
 import TraceAnthropic from '/snippets/trace-with-anthropic.mdx';
 
 You can send Anthropic traces to LangSmith from Anthropic's servers or from your own application:
@@ -16,6 +18,8 @@ You can send Anthropic traces to LangSmith from Anthropic's servers or from your
 <Note>
 Tracing from the Claude Platform and the Claude SDKs is in public beta.
 </Note>
+
+<AgentTracingPrerequisite />
 
 ## Trace from the Claude Platform
 
@@ -37,7 +41,7 @@ To add a destination:
    - **Name**: (Optional) A label for the destination, such as `LangSmith`.
    - **Region**: The region of your LangSmith deployment: **US**, **EU**, **APAC**, or **US on AWS**. For self-hosted LangSmith, select **Self-hosted** and enter the OTel endpoint URL of your instance in the **LangSmith URL** field, for example `https://<your-langsmith-host>/api/v1/otel`.
    - **API key**: Your LangSmith API key.
-   - **Project**: (Optional) The name of the [tracing project](/langsmith/log-traces-to-project) to send traces to. If you leave it empty, traces go to the `default` project.
+   - **Project**: The name of the [existing environment project](/langsmith/create-an-agent#use-an-environment-project) to send traces to. Set it explicitly in an agent-based workspace. If omitted, the integration uses `default`.
    - **LangSmith workspace ID**: (Optional) The ID of the LangSmith workspace to send traces to. If you leave it empty, traces go to the workspace that the API key belongs to. Organization-scoped service keys require it. To find the ID, see [Create an account and API key](/langsmith/create-account-api-key).
    - **Content mode**: Select **Full content** to include prompts and responses in the spans. With **Metadata only**, spans omit the input and output content.
    - **Workspaces**: The Claude workspaces that send traces to this destination: **All**, **Selected**, or **All except**. For details on each option, see [Choose workspaces for a destination](https://platform.claude.com/docs/en/manage-claude/opentelemetry/api#choose-workspaces-for-a-destination) in the Anthropic docs.
@@ -57,7 +61,7 @@ To check the setup:
 
 1. Send a Messages API request or run a Claude Managed Agents session in a Claude workspace that uses the destination.
 2. On the Claude Console OpenTelemetry settings page, check that the **Delivery** column of the destination shows **Healthy**. This can take about a minute.
-3. In LangSmith, open the project that you named in the **Project** field, or the `default` project.
+3. In LangSmith, open the environment whose project you named in the **Project** field.
 
 ### Troubleshoot delivery
 
@@ -94,7 +98,7 @@ To send Claude SDK spans to LangSmith:
 
    Set the following request headers:
    - `x-api-key`: Your LangSmith API key.
-   - `Langsmith-Project`: (Optional) The name of the tracing project to send traces to. Without this header, traces go to the `default` project.
+   - `Langsmith-Project`: Set to the existing environment project name. Without this header, the exporter uses `default`.
    - `X-Tenant-Id`: (Optional) The ID of the LangSmith workspace to send traces to. Without this header, traces go to the workspace that the API key belongs to. Organization-scoped service keys require it.
 
    For example, with the standard OTel environment variables:

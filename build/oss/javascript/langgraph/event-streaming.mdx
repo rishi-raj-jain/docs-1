@@ -274,6 +274,18 @@ The `messages` channel models output as content blocks. The data's `event` field
 
 Content blocks have explicit boundaries: a block starts, emits zero or more deltas, and finishes before the next block in the same message starts. This makes token streaming, reasoning blocks, tool-call blocks, and multimodal content explicit without requiring provider-specific formats. `message-finish` may include token usage; unrecoverable model-call failures arrive as message error events.
 
+Each `content-block-delta` event carries one delta for the block at its `index`:
+
+| Delta `type` | Effect on the block |
+| ------------ | ------------------- |
+| `text-delta` | Appends its `text` to the block's `text`. |
+| `reasoning-delta` | Appends its `reasoning` to the block's `reasoning`. |
+| `data-delta` | Appends its `data` to the block's `base64`. |
+| `tool-call-delta` | Appends its `args` to the block's `args`. |
+| `block-delta` | Sets each key in `fields` on the block, replacing the earlier value. |
+
+`content-block-finish` carries the complete block. Ignore any delta type you do not recognize, and keep reading the stream.
+
 To consume raw content-block events directly instead of using the `stream.messages` projection:
 
 
@@ -290,6 +302,8 @@ for await (const event of stream) {
     process.stdout.write(block.text ?? "");
   } else if (block.type === "reasoning-delta") {
     process.stdout.write(`[thinking]${block.reasoning ?? ""}`);
+  } else if (block.type === "tool-call-delta") {
+    process.stdout.write(`[args]${block.args ?? ""}`);
   }
 }
 ```

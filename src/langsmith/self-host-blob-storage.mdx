@@ -370,11 +370,7 @@ rule {
   </Tab>
   <Tab title="Neon">
 
-Neon Object Storage does not run lifecycle rules. Add each custom prefix to `RULES` in your [cleanup job](#neon-object-storage-lifecycle-rules):
-
-```python
-RULES = {"ttl_s/": 14, "ttl_l/": 400, "ttl_90d/": 90, "ttl_180d/": 180}
-```
+Neon Object Storage does not run lifecycle rules. Make sure your [cleanup job](#neon-object-storage-lifecycle-rules) deletes objects under each custom prefix, such as `ttl_90d/` and `ttl_180d/`, once they are older than that prefix's TTL.
 
   </Tab>
 </Tabs>
